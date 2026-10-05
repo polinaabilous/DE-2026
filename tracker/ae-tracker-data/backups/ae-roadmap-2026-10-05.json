@@ -1,0 +1,18 @@
+{
+  "v": 4,
+  "setupV": 2,
+  "savedAt": 0,
+  "r": {},
+  "pc": {},
+  "rc": {},
+  "g": {},
+  "notes": [],
+  "lib": {},
+  "act": {},
+  "log": [],
+  "ui": {
+    "hideDone": false,
+    "showOpt": true,
+    "res": "topic"
+  }
+}

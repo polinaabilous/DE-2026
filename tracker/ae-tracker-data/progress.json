@@ -1,0 +1,32 @@
+{
+  "app": "ae-roadmap",
+  "version": 4,
+  "savedAt": 1791235203836,
+  "data": {
+    "v": 4,
+    "setupV": 2,
+    "curriculumV": 4,
+    "savedAt": 1791235203836,
+    "r": {},
+    "pc": {
+      "SETUP": [
+        true,
+        true,
+        false,
+        false
+      ]
+    },
+    "rc": {},
+    "g": {},
+    "lib": {},
+    "act": {
+      "2026-10-05": 8
+    },
+    "log": [],
+    "ui": {
+      "hideDone": false,
+      "showOpt": true,
+      "res": "topic"
+    }
+  }
+}
