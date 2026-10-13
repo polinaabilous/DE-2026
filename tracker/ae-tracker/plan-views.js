@@ -34,9 +34,15 @@ globalThis.AEPlanViews = Object.freeze({
     }
     const sectionTitle = (n, t) => `<h3 class="section-title"><span class="section-number">${n}</span>${t}</h3>`;
     const linkRes = (r, attrs = "") => r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" ${attrs}>${esc(r.title)}</a>` : `<span ${attrs}>${esc(r.title)}</span>`;
+    // Format badge (colour + icon) and time badge, shared with the Resources views.
+    const fmtBadge = f => { const [label, ic] = RES.FORMATS[f] || [f, "doc"]; return `<span class="fmt f-${esc(f)}">${icon(ic)}${esc(label)}</span>`; };
+    const timeBadge = t => RES.TIME[t] ? `<span class="tb t-${esc(t)}">${RES.TIME[t][0]} ${RES.TIME[t][1]}</span>` : "";
+    const bookBadge = r => RES.currentBooks().has(r.key) ? `<span class="badge book-now" title="The book you're reading now — read just these chapters">📗 Your current book</span>` : "";
+    const libDoneFor = (owner, k) => (S().rc[owner] || {})[k] || RES.libDone(k);
     function resRow(owner, r, label) {
-      const ck = (S().rc[owner] || {})[r.key] || S().lib[r.key] === "done";
-      return `<label class="res-row"><input type="checkbox" data-rc="${esc(owner)}|${esc(r.key)}" ${ck ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${label ? `<span class="res-tier">${label}</span>` : ""}${linkRes(r)}${r.note ? ` <span class="muted small">— ${esc(r.note)}</span>` : ""}<span class="kind k-${esc(r.kind)}">${esc(r.kind)}</span></span></label>`;
+      const ck = libDoneFor(owner, r.key);
+      return `<label class="res-row"><input type="checkbox" data-rc="${esc(owner)}|${esc(r.key)}" ${ck ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${label ? `<span class="res-tier">${label}</span>` : ""}${linkRes(r)}${r.note ? ` <span class="res-note">— ${esc(r.note)}</span>` : ""}
+        <span class="res-meta">${fmtBadge(r.format)}${timeBadge(r.time)}${bookBadge(r)}${r.pw ? `<span class="small muted">may need sign-in (${esc(r.pw)})</span>` : ""}</span></span></label>`;
     }
     const siteLink = r => `<a class="resource" href="${esc(r.url || "#")}" target="_blank" rel="noopener">${icon("flag")}<span class="grow"><strong>${esc(r.title)}</strong><small>Choose problems on this lesson's topics; track them separately.</small></span>${icon("arrow")}</a>`;
 
@@ -65,10 +71,17 @@ globalThis.AEPlanViews = Object.freeze({
         <footer class="area-foot">${reading.length ? `<details class="reading-list" data-reading="${a.id}" ${expanded.has("r:" + a.id) ? "open" : ""}><summary>${icon("book")} Area reading list <span class="muted">(${reading.length})</span></summary>${readingList(reading)}</details>` : "<span></span>"}
         ${firstRow ? `<button class="text-btn" data-road="${firstRow.key}">See on roadmap ${icon("arrow")}</button>` : ""}</footer></section>`;
     }
-    function readingList(list) {
-      return `<p class="small muted">Books and courses that span several lessons. Dip in when a lesson points here.</p><div class="reading-items">${list.map(r => {
-        const d = S().lib[r.key] === "done" || Object.values(S().rc).some(m => m && m[r.key]);
-        return `<label class="res-row"><input type="checkbox" data-lib="${esc(r.key)}" ${d ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${linkRes(r)}<span class="kind k-${esc(r.kind)}">${esc(r.kind)}</span>${r.lessons.length ? `<small class="muted reading-for">${r.lessons.map(l => esc(it(l).name)).join(" · ")}</small>` : ""}</span></label>`;
+    // Area reading list: books and courses with the chapters each lesson uses. In a lesson panel this lesson's chapters come first.
+    function readingList(list, lesson) {
+      const mine = r => r.lessons.some(l => l.id === lesson);
+      const sorted = lesson ? [...list].sort((a, b) => mine(b) - mine(a)) : list;
+      return `<p class="small muted">Books and courses that span several lessons. Read only the chapters a lesson names.</p><div class="reading-items">${sorted.map(r => {
+        const own = lesson && r.lessons.find(l => l.id === lesson);
+        const uses = r.lessons.filter(l => l.id !== lesson);
+        return `<label class="res-row ${own ? "for-lesson" : ""}"><input type="checkbox" data-lib="${esc(r.key)}" ${RES.libDone(r.key) ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${linkRes(r)}
+          <span class="res-meta">${fmtBadge(r.format)}${bookBadge(r)}</span>
+          ${own ? `<small class="reading-for"><b>This lesson:</b> ${esc(own.note || "the whole book")}</small>` : ""}
+          ${uses.length ? `<small class="muted reading-for">${uses.map(l => `${esc(it(l.id).name)}${l.note ? ` — ${esc(l.note)}` : ""}`).join("<br>")}</small>` : ""}</span></label>`;
       }).join("")}</div>`;
     }
     function vTopics() {
@@ -122,7 +135,7 @@ globalThis.AEPlanViews = Object.freeze({
       const built = P.stages.filter(s => isDone(s.id)).length, done = R.required.filter(isDone).length;
       let n = 0;
       let h = `<div class="page-head"><div><div class="eyebrow">Learning & portfolio</div><h2>Roadmap</h2><p class="muted">Learn on the left, build on the right. Each row lists the lessons that unlock the next project stage, career milestone or checkpoint.</p></div></div>
-        <section class="road-intro"><div class="grow"><strong>Portfolio · Fuel Smart</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(P.deckBase + P.portfolio.brief)}" target="_blank" rel="noopener">Project brief</a></p></div>
+        <section class="road-intro"><div class="grow"><strong>Portfolio · Fuel Smart</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(RES.docUrl(P.portfolio.brief))}" target="_blank" rel="noopener">Project brief</a></p></div>
           <div class="kpis small-kpis"><div><b>${done}/${R.required.length}</b><span>lessons complete</span></div><div><b>${built}/${P.stages.length}</b><span>stages built</span></div></div>
           ${cur ? `<button class="btn primary" data-act="jump">${icon("map")} Jump to where you are</button>` : ""}</section>
         <div class="road-headers"><div><h3>${icon("book")} Learning roadmap</h3><p>The lessons each step needs.</p></div><div></div><div><h3>${icon("box")} Portfolio roadmap</h3><p>Project stages, career milestones and checkpoints.</p></div></div>`;
@@ -143,37 +156,53 @@ globalThis.AEPlanViews = Object.freeze({
     }
 
     // ---------- lesson panel ----------
+    function deckCard(x) {
+      const done = RES.libDone(x.key);
+      return `<article class="deck-card ${x.partial ? "partial" : ""} ${done ? "done" : ""}"><div class="deck-top">${icon("slides")}<span class="grow"><strong>${esc(x.title)}</strong>
+          <small>${x.guide ? "Quick guide" : `${x.slides} slides`}${x.sub && !x.guide ? ` · ${esc(x.sub)}` : ""}</small></span>
+          ${x.partial ? '<span class="badge amber" title="Covers part of this lesson">Partial</span>' : `<span class="badge">${x.guide ? "Guide" : "Whole lesson"}</span>`}</div>
+        <p class="deck-cover"><span class="muted">Covers:</span> ${esc(x.coverage)}</p>
+        <div class="deck-actions"><a class="btn sm primary" href="${esc(x.url)}" target="_blank" rel="noopener">${x.guide ? "Open guide" : "Open deck"} ${icon("arrow")}</a>
+          ${x.mdUrl ? `<a class="btn sm" href="${esc(x.mdUrl)}" target="_blank" rel="noopener">Markdown ↗</a>` : ""}
+          ${x.extras.map(e => `<a class="btn sm" href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title.split(" (")[0])} ↗</a>`).join("")}
+          <label class="deck-done"><input type="checkbox" data-lib="${esc(x.key)}" ${done ? "checked" : ""}> Done</label></div></article>`;
+    }
     function deckSlot(id) {
       const d = RES.deckFor(id);
-      const decks = d.decks.map(x => `<a class="resource deck" href="${esc(x.url)}" target="_blank" rel="noopener">${icon("slides")}<span class="grow"><strong>${esc(x.title)}${x.slide ? ` · from slide ${x.slide}` : ""}</strong><small>${esc(x.note)}</small></span>${x.partial ? '<span class="badge amber">Partial</span>' : '<span class="badge">Deck</span>'}${icon("arrow")}</a>`).join("");
       const planned = d.planned.length ? `<small>Planned: ${d.planned.map(esc).join(" · ")}</small>` : "";
       if (!d.decks.length) return `<div class="resource inactive deck-missing">${icon("slides")}<span class="grow"><strong>No deck yet</strong>${planned || "<small>Use the resources below for now.</small>"}</span></div>`;
-      return decks + (d.planned.length && d.decks.every(x => x.partial) ? `<p class="small muted planned">Fuller deck planned: ${d.planned.map(esc).join(" · ")}</p>` : "");
+      return d.decks.map(deckCard).join("") + (d.planned.length && d.decks.every(x => x.partial) ? `<p class="small muted planned">Fuller deck planned: ${d.planned.map(esc).join(" · ")}</p>` : "");
+    }
+    function labSlot(d) {
+      if (!d.labs.length) return `<p class="small muted">Lab will be added with the deck. Until then, use the practice tasks below.</p>`;
+      return d.labs.map(l => `<div class="resource lab">${icon("box")}<span class="grow"><a href="${esc(l.url)}" target="_blank" rel="noopener"><strong>${esc(l.title)}</strong></a>
+        <small>${l.folder ? "Project folder — open its README" : l.slide ? `Deck slide ${l.slide}` : "Runnable file"}${l.slideUrl ? ` · <a href="${esc(l.slideUrl)}" target="_blank" rel="noopener">walkthrough slide ${l.slide}</a>` : ""}</small></span>${icon("arrow")}</div>`).join("");
     }
     function lessonBody(id) {
       const x = it(id), d = RES.deckFor(id), res = RES.lessonRes(id), a = R.areaOf(id);
       const pre = R.prereqs(id), points = learnPoints(x.c), links = R.connections(id), row = R.rowOf[id];
       const done = isDone(id), pcs = S().pc[id] || [], cks = R.lessonChecks(id);
-      const reading = RES.areaReading(a);
+      const reading = RES.areaReading(a), ownReading = reading.filter(r => r.lessons.some(l => l.id === id)).length;
       const tiers = [res.start && resRow(id, res.start, "Start here"), ...res.deeper.map(r => resRow(id, r, "Go deeper"))].filter(Boolean).join("");
       const sites = res.sites;
-      const sitesNames = sites.map(r => r.title.split(/ [–—(]/)[0]).join(", ");
+      const sitesNames = sites.map(r => r.title.split(/ [–—(:]/)[0]).join(", ");
+      const alsoTagged = res.more.length + res.reading.filter(r => !reading.some(z => z.key === r.key)).length;
       return `${pre.length ? `<section class="panel-prereq"><p class="eyebrow">Learn first</p><div class="prereq-list">${pre.map(p => lessonButton(p)).join("")}</div></section>` : ""}
         <section class="lesson-section">${sectionTitle(1, "What to learn")}
           ${points ? `<ul class="learn-list">${points.map(t => `<li><span class="bullet">·</span><span>${md(t)}</span></li>`).join("")}</ul>` : `<p class="learn-text">${md(x.c)}</p>`}
           ${x.setup ? `<div class="setup-box"><h4>🔧 Set up first <span class="muted small">only what this lesson needs</span></h4><ul>${x.setup.map(t => `<li>${md(t)}</li>`).join("")}</ul></div>` : ""}
-          <h4 class="sub">Deck</h4>${deckSlot(id)}
+          <h4 class="sub">${d.decks.length > 1 ? "Decks" : "Deck"}</h4>${deckSlot(id)}
           <h4 class="sub">Resources <span class="muted small">at most ${RES.MAX}</span></h4>
-          ${tiers ? `<div class="res-list">${tiers}</div>` : `<p class="small muted">No single short resource fits this lesson — use the deck or the area reading list.</p>`}
-          ${reading.length ? `<details class="reading-list in-panel"><summary>${icon("book")} ${esc(a.name)} reading list <span class="muted">(${reading.length})</span></summary>${readingList(reading)}</details>` : ""}
-          ${res.more.length ? `<p class="small muted">${res.more.length} more ${res.more.length === 1 ? "resource is" : "resources are"} tagged with this lesson in the <a href="#resources" data-act="closepanel">Resources page</a>.</p>` : ""}</section>
+          ${tiers ? `<div class="res-list">${tiers}</div>` : `<p class="small muted">No single short resource fits this lesson — use the deck${sites.length ? ", the problem sites" : ""} or the area reading list.</p>`}
+          ${reading.length ? `<details class="reading-list in-panel" ${ownReading ? "open" : ""}><summary>${icon("book")} ${esc(a.name)} reading list <span class="muted">(${ownReading ? `${ownReading} for this lesson · ` : ""}${reading.length})</span></summary>${readingList(reading, id)}</details>` : ""}
+          ${alsoTagged ? `<p class="small muted">${alsoTagged} more ${alsoTagged === 1 ? "resource is" : "resources are"} tagged with this lesson in <a href="#resources" data-act="closepanel">Resources → By lesson</a>.</p>` : ""}</section>
         <section class="lesson-section">${sectionTitle(2, "How to practise")}
-          <article class="practice-card"><div class="row spread"><h4>Lab</h4>${d.labs.length ? '<span class="badge">Existing material</span>' : '<span class="badge neutral">Coming later</span>'}</div>
-            ${d.labs.length ? d.labs.map(l => `<a class="resource" href="${esc(l.url)}" target="_blank" rel="noopener">${icon("box")}<span class="grow"><strong>${esc(l.title)}${l.slide ? ` · slide ${l.slide}` : ""}</strong><small>${esc(l.note)}</small></span>${icon("arrow")}</a>`).join("") : `<p class="small muted">Lab will be added with the deck. Until then, use the practice tasks below.</p>`}</article>
+          <article class="practice-card"><div class="row spread"><h4>Lab</h4>${d.labs.length ? '<span class="badge">From the deck</span>' : '<span class="badge neutral">Coming later</span>'}</div>${labSlot(d)}</article>
           <article class="practice-card"><div class="row spread"><h4>Practice tasks</h4><span class="small muted">${pcs.filter(Boolean).length} / ${x.practice.length}</span></div>
-            <div class="checks">${x.practice.map((t, i) => `<label><input type="checkbox" data-pc="${id}|${i}" ${pcs[i] ? "checked" : ""}> <span>${md(t)}</span></label>`).join("")}</div></article>
+            <div class="checks">${x.practice.map((t, i) => `<label><input type="checkbox" data-pc="${id}|${i}" ${pcs[i] ? "checked" : ""}> <span>${md(t)}</span></label>`).join("")}</div>
+            ${res.tools.length ? `<p class="small tools-line"><span class="muted">Data & tools for these tasks:</span> ${res.tools.map(r => linkRes(r)).join(" · ")}</p>` : ""}</article>
           ${sites.length ? `<article class="practice-card practice-directory"><h4>Where to find more problems</h4><p class="small muted">Choose your own questions on this lesson's topics.</p>${sites.map(siteLink).join("")}
-            ${sites.some(r => r.key === "dataLemur") ? `<p class="small"><a href="#trackers/datalemur" data-act="closepanel">Track DataLemur problems in Trackers →</a> · <a href="${esc(RES.deckUrl("dlCatalog"))}" target="_blank" rel="noopener">Offline DataLemur catalog</a></p>` : ""}</article>` : ""}</section>
+            ${sites.some(r => r.key === "dataLemur") ? `<p class="small"><a href="#trackers/datalemur" data-act="closepanel">Track DataLemur problems in Trackers →</a> · <a href="${esc(RES.docUrl(P.dlCatalog))}" target="_blank" rel="noopener">Offline DataLemur catalog</a></p>` : ""}</article>` : ""}</section>
         <section class="lesson-section">${sectionTitle(3, "Portfolio connection")}
           ${links.length ? links.map(s => `<article class="project-link"><div class="row spread"><h4>${esc(s.name)}</h4><span class="badge ${R.stageStatus(s) === "locked" ? "neutral" : ""}">${R.stageLabel[R.stageStatus(s)]}</span></div><p>Stage ${stageNo(s.id)} of the portfolio needs this lesson. ${esc(firstSentence(R.stageDesc(s), 150))}</p><button class="text-btn" data-open="${s.id}">Open portfolio stage ${icon("arrow")}</button></article>`).join("")
             : `<div class="no-project">${x.opt ? "Optional. " : ""}Standalone — not required for a portfolio stage. ${sites.length ? `Practise with ${esc(sitesNames)}.` : "Practise with the tasks above and keep notes of what you learn."}</div>`}
@@ -191,7 +220,7 @@ globalThis.AEPlanViews = Object.freeze({
     // ---------- stage panel ----------
     function stageBody(s) {
       const learned = s.req.filter(isDone).length, tasks = R.stageTasks(s), checks = R.stageChecks(s), st = R.stageStatus(s);
-      const refs = [...new Map(s.from.flatMap(id => it(id).learn.map(e => [id, RES.resolve(e)])).map(([o, r]) => [r.key, [o, r]])).values()];
+      const refs = RES.stageRefs(s);
       const setup = s.setup && it(s.setup).setup;
       return `<section class="lesson-section">${sectionTitle(1, "Knowledge needed")}<p class="practice-intro">${learned} of ${s.req.length} required lessons complete. Open one to review or practise it.</p>
           <div class="prereq-list">${s.req.map(id => lessonButton(id)).join("")}</div>
@@ -231,6 +260,6 @@ globalThis.AEPlanViews = Object.freeze({
     const panelBody = id => isStage(id) ? stageBody(stage(id)) : lessonBody(id);
     const panelFoot = id => isStage(id) ? stageFoot(stage(id)) : lessonFoot(id);
 
-    return { topics: vTopics, roadmap: vRoadmap, panelHead, panelBody, panelFoot, lessonButton, learnPoints, expanded };
+    return { topics: vTopics, roadmap: vRoadmap, panelHead, panelBody, panelFoot, lessonButton, learnPoints, expanded, fmtBadge, timeBadge, bookBadge, deckCard, readingList };
   }
 });

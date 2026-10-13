@@ -34,6 +34,25 @@ const PROJECT_SWAP = new Set(['S2 practice 2', 'S7 practice 0', 'D3 practice 1',
   'PF3 practice 1', 'PF3 check 0', 'PF4 description', 'PF4 check 0', 'PF8 description', 'PF8 check 3']);
 const PROJECT_DATA = new Set(['ghArchive', 'foodcom', 'fdc', 'offData']);
 const OLD_PROJECT = /GH Archive|GitHub|\bGH\b|\bPR\b|repositor|contributor|24-hour UTC|hourly|per hour/i;
+// Verified moved links from the resource plan's issues list (2026-10-13). Keys stay; only these fields change.
+// Format/kind corrections (newsletter, community …) live in LM, so the [title, url, kind] entries keep their kind.
+const RESOURCE_FIXES = {
+  modeSql: { 0: 'ThoughtSpot SQL tutorial (formerly Mode)', 1: 'https://www.thoughtspot.com/sql-tutorial' },
+  duckdb: { 1: 'https://duckdb.org/docs/current/' },
+  dbtContracts: { 1: 'https://docs.getdbt.com/docs/mesh/govern/model-contracts' },
+  dbtVersions: { 1: 'https://docs.getdbt.com/docs/mesh/govern/model-versions' },
+  dbtAccess: { 1: 'https://docs.getdbt.com/docs/mesh/govern/model-access' },
+  pydantic: { 1: 'https://pydantic.dev/docs/' },
+  skillsBoost: { 0: 'Google Skills (formerly Cloud Skills Boost) – LookML labs', 1: 'https://www.skills.google/course_templates/327' },
+  bqSandbox: { 1: 'https://docs.cloud.google.com/bigquery/docs/sandbox' },
+  learningSpark: { 0: 'Learning Spark, 2nd ed. (Damji, Wenig, Das & Lee)' },
+  dbtDocs: { 0: 'dbt docs (search: state, defer, exposures, environments)' }
+};
+const LX_FIXES = {
+  arAstroLearn: { 0: 'Astronomer docs: Airflow guides (formerly Learn)', 1: 'https://www.astronomer.io/docs/airflow/overview' },
+  ytBtree: { 4: 'deep' }
+};
+const fixed = (v, fix) => plain(Object.assign([...v], fix || {}));
 
 test('no old topic, check, practice item, resource, setup step or prerequisite is lost', () => {
   const old = legacy(), { plan, roadmap } = fixture();
@@ -87,8 +106,9 @@ test('no old topic, check, practice item, resource, setup step or prerequisite i
   assert.ok(!OLD_PROJECT.test(plan.portfolio.question + plan.portfolio.scope), 'portfolio no longer describes GitHub activity');
   for (const s of plan.stages) assert.ok(!/GH Archive|GitHub|\bPR\b|repositories/.test([s.name, s.desc || '', ...s.scope, s.boundary, ...s.tasks.map(t => (t.t || '') + ' ' + (t.d || ''))].join(' ')), `stage ${s.id} uses Fuel Smart data`);
   assert.deepEqual(plain(plan.skip), plain(old.skip));
-  for (const [k, v] of Object.entries(old.L)) assert.deepEqual(plain(plan.L[k]), plain(v), `resource ${k}`);
-  for (const k of Object.keys(old.LX)) assert.ok(plan.LX[k], `library extra ${k}`);
+  for (const [k, v] of Object.entries(old.L)) assert.deepEqual(plain(plan.L[k]), fixed(v, RESOURCE_FIXES[k]), `resource ${k}`);
+  for (const [k, v] of Object.entries(old.LX)) assert.deepEqual(plain(plan.LX[k]), fixed(v, LX_FIXES[k]), `library extra ${k}`);
+  for (const k of [...Object.keys(RESOURCE_FIXES), ...Object.keys(LX_FIXES)]) assert.ok(old.L[k] || old.LX[k], `fix ${k} names an existing resource`);
   // Old checkpoints keep their item count and keys, so saved ticks still apply.
   for (const st of old.stages) {
     for (const [key, g] of [['s' + st.n, st.gate], ...(st.apply ? [['apply', st.apply]] : [])]) {
@@ -218,50 +238,155 @@ test('prerequisites lock lesson completion; stages unlock after lessons and earl
   assert.equal(checks[0].text, plan.items.PF1.dod[0]);
 });
 
-test('lessons show a deck slot and at most three resources; practice sites and broad books move out', () => {
-  const { plan, roadmap, resources } = fixture();
+test('lessons show their decks and at most three resources; practice sites, tools and book chapters move out', () => {
+  const { plan, roadmap, resources, views } = fixture();
   for (const id of roadmap.lessons) {
     const r = resources.lessonRes(id);
     const shown = [r.start, ...r.deeper].filter(Boolean);
     assert.ok(shown.length <= 3, `${id} shows ${shown.length} resources`);
+    assert.ok(r.deeper.length <= 2, `${id} has at most two Go deeper picks`);
     assert.ok(shown.every(x => x.kind !== 'practice'), `${id} lists practice sites as resources`);
     assert.ok(r.sites.every(x => x.kind === 'practice'), `${id} problem sites`);
-    // Nothing tagged to the lesson disappears: shown, reading list, problem sites or the Library.
-    const placed = new Set([...shown, ...r.reading, ...r.more, ...r.sites].map(x => x.key));
+    // The panel renders at most three Start here / Go deeper rows.
+    const tiers = (views.panelBody(id).match(/class="res-tier"/g) || []).length;
+    assert.ok(tiers <= 3, `${id} panel shows ${tiers} resources`);
+    // Nothing tagged to the lesson disappears: shown, reading list, problem sites, tools or "Also tagged".
+    const placed = new Set(resources.tagged(id).map(x => x.key));
     for (const e of plan.items[id].learn) assert.ok(placed.has(e.split('|')[0]), `${id} keeps ${e}`);
+    // Broad entries dropped from the panel stay tagged with the lesson in the Library and the By lesson view.
+    for (const k of plan.lessonResources[id]?.drop || []) {
+      assert.ok(!shown.some(x => x.key === k), `${id} hides dropped ${k}`);
+      assert.ok([...r.more, ...r.tools, ...r.sites, ...r.reading].some(x => x.key === k), `${id} keeps ${k} under Also tagged (or as a tool, site or chapter)`);
+      assert.ok(resources.libItem[k].topics.includes(id), `${k} stays tagged with ${id} in the Library`);
+    }
   }
   const libKeys = new Set(resources.LIB.map(x => x.key));
   for (const k of [...Object.keys(plan.L), ...Object.keys(plan.LX)]) assert.ok(libKeys.has(k), `${k} stays in the Library`);
+  for (const k of Object.keys(legacy().L).concat(Object.keys(legacy().LX))) assert.ok(libKeys.has(k), `old ${k} is still in the Library`);
   for (const id of Object.keys(plan.items)) for (const e of plan.items[id].learn) {
     assert.ok(resources.LIB.find(x => x.key === e.split('|')[0]).topics.includes(id), `${e} stays tagged with ${id}`);
   }
   assert.ok(resources.areaReading('sql').some(r => r.key === 'tanimura'), 'broad SQL books are on the area reading list');
 });
 
-test('deck links point only to existing files and slide anchors', () => {
+test('resource plan picks resolve, new resources are verified, every resource has a format and time', () => {
+  const { plan, resources } = fixture();
+  const old = legacy(), oldKeys = new Set([...Object.keys(old.L), ...Object.keys(old.LX)]);
+  for (const [id, o] of Object.entries(plan.lessonResources)) {
+    assert.ok(plan.items[id], `${id} is a curriculum item`);
+    for (const e of [o.start, ...(o.deeper || []), ...(o.reading || []), ...(o.sites || []), ...(o.tools || []), ...(o.more || []), ...(o.drop || [])].filter(Boolean)) {
+      const k = e.split('|')[0];
+      assert.ok(plan.L[k] || plan.LX[k], `${id} references ${k}`);
+    }
+  }
+  const added = Object.keys(plan.L).filter(k => !oldKeys.has(k));
+  assert.ok(added.length >= 200, `${added.length} specific pages added`);
+  for (const k of added) {
+    assert.match(plan.L[k][1] || '', /^https:\/\//, `${k} has a URL`);
+    assert.match(plan.LM[k]?.ok || '', /^\d{4}-\d{2}-\d{2}$/, `${k} was checked`);
+  }
+  for (const [k, v] of Object.entries(plan.L)) if (!v[1]) assert.ok(['book', 'docs', 'practice', 'article'].includes(v[2]), `${k} has no URL only when it is print or a bundle`);
+  for (const x of resources.LIB) {
+    assert.ok(resources.FORMATS[x.format], `${x.key} format ${x.format}`);
+    assert.ok(resources.TIME[x.time], `${x.key} time ${x.time}`);
+  }
+  assert.ok(resources.LIB.filter(x => x.format === 'deck').length >= 20, 'decks are in the Library');
+});
+
+test('book chapters show with their notes; the current book is badged', () => {
+  const { resources, views, plan } = fixture();
+  const m1 = resources.lessonRes('M1');
+  const dwt = m1.deeper.find(r => r.key === 'dwt');
+  assert.match(dwt.note, /ch\. 1/);
+  const panel = views.panelBody('M1');
+  assert.match(panel, /ch\. 1 Data Warehousing/);
+  assert.match(panel, /Your current book/);
+  assert.match(views.panelBody('S1'), /ch\. 3 Time Series Analysis/, 'reading-list chapters show in the panel');
+  assert.deepEqual(plain(plan.currentBooks), ['dwt']);
+  // Once you mark another book as Reading, the badge follows it.
+  resources.startReading('ddia');
+  assert.ok(!/Your current book/.test(views.panelBody('M1')), 'the badge moves to the book you are reading');
+  assert.match(views.panelBody('P2'), /Your current book/);
+});
+
+test('deck, lab, extra and document links point to existing files and slide anchors', () => {
   const { plan, resources, roadmap, views } = fixture();
   const repo = path.join(__dirname, '../..');
-  for (const [key, d] of Object.entries(plan.decks)) {
-    const file = path.join(repo, 'docs', d.file);
-    assert.ok(fs.existsSync(file), `${key}: ${d.file} exists`);
+  assert.equal(plan.deckBase, 'decks/', 'decks are published with the app');
+  const deckDir = path.resolve(app, plan.deckBase);
+  assert.equal(deckDir, path.join(app, 'decks'));
+  for (const [slug, d] of Object.entries(plan.decks)) {
+    for (const f of [d.file, d.md, ...(d.extras || []).map(x => x[1])].filter(Boolean)) assert.ok(fs.existsSync(path.join(deckDir, f)), `${slug}: ${f} exists`);
   }
-  assert.equal(path.resolve(app, plan.deckBase), path.join(repo, 'docs'));
+  for (const [id, labs] of Object.entries(plan.lessonLabs)) for (const l of labs) {
+    assert.ok(fs.existsSync(path.join(deckDir, l.file)), `${id} lab ${l.file}`);
+    if (l.deck) assert.ok(plan.decks[l.deck], `${id} lab deck ${l.deck}`);
+  }
   const html = {};
+  const exists = (href, where) => {
+    const [file, hash] = href.split('#');
+    const abs = path.resolve(app, decodeURI(file));
+    assert.ok(fs.existsSync(abs), `${where}: ${href}`);
+    if (hash) { html[abs] ||= fs.readFileSync(abs, 'utf8'); assert.ok(html[abs].includes(`id="${hash}"`), `${where}: #${hash} exists in ${file}`); }
+  };
   for (const id of roadmap.lessons) {
     const d = resources.deckFor(id);
-    for (const x of [...d.decks, ...d.labs]) {
-      const [file, hash] = x.url.split('#');
-      const abs = path.resolve(app, file);
-      assert.ok(fs.existsSync(abs), `${id}: ${file}`);
-      if (hash) {
-        html[abs] ||= fs.readFileSync(abs, 'utf8');
-        assert.ok(html[abs].includes(`id="${hash}"`), `${id}: ${hash} exists in ${file}`);
-      }
-    }
+    for (const x of d.decks) [x.url, x.mdUrl, ...x.extras.map(e => e.url)].filter(Boolean).forEach(u => exists(u, id));
+    for (const l of d.labs) [l.url, l.slideUrl].filter(Boolean).forEach(u => exists(u, id + ' lab'));
     const panel = views.panelBody(id);
-    const links = [...panel.matchAll(/href="([^"]+)"/g)].map(m => m[1]).filter(h => !/^(https?:|#|mailto:)/.test(h));
-    for (const href of links) assert.ok(fs.existsSync(path.resolve(app, href.split('#')[0])), `${id} links ${href}`);
+    const links = [...panel.matchAll(/href="([^"]+)"/g)].map(m => m[1].replace(/&amp;/g, '&')).filter(h => !/^(https?:|#|mailto:)/.test(h));
+    links.forEach(href => exists(href, id));
     if (!d.decks.length) assert.match(panel, /No deck yet/);
+    else assert.equal((panel.match(/class="deck-card/g) || []).length, d.decks.length, `${id} shows every deck`);
+    if (!d.labs.length) assert.match(panel, /Lab will be added with the deck/);
+    if (d.decks.some(x => !x.partial)) assert.equal(d.planned.length, 0, `${id} has a full deck, so no planned deck`);
   }
+  for (const x of resources.LIB.filter(x => x.format === 'deck')) [x.url, x.mdUrl].filter(Boolean).forEach(u => exists(u, x.key));
+  exists(resources.docUrl(plan.portfolio.brief), 'project brief');
+  exists(resources.docUrl(plan.dlCatalog), 'DataLemur catalog');
   assert.ok(Object.values(plan.plannedDecks).every(name => !Object.values(plan.decks).some(d => d.title === name)), 'planned decks are not linked');
+  // Superseded originals were removed from docs/ after the split decks took their content over.
+  for (const f of ['sql/sql-windows-recursion-clean.html', 'sql/sql-interview-patterns-lab.sql', 'data-modeling/dimensional-modeling.html', 'data-formats/de-data-formats.html', 'tools/uv-quick-guide.md'])
+    assert.ok(!fs.existsSync(path.join(repo, 'docs', f)), `docs/${f} moved into the app`);
+});
+
+test('reading status migrates once from saved Library entries without losing lib or resource ticks', () => {
+  const { model } = fixture();
+  const old = { v: 7, setupV: 2, curriculumV: 4, checksV: 1, lib: { dwt: 'later', ddia: 'done', ytKahanStar: 'done', podAE: 'later' }, rc: { M1: { dwt: true } } };
+  const s = model.migrate(structuredClone(old));
+  assert.equal(s.readingV, 1);
+  assert.deepEqual(plain(s.lib), old.lib, 'lib entries stay');
+  assert.deepEqual(plain(s.rc), old.rc, 'resource ticks stay');
+  assert.equal(s.reading.dwt.status, 'later'); assert.equal(s.reading.ddia.status, 'done');
+  assert.equal(s.reading.ytKahanStar, undefined, 'videos are not long reads'); assert.equal(s.reading.podAE, undefined);
+  assert.ok(!Object.values(s.reading).some(r => r.status === 'reading'), 'nothing is marked as being read');
+  assert.deepEqual(plain(model.migrate(structuredClone(plain(s)))), plain(s), 'idempotent');
+  const edited = structuredClone(plain(s)); delete edited.reading.dwt;
+  assert.equal(model.migrate(edited).reading.dwt, undefined, 'a cleared status is not resurrected');
+  assert.deepEqual(plain(model.blank().reading), {});
+});
+
+test('one long read at a time: starting a second asks to pause the first; status stays consistent with Library ticks', () => {
+  const { resources, model, replace, state } = fixture();
+  replace(model.migrate({}));
+  assert.deepEqual(plain(resources.startReading('dwt')), { paused: [] });
+  assert.deepEqual(plain(resources.readingNow()), ['dwt']);
+  assert.deepEqual(plain(resources.startReading('ddia')), { confirm: ['dwt'] }, 'second book needs confirmation');
+  assert.deepEqual(plain(resources.readingNow()), ['dwt'], 'nothing changes before confirming');
+  resources.startReading('ddia', true);
+  assert.equal(resources.longStatus('dwt'), 'paused'); assert.equal(resources.longStatus('ddia'), 'reading');
+  resources.setProgress('ddia', { note: ' Ch. 3 · Storage ', pct: '140' });
+  assert.equal(state().reading.ddia.note, 'Ch. 3 · Storage'); assert.equal(state().reading.ddia.pct, 100);
+  resources.setLongStatus('ddia', 'done');
+  assert.equal(resources.libDone('ddia'), true); assert.equal(state().lib.ddia, 'done');
+  resources.setLibDone('ddia', false);
+  assert.equal(resources.longStatus('ddia'), ''); assert.equal(state().lib.ddia, undefined);
+  resources.setLongStatus('corr', 'later');
+  assert.equal(resources.libLater('corr'), true);
+  resources.setLongStatus('corr', '');
+  assert.equal(resources.libLater('corr'), false); assert.equal(state().reading.corr, undefined);
+  // Quick picks: deck first, then a short article/docs page and a short video.
+  const picks = resources.quickPicks('M1');
+  assert.equal(picks[0].format, 'deck');
+  assert.ok(picks.every(x => x.format === 'deck' || ['quick', 'hour'].includes(x.time)));
 });
