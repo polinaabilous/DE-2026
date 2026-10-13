@@ -1,0 +1,9 @@
+node_modules/
+.firebase/
+.firebase-cli/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+backups-private/
+*.log
+.DS_Store

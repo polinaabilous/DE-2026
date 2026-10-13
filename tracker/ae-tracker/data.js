@@ -1259,10 +1259,10 @@
     title: "Analytics Engineer Roadmap",
     effort: { min: 280, max: 350, weekly: 10 },
     roles: {
-      P: { name: "Practice", color: "#4f8cff", lane: "A" },
-      T: { name: "Theory", color: "#a970ff", lane: "B" },
-      B: { name: "Build", color: "#22b07d", lane: "C" },
-      J: { name: "Job & career", color: "#f0a020", lane: "D" }
+      P: { name: "Practice", color: "#237990", lane: "A" },
+      T: { name: "Theory", color: "#9b6b20", lane: "B" },
+      B: { name: "Build", color: "#25805f", lane: "C" },
+      J: { name: "Job & career", color: "#b14e24", lane: "D" }
     },
     rating: ["Not yet", "Shaky", "Solid", "Confident"],
     L, LX, LT, tracks, items, stages,

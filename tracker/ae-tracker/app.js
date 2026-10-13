@@ -1,216 +1,29 @@
 (() => {
   const P = window.PLAN, KEY = "ae-prep-tracker-v2";
-  const $ = (s, r = document) => r.querySelector(s);
-  const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
-  const md = s => esc(s).replace(/`([^`]+)`/g, "<code>$1</code>");
-  const pct = v => Math.round(v * 100) + "%";
-
-  // ---------- index ----------
-  const order = [], where = {};
-  P.stages.forEach(st => st.steps.forEach(sp => sp.items.forEach(id => { order.push(id); where[id] = { stage: st.n, step: sp.id }; })));
-  order.forEach(id => { if (!P.items[id]) console.error("Missing item " + id); });
-  Object.keys(P.items).forEach(id => { if (!where[id]) console.error("Item not on roadmap " + id); });
-  const allSteps = P.stages.flatMap(st => st.steps.map(sp => Object.assign({ stage: st.n }, sp)));
-  const trackName = Object.fromEntries(P.tracks.map(t => [t.id, t.name]));
+  const { $, esc, icon, md, pct, dl, today: dayKey } = globalThis.AEUtils;
+  const { NOTE_FORMAT, MOD, formatNote, formatLink, formatList, continueList, indentList, inl, mdBlock, formatToolbar } = globalThis.AEEditor;
 
   // ---------- state ----------
-  const Store = window.AEStore, GEN = Store.GENERAL;
-  // notes: [{ id, track, text, topic?, c, u }] (first line of text = title) · lib: { resourceKey: "done"|"later" } · act: { "YYYY-MM-DD": actions }
-  const blank = () => ({ v: 4, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, notes: [], lib: {}, act: {}, log: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
-  const trackOf = topic => P.items[topic] ? P.items[topic].track : GEN;
-  const trackLabel = t => t === GEN ? "General" : trackName[t] || t;
-  // older typed knowledge-base entries (v3) become plain notes
-  function kbText(e) {
-    const head = ((e.t === "qa" ? "Q: " : "") + String(e.q || "").replace(/\s*\n\s*/g, " ").trim()) || "(untitled)";
-    const parts = [];
-    if (e.url) parts.push(String(e.url).trim());
-    if (e.a && String(e.a).trim()) parts.push(e.t === "snippet" ? "```" + (e.lang || "") + "\n" + String(e.a).replace(/\s+$/, "") + "\n```" : String(e.a).trim());
-    if (e.tags && e.tags.length) parts.push(e.tags.map(t => "#" + t).join(" "));
-    return [head, parts.join("\n\n")].filter(Boolean).join("\n");
-  }
-  function migrate(s) {
-    const oldSetup = !!s && s.setupV !== 2;
-    const oldCurriculum = s?.curriculumV ?? 3;
-    s = Object.assign(blank(), s || {});
-    s.ui = Object.assign(blank().ui, s.ui || {}); delete s.ui.iv;
-    ["r", "pc", "rc", "g", "lib", "act"].forEach(k => { if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = {}; });
-    if (!Array.isArray(s.log)) s.log = [];
-    const now = Store.today(), list = [];
-    if (Array.isArray(s.notes)) list.push(...s.notes.filter(n => n && typeof n.text === "string" && n.text.trim()));
-    else if (s.notes && typeof s.notes === "object") // v2: free text per topic
-      Object.entries(s.notes).forEach(([id, txt]) => { txt = String(txt || "").trim(); if (txt) list.push({ track: trackOf(id), topic: id, text: txt }); });
-    if (s.kb && typeof s.kb === "object") // v3: typed entries per topic
-      Object.entries(s.kb).forEach(([topic, es]) => (Array.isArray(es) ? es : []).forEach(e => list.push({ id: e.id, track: trackOf(topic), topic, text: kbText(e), c: e.c, u: e.u })));
-    const ids = new Set();
-    s.notes = list.map(n => {
-      const x = { id: n.id && !ids.has(n.id) ? n.id : Store.uid(), track: n.track === GEN || trackName[n.track] ? n.track : GEN, text: n.text.replace(/\s+$/, ""), c: n.c || now };
-      x.u = n.u || x.c;
-      if (n.topic && P.items[n.topic]) x.topic = n.topic;
-      ids.add(x.id); return x;
-    });
-    delete s.kb; delete s.srs;
-    // Setup became a minimal lab with new checks; old ticks/ratings no longer line up
-    if (oldSetup) { delete s.r.SETUP; delete s.pc.SETUP; }
-    s.setupV = 2;
-    // Checklist positions changed in curriculum v4. Retain exact matching checks,
-    // and archive the previous values so old evidence is never silently discarded.
-    const cm = P.curriculumMigration;
-    if (oldCurriculum < cm.to) {
-      const archive = { from: oldCurriculum, to: cm.to, r: {}, pc: {}, g: {} };
-      Object.entries(cm.topics).forEach(([id, fields]) => {
-        Object.entries(fields).forEach(([key, indices]) => {
-          const old = s[key][id];
-          if (!Array.isArray(old)) return;
-          archive[key][id] = old.slice();
-          s[key][id] = indices.map(i => i >= 0 ? old[i] ?? (key === "r" ? 0 : false) : (key === "r" ? 0 : false));
-        });
-      });
-      Object.entries(cm.gates).forEach(([prefix, indices]) => {
-        const old = {};
-        Object.keys(s.g).filter(k => k.startsWith(prefix + "-")).forEach(k => {
-          old[k] = s.g[k]; archive.g[k] = s.g[k]; delete s.g[k];
-        });
-        indices.forEach((i, j) => {
-          if (i >= 0 && Object.hasOwn(old, prefix + "-" + i)) s.g[prefix + "-" + j] = old[prefix + "-" + i];
-        });
-      });
-      if ([archive.r, archive.pc, archive.g].some(x => Object.keys(x).length)) {
-        if (!Array.isArray(s.curriculumHistory)) s.curriculumHistory = [];
-        s.curriculumHistory.push(archive);
-      }
-    }
-    s.curriculumV = Math.max(oldCurriculum, P.curriculumV);
-    s.v = 4;
-    return s;
-  }
+  const Store = window.AEStore, Cloud = window.AECloud, GEN = Store.GENERAL;
+  let activeKey = KEY, accountUid = null;
+  const { blank, migrate, hasData, trackOf, trackLabel, trackName } = globalThis.AEState.create(P, Store);
   function load() {
     try { return migrate(JSON.parse(localStorage.getItem(KEY))); } catch { return blank(); }
   }
   let S = load();
-  const persistLocal = () => { try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) { toast("Couldn't save in the browser: " + e.message, true); } };
-  function save() { S.savedAt = Date.now(); persistLocal(); Store.schedule(S, trackLabel); }
+  const persistLocal = () => { try { localStorage.setItem(activeKey, JSON.stringify(S)); } catch (e) { toast("Couldn't save in the browser: " + e.message, true); } };
+  function save() {
+    S.savedAt = Date.now(); persistLocal();
+    if (Cloud?.info().user) Cloud.schedule(S); else Store.schedule(S, trackLabel);
+  }
   // count a meaningful action for the activity history (future heatmap)
   const touch = () => { const d = Store.today(); S.act[d] = (S.act[d] || 0) + 1; };
-  const hasData = s => s.log.length || Object.keys(s.r).length || Object.keys(s.pc).length || s.notes.length || Object.keys(s.lib).length;
+  const roadmap = globalThis.AEProgress.create(P, () => S);
+  const { order, where, allSteps, it, role, ratings, score, isDone, status, statusLabel, required, progress, currentStep, visible } = roadmap;
+  const { resolve, LIB, TIME, KINDS, libDone, libLater, setLibDone } = globalThis.AEResources.create(P, roadmap, () => S);
+  const { tag, bar, card, chip, roadmap: vRoadmap, skills: vSkills } = globalThis.AEPlanViews.create({ plan: P, roadmap, getState: () => S });
 
-  // ---------- scoring ----------
-  const it = id => P.items[id];
-  const role = id => P.roles[it(id).role];
-  const ratings = id => { const a = S.r[id] || []; return it(id).dod.map((_, i) => a[i] || 0); };
-  // progress per check: Not yet 0, Shaky 0.4, Solid/Confident 1 — so a Done topic is always 100%
-  const W = [0, 0.4, 1, 1];
-  const score = id => { const a = ratings(id); return a.reduce((x, y) => x + W[y], 0) / a.length; };
-  const isDone = id => ratings(id).every(v => v >= 2);
-  const started = id => ratings(id).some(v => v > 0) || (S.pc[id] || []).some(Boolean) || Object.values(S.rc[id] || {}).some(Boolean);
-  const status = id => isDone(id) ? "done" : started(id) ? "doing" : "todo";
-  const statusLabel = { done: "Done", doing: "In progress", todo: "Not started" };
-  const required = order.filter(id => !it(id).opt);
-  function progress(ids) {
-    let h = 0, got = 0;
-    ids.forEach(id => { h += it(id).h; got += score(id) * it(id).h; });
-    return { pct: h ? got / h : 0, h, left: h - got };
-  }
-  const stepOptional = sp => sp.items.every(id => it(id).opt);
-  const stepReq = sp => stepOptional(sp) ? sp.items : sp.items.filter(id => !it(id).opt);
-  const stepDone = sp => stepReq(sp).every(isDone);
-  const currentStep = () => allSteps.find(sp => !stepOptional(sp) && !stepDone(sp));
-  const visible = id => S.ui.showOpt || !it(id).opt;
-
-  function resolve(entry) {
-    if (Array.isArray(entry)) return { key: entry[0], title: entry[0], url: entry[1], kind: entry[2] || "docs" };
-    const [k, note] = entry.split("|");
-    const r = P.L[k];
-    if (!r) { console.error("Missing resource " + k); return { key: k, title: k, url: null, kind: "?" }; }
-    return { key: k, title: r[0], url: r[1], kind: r[2], note };
-  }
-
-  // ---------- small components ----------
-  const tag = id => `<span class="tag" style="--rc:${role(id).color}">${role(id).name}</span>`;
-  const bar = (v, cls = "") => `<div class="bar ${cls}"><i style="width:${pct(v)}"></i></div>`;
-  const nCount = id => S.notes.filter(n => n.topic === id).length;
-  function card(id) {
-    const x = it(id), st = status(id);
-    return `<button class="card ${st}" data-open="${id}" style="--rc:${role(id).color}">
-      <div class="card-top">${tag(id)}${x.opt ? '<span class="tag opt">optional</span>' : ""}<span class="cid">${id}</span></div>
-      <div class="card-name">${esc(x.name)}</div>
-      <div class="card-meta"><span>~${x.h}h · ${x.dod.length} checks${x.setup ? ` · <span title="Has a few install steps — see 🔧 Set up first">🔧</span>` : ""}${nCount(id) ? ` · 📝 ${nCount(id)}` : ""}</span><span class="st st-${st}">${st === "done" ? "✓ " : ""}${statusLabel[st]}</span></div>
-      ${bar(score(id))}</button>`;
-  }
-  const chip = id => `<button class="chip ${isDone(id) ? "done" : ""}" data-open="${id}" style="--rc:${role(id).color}" title="${esc(it(id).name)} · ${pct(score(id))}">${isDone(id) ? "✓ " : ""}${id} · ${esc(it(id).name)}</button>`;
-
-  function gate(g, key, apply) {
-    const n = g.items.length, c = g.items.filter((_, i) => S.g[key + "-" + i]).length;
-    return `<div class="gate ${apply ? "apply" : ""} ${c === n ? "passed" : ""}">
-      <div class="dot">${apply ? "🚪" : c === n ? "✓" : "⛳"}</div>
-      <div class="gate-body"><h4>${esc(g.title)} <span class="muted small">${c}/${n}</span></h4>
-      ${g.note ? `<p class="small">${esc(g.note)}</p>` : ""}
-      <div class="gate-items">${g.items.map((t, i) => `<label><input type="checkbox" data-gate="${key}-${i}" ${S.g[key + "-" + i] ? "checked" : ""}> ${esc(t)}</label>`).join("")}</div></div></div>`;
-  }
-
-  // ---------- views ----------
-  function vRoadmap() {
-    const cur = currentStep(), all = progress(required);
-    const doneCount = required.filter(isDone).length;
-    let h = `<div class="panel rm-head">
-      <div class="grow"><h2>Your roadmap</h2>
-      <p class="small"><b>Portfolio v1:</b> ${esc(P.portfolio.question)} ${esc(P.portfolio.scope)} <b>Later releases:</b> lakehouse, orchestration, semantic layer, AI and portability.</p>
-      <p class="muted">Work top to bottom. Each step groups complementary topics — practice, theory and a build piece. Work in topic order within a step and finish a topic’s <b>prerequisites</b> before its deliverable. Click a topic to see what to learn, how to practice and its <b>definition of done</b>. A topic is <b>Done</b> when every check is rated <b>Solid</b> or better.</p>
-      <div class="legend">${Object.values(P.roles).map(r => `<span><i style="background:${r.color}"></i>${r.name}</span>`).join("")}</div></div>
-      <div class="kpis small-kpis">
-        <div><b>${pct(all.pct)}</b><span>overall</span></div>
-        <div><b>${doneCount}/${required.length}</b><span>topics done</span></div>
-        <div><b>~${Math.round(all.left)}h</b><span>left (est.)</span></div>
-        <div><b>${cur ? cur.id : "🎉"}</b><span>current step</span></div>
-      </div>
-      <div class="rm-tools"><button class="btn primary" data-act="jump">📍 Jump to current step</button>
-        <label><input type="checkbox" data-act="hideDone" ${S.ui.hideDone ? "checked" : ""}> Hide finished steps</label>
-        <label><input type="checkbox" data-act="showOpt" ${S.ui.showOpt ? "checked" : ""}> Show optional topics</label></div>
-    </div><div class="timeline">`;
-    P.stages.forEach(st => {
-      const p = progress(st.steps.flatMap(s => s.items).filter(id => !it(id).opt));
-      h += `<section class="stage"><div class="stage-head"><div class="stage-num">${st.n}</div>
-        <div class="grow"><h3>Stage ${st.n} · ${esc(st.name)}</h3><p class="muted">${esc(st.goal)}</p>${bar(p.pct, "thick")}</div>
-        <div class="stage-p"><b>${pct(p.pct)}</b><span>~${p.h}h</span></div></div>`;
-      st.steps.forEach(sp => {
-        const opt = stepOptional(sp);
-        if (opt && !S.ui.showOpt) return;
-        const done = stepDone(sp);
-        if (done && S.ui.hideDone) return;
-        const isCur = cur && cur.id === sp.id;
-        const ids = sp.items.filter(visible);
-        const hrs = ids.reduce((a, id) => a + it(id).h, 0);
-        h += `<div class="step ${done ? "done" : ""} ${isCur ? "current" : ""}" id="step-${sp.id}">
-          <div class="dot">${done ? "✓" : sp.id}</div>
-          <div class="step-body"><div class="step-head"><h4>Step ${sp.id} · ${esc(sp.title)}</h4>
-          ${isCur ? '<span class="here">📍 You are here</span>' : ""}${opt ? '<span class="tag opt">optional</span>' : ""}
-          <span class="muted small">~${hrs}h · follow prerequisite order</span></div>
-          ${done && !isCur ? `<div class="chips">${ids.map(chip).join("")}</div>` : `<div class="cards">${ids.map(card).join("")}</div>`}
-          </div></div>`;
-      });
-      h += gate(st.gate, "s" + st.n);
-      if (st.apply) h += gate(st.apply, "apply", true);
-      h += `</section>`;
-    });
-    h += `<div class="panel skip"><h4>Skip for now</h4><div class="chips">${P.skip.map(s => `<span class="chip static">${esc(s)}</span>`).join("")}</div></div>`;
-    return h + `</div>`;
-  }
-
-  function vSkills() {
-    let h = `<div class="panel"><h2>Skills map</h2><p class="muted">The same topics, arranged by skill track (rows) and stage (columns). Fill = your self-rating; ✓ = done. Click any topic to open it.</p></div>
-      <div class="skills-wrap"><table class="skills"><thead><tr><th>Track</th>${P.stages.map(s => `<th>${s.n} · ${esc(s.name)}</th>`).join("")}<th>Progress</th></tr></thead><tbody>`;
-    P.tracks.forEach(t => {
-      const ids = order.filter(id => it(id).track === t.id);
-      const p = progress(ids.filter(id => !it(id).opt));
-      h += `<tr><th><div>${esc(t.name)}${t.star ? " ⭐" : ""}</div><span class="muted small">${t.tier}</span></th>
-        ${P.stages.map(s => `<td>${ids.filter(id => where[id].stage === s.n && visible(id)).map(id =>
-          `<button class="schip st-${status(id)}" data-open="${id}" style="--s:${score(id)};--rc:${role(id).color}" title="${esc(it(id).name)} · ${pct(score(id))}"><b>${isDone(id) ? "✓ " : ""}${id}</b><small>${esc(it(id).name)}</small></button>`).join("")}</td>`).join("")}
-        <td class="tp">${bar(p.pct)}<span class="small">${pct(p.pct)}</span></td></tr>`;
-    });
-    return h + `</tbody></table></div>`;
-  }
-
-  // dashboard helpers
-  const dayKey = d => Store.today(d);
+  // ---------- dashboard ----------
   function weekStart(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
   function streak() {
     const days = new Set(S.log.map(e => e.d));
@@ -221,24 +34,21 @@
   }
   function weeklyChart() {
     const W = 12, ws = weekStart(new Date()), weeks = [];
-    for (let i = W - 1; i >= 0; i--) { const s = new Date(ws); s.setDate(s.getDate() - 7 * i); weeks.push({ s, v: { P: 0, T: 0, B: 0, J: 0 } }); }
+    for (let i = W - 1; i >= 0; i--) { const s = new Date(ws); s.setDate(s.getDate() - 7 * i); weeks.push({ s, days: new Set() }); }
+    const today = Store.today();
     S.log.forEach(e => {
+      if (e.d > today) return;
       const k = weekStart(new Date(e.d + "T12:00:00")).getTime();
       const w = weeks.find(x => x.s.getTime() === k);
-      if (w) w.v[e.role] = (w.v[e.role] || 0) + Number(e.h);
+      if (w) w.days.add(e.d);
     });
-    const max = Math.max(P.effort.weekly + 2, ...weeks.map(w => Object.values(w.v).reduce((a, b) => a + b, 0)));
     const cw = 640, ch = 190, pad = 26, bw = (cw - pad) / W - 8;
-    const y = v => ch - 20 - (v / max) * (ch - 34);
-    let svg = `<svg viewBox="0 0 ${cw} ${ch}" class="chart" role="img" aria-label="Hours per week">`;
-    svg += `<line x1="${pad}" x2="${cw}" y1="${y(P.effort.weekly)}" y2="${y(P.effort.weekly)}" class="target"/><text x="${cw - 4}" y="${y(P.effort.weekly) - 4}" text-anchor="end" class="axis">target ${P.effort.weekly}h</text>`;
+    const y = v => ch - 20 - (v / 7) * (ch - 34);
+    let svg = `<svg viewBox="0 0 ${cw} ${ch}" class="chart" role="img" aria-label="Days with progress entries per week">`;
+    [0, 7].forEach(v => { svg += `<text x="${pad - 8}" y="${y(v)}" text-anchor="end" class="axis">${v}</text>`; });
     weeks.forEach((w, i) => {
-      let base = 0; const x = pad + i * (bw + 8);
-      ["P", "T", "B", "J"].forEach(r => {
-        const v = w.v[r]; if (!v) return;
-        svg += `<rect x="${x}" y="${y(base + v)}" width="${bw}" height="${y(base) - y(base + v)}" fill="${P.roles[r].color}" rx="2"><title>${P.roles[r].name}: ${v}h</title></rect>`;
-        base += v;
-      });
+      const x = pad + i * (bw + 8), v = w.days.size;
+      if (v) svg += `<rect x="${x}" y="${y(v)}" width="${bw}" height="${y(0) - y(v)}" fill="var(--accent)" rx="2"><title>Week of ${dayKey(w.s)}: ${v} ${v === 1 ? "day" : "days"} logged</title></rect>`;
       svg += `<text x="${x + bw / 2}" y="${ch - 5}" text-anchor="middle" class="axis">${w.s.getMonth() + 1}/${w.s.getDate()}</text>`;
     });
     return svg + `</svg>`;
@@ -246,30 +56,29 @@
 
   function vDashboard() {
     const all = progress(required), cur = currentStep();
-    const total = S.log.reduce((a, e) => a + Number(e.h), 0);
-    const ws = dayKey(weekStart(new Date()));
-    const week = S.log.filter(e => e.d >= ws).reduce((a, e) => a + Number(e.h), 0);
-    const byRole = { P: 0, T: 0, B: 0, J: 0 }; S.log.forEach(e => byRole[e.role] = (byRole[e.role] || 0) + Number(e.h));
-    const target = { P: 30, T: 25, B: 40, J: 5 };
+    const ws = dayKey(weekStart(new Date())), today = Store.today();
+    const weekDays = new Set(S.log.filter(e => e.d >= ws && e.d <= today).map(e => e.d)).size;
+    const loggedDays = new Set(S.log.map(e => e.d)).size;
+    const recent = sortedLog().slice(0, 3);
     const ratedChecks = required.reduce((a, id) => a + ratings(id).filter(v => v >= 2).length, 0);
     const allChecks = required.reduce((a, id) => a + it(id).dod.length, 0);
     const next = cur ? cur.items.filter(id => !isDone(id) && visible(id)) : [];
-    return `<div class="kpis">
+    return `<div class="page-head"><div><div class="eyebrow">Your progress</div><h2>Dashboard</h2><p class="muted">See how your skills and daily practice are growing.</p></div></div><div class="kpis">
         <div class="kpi"><b>${pct(all.pct)}</b><span>overall (hours-weighted)</span></div>
         <div class="kpi"><b>${required.filter(isDone).length}/${required.length}</b><span>topics done</span></div>
         <div class="kpi"><b>${ratedChecks}/${allChecks}</b><span>checks Solid+</span></div>
-        <div class="kpi"><b>${week.toFixed(1)}h</b><span>this week (target ${P.effort.weekly})</span></div>
-        <div class="kpi"><b>${total.toFixed(1)}h</b><span>logged total</span></div>
+        <div class="kpi"><b>${weekDays}d</b><span>logged this week</span></div>
+        <div class="kpi"><b>${loggedDays}d</b><span>days logged total</span></div>
         <div class="kpi"><b>${streak()}d</b><span>streak</span></div>
         <div class="kpi"><b>${S.notes.length}</b><span><a href="#notes">notes</a> · ${LIB.filter(x => libDone(x.key)).length} library items done</span></div>
       </div>
       <div class="grid2">
         <div class="panel"><h3>Up next ${cur ? `<span class="muted small">Step ${cur.id} · ${esc(cur.title)}</span>` : ""}</h3>
           ${next.length ? `<div class="cards">${next.map(card).join("")}</div>` : `<p class="muted">Everything done 🎉</p>`}</div>
-        <div class="panel"><h3>Hours per week</h3>${weeklyChart()}
-          <div class="legend">${Object.values(P.roles).map(r => `<span><i style="background:${r.color}"></i>${r.name}</span>`).join("")}</div></div>
-        <div class="panel"><h3>Time balance <span class="muted small">actual vs suggested mix</span></h3>
-          ${["P", "T", "B", "J"].map(r => { const a = total ? byRole[r] / total : 0; return `<div class="lane-row"><span style="color:${P.roles[r].color}">${P.roles[r].name}</span><div class="bar"><i style="width:${pct(a)};background:${P.roles[r].color}"></i><em style="left:${target[r]}%"></em></div><span class="small">${pct(a)} / ${target[r]}%</span></div>`; }).join("")}</div>
+        <div class="panel"><h3>Days logged per week</h3>${weeklyChart()}<p class="small muted">Each day counts once, however many entries you write.</p></div>
+        <div class="panel"><h3>Recent progress</h3>
+          ${recent.map(e => `<div class="progress-preview"><a href="#log">${esc(e.d)}</a><div class="nt-body">${mdBlock(e.text)}</div></div>`).join("") || `<p class="muted">Your daily entries will appear here.</p>`}
+          <p><a href="#log">Open daily log →</a> · <a href="#todo">To do (${S.todo.filter(e => !e.done).length}) →</a></p></div>
         <div class="panel"><h3>Stages</h3>
           ${P.stages.map(st => { const p = progress(st.steps.flatMap(s => s.items).filter(id => !it(id).opt)); return `<div class="lane-row"><span>${st.n} · ${esc(st.name)}</span>${bar(p.pct)}<span class="small">${pct(p.pct)}</span></div>`; }).join("")}</div>
         <div class="panel wide"><h3>Skill tracks</h3><div class="tracks-grid">
@@ -278,35 +87,6 @@
   }
 
   // ---------- resources ----------
-  const TIME = { quick: ["⚡", "≤30 min"], hour: ["⏱", "~1 hour"], series: ["📺", "Pick a piece"], deep: ["📚", "Multi-session"], ref: ["🔎", "Reference"] };
-  const KINDS = ["video", "podcast", "article", "newsletter", "course", "book", "practice", "docs", "tool"];
-  const ORPHAN = { pgex: ["sql", "perf"], cmu: ["perf", "arch"], pyStdlib: ["py"], fluentPy: ["py"], realPython: ["py"] };
-  // every resource once: the roadmap's (areas = tracks of the topics that use it, in roadmap order) + extras to watch, read or listen to
-  const LIB = (() => {
-    const m = new Map();
-    order.forEach(id => it(id).learn.map(resolve).forEach(r => {
-      if (!m.has(r.key)) m.set(r.key, { key: r.key, title: r.title, url: r.url, kind: r.kind, areas: [], topics: [], why: "" });
-      const x = m.get(r.key);
-      if (!x.topics.includes(id)) x.topics.push(id);
-      if (!x.areas.includes(it(id).track)) x.areas.push(it(id).track);
-    }));
-    Object.entries(P.L).forEach(([k, r]) => { if (!m.has(k)) m.set(k, { key: k, title: r[0], url: r[1], kind: r[2], areas: (ORPHAN[k] || []).slice(), topics: [], why: "" }); });
-    Object.entries(P.LX).forEach(([k, r]) => m.set(k, { key: k, title: r[0], url: r[1], kind: r[2], areas: r[3].slice(), topics: [], time: r[4], why: r[5] || "" }));
-    return [...m.values()].map(x => {
-      if (!x.areas.length) x.areas = ["career"];
-      x.time = TIME[x.time] ? x.time : P.LT[x.key] || ({ docs: "ref", tool: "ref", book: "deep", course: "deep" })[x.kind] || "series";
-      x.text = [x.title, x.why, x.kind, ...x.areas.map(a => trackName[a]), ...x.topics].join(" ").toLowerCase();
-      return x;
-    });
-  })();
-  const libDone = k => S.lib[k] === "done" || Object.values(S.rc).some(m => m && m[k]);
-  const libLater = k => S.lib[k] === "later" && !libDone(k);
-  function setLibDone(k, on) {
-    if (on) { S.lib[k] = "done"; return; }
-    delete S.lib[k];
-    Object.values(S.rc).forEach(m => { if (m) delete m[k]; });
-  }
-
   function vResources() {
     const lib = S.ui.res === "lib";
     const tabs = `<div class="tabs"><button class="${lib ? "" : "on"}" data-rtab="topic">By topic</button><button class="${lib ? "on" : ""}" data-rtab="lib">📚 Library <span class="small">${LIB.length}</span></button></div>`;
@@ -407,59 +187,111 @@
     if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }
 
-  function topicOptions(sel) {
-    return `<option value="">— general —</option>` + P.stages.map(st => `<optgroup label="Stage ${st.n} · ${esc(st.name)}">${st.steps.flatMap(s => s.items).map(id => `<option value="${id}" ${sel === id ? "selected" : ""}>${id} · ${esc(it(id).name)}</option>`).join("")}</optgroup>`).join("");
+  // ---------- daily journal / to do ----------
+  const entryEdit = { log: null, todo: null };
+  let entryFocus = null, todoDoneOpen = false;
+  const sortedLog = () => S.log.map((e, i) => ({ e, i })).sort((a, b) => b.e.d.localeCompare(a.e.d) || b.i - a.i).map(x => x.e);
+  const entryKey = (kind, id) => `${kind}:${id ? "edit:" + id : "new"}`;
+  function entryForm(kind, entry) {
+    const key = entryKey(kind, entry?.id), editing = !!entry, journal = kind === "log";
+    if (!journal) {
+      const value = drafts[key] ?? entry?.text ?? "", track = drafts[key + ":t"] ?? entry?.track ?? GEN;
+      // Older multi-line items remain editable without flattening their text.
+      const field = value.includes("\n") ? `<textarea name="text" aria-label="To do item" required>${esc(value)}</textarea>` : `<input type="text" name="text" aria-label="To do item" placeholder="Something to follow up on…" value="${esc(value)}" required>`;
+      return `<form class="entryform todoform" data-kind="todo" data-key="${esc(key)}" ${editing ? `data-id="${esc(entry.id)}"` : ""}>
+        <div class="todo-add-row">${field}<select name="track" aria-label="Track">${trackOpts(track)}</select><button class="btn primary">${editing ? "Save" : "Add to do"}</button></div>
+        ${editing ? `<div><button type="button" class="btn" data-act="entrycancel" data-kind="todo">Cancel</button></div>` : ""}
+      </form>`;
+    }
+    return `<form class="entryform" data-kind="${kind}" data-key="${esc(key)}" ${editing ? `data-id="${esc(entry.id)}"` : ""}>
+      ${journal ? `<label class="entry-date">Date<input type="date" name="d" value="${esc(drafts[key + ":d"] ?? entry?.d ?? Store.today())}" required></label>` : ""}
+      <div class="editor-shell">${formatToolbar()}
+      <textarea name="text" aria-label="${journal ? "Daily progress" : "To do item"}" placeholder="${journal ? "What did you work on or learn today? Write it however you like…" : "Something to look up, try, read or come back to…"}" required>${esc(drafts[key] ?? entry?.text ?? "")}</textarea></div>
+      <div class="row form-actions"><button class="btn primary sm">${editing ? "Save changes" : journal ? "Save entry" : "Add to do"}</button>
+        ${editing ? `<button type="button" class="btn sm" data-act="entrycancel" data-kind="${kind}">Cancel</button>` : ""}
+        <span class="small muted">${MOD}Enter to save</span></div>
+    </form>`;
+  }
+  function entryCard(kind, entry) {
+    if (entryEdit[kind] === entry.id) return `<article class="nt editing">${entryForm(kind, entry)}</article>`;
+    const journal = kind === "log";
+    return `<article class="nt ${journal ? "journal-entry" : "todo-entry"} ${entry.done ? "completed" : ""}">
+      <div class="nt-head">
+        ${journal ? `<time class="nt-title" datetime="${esc(entry.d)}">${esc(entry.d)}</time>` : `<div class="todo-check"><input type="checkbox" data-todo="${esc(entry.id)}" ${entry.done ? "checked" : ""} aria-label="Mark ${esc(entry.text.split("\n")[0].slice(0, 100))} ${entry.done ? "incomplete" : "complete"}"><div class="nt-body">${mdBlock(entry.text)}</div></div>`}
+        ${journal ? "" : `<span class="ttag todo-track">${esc(trackLabel(entry.track || GEN))}</span>`}
+        <div class="nt-tools"><button class="icon sm" data-act="entryedit" data-kind="${kind}" data-id="${esc(entry.id)}" title="Edit ${journal ? "entry" : "to do"}">${icon("edit")}</button>
+          <button class="icon sm" data-act="entrydelete" data-kind="${kind}" data-id="${esc(entry.id)}" title="Delete ${journal ? "entry" : "to do"}">${icon("trash")}</button></div>
+      </div>${journal ? `<div class="nt-body">${mdBlock(entry.text)}</div>` : ""}
+    </article>`;
   }
   function vLog() {
-    const today = dayKey(new Date());
-    const rows = [...S.log].map((e, i) => ({ e, i })).sort((a, b) => b.e.d.localeCompare(a.e.d) || b.i - a.i);
-    return `<div class="panel"><h2>Practice log</h2>
-      <form id="logform" class="logform">
-        <label>Date<input type="date" name="d" value="${today}" required></label>
-        <label>Hours<input type="number" name="h" min="0.25" step="0.25" value="1" required></label>
-        <label>Topic<select name="item">${topicOptions("")}</select></label>
-        <label>Type<select name="role">${Object.entries(P.roles).map(([k, r]) => `<option value="${k}">${r.name}</option>`).join("")}</select></label>
-        <label class="grow">Note<input name="note" placeholder="What did you do / learn?"></label>
-        <button class="btn primary">Add</button>
-      </form></div>
-      <div class="panel"><table class="log"><thead><tr><th>Date</th><th>Hours</th><th>Type</th><th>Topic</th><th>Note</th><th></th></tr></thead><tbody>
-      ${rows.length ? rows.map(({ e, i }) => `<tr><td>${e.d}</td><td>${e.h}</td><td><span class="tag" style="--rc:${P.roles[e.role].color}">${P.roles[e.role].name}</span></td>
-        <td>${e.item && P.items[e.item] ? `<button class="link-btn" data-open="${e.item}">${e.item} · ${esc(it(e.item).name)}</button>` : "—"}</td><td>${esc(e.note)}</td>
-        <td><button class="icon" data-dellog="${i}" title="Delete">✕</button></td></tr>`).join("") : `<tr><td colspan="6" class="muted">No entries yet.</td></tr>`}
-      </tbody></table></div>`;
+    const rows = sortedLog();
+    return `<div class="page-head"><div><div class="eyebrow">Daily practice</div><h2>Daily progress log</h2><p class="muted">What you worked on, what you learned, and what comes next.</p></div></div><section class="panel composer"><h3>Write an entry</h3>${entryForm("log")}</section>
+      <div class="section-head"><h3>Previous entries</h3><span class="small muted">${rows.length} ${rows.length === 1 ? "entry" : "entries"}</span></div><div class="nlist">${rows.map(e => entryCard("log", e)).join("") || `<div class="panel muted">No entries yet. Start with a few lines about today.</div>`}</div>`;
+  }
+  function vTodo() {
+    const pending = S.todo.filter(e => !e.done).reverse(), done = S.todo.filter(e => e.done).reverse();
+    return `<div class="page-head"><div><div class="eyebrow">Keep it for later</div><h2>To do</h2><p class="muted">A place for things you want to look up, try, or come back to.</p></div></div><div class="panel composer">${entryForm("todo")}</div>
+      <div class="section-head"><h3>To follow up</h3><span class="small muted">${pending.length} ${pending.length === 1 ? "item" : "items"}</span></div><div class="panel todo-list"><div class="nlist">${pending.map(e => entryCard("todo", e)).join("") || `<div class="empty-state">Nothing waiting. Capture an idea whenever it comes up.</div>`}</div></div>
+      ${done.length ? `<details class="todo-completed" id="todoCompleted" ${todoDoneOpen || done.some(e => entryEdit.todo === e.id) ? "open" : ""}><summary>Completed (${done.length})</summary><div class="nlist">${done.map(e => entryCard("todo", e)).join("")}</div></details>` : ""}`;
+  }
+  function cancelEntry(kind) {
+    if (!Object.hasOwn(entryEdit, kind)) return;
+    const key = entryKey(kind, entryEdit[kind]);
+    if (entryEdit[kind]) { delete drafts[key]; delete drafts[key + ":d"]; delete drafts[key + ":t"]; }
+    entryEdit[kind] = null;
+  }
+  function clearEntryDrafts() {
+    ["log", "todo"].forEach(kind => { cancelEntry(kind); delete drafts[entryKey(kind)]; delete drafts[entryKey(kind) + ":d"]; delete drafts[entryKey(kind) + ":t"]; });
+    entryFocus = null;
+  }
+  function clearDrafts() {
+    clearEntryDrafts();
+    for (const key of Object.keys(drafts)) delete drafts[key];
+    noteEdit = null; focusKey = null; noteExpanded.clear();
+    practice.reset();
+  }
+  function saveEntry(form) {
+    const { kind, key, id } = form.dataset;
+    if (!Object.hasOwn(entryEdit, kind)) return;
+    const text = form.text.value.trimEnd();
+    if (!text.trim()) return toast("Write something first 🙂");
+    const d = kind === "log" ? form.d.value : null;
+    if (kind === "log" && !/^\d{4}-\d{2}-\d{2}$/.test(d)) return toast("Choose a date for this entry.");
+    const now = Store.today(), track = kind === "todo" ? (trackName[form.track.value] ? form.track.value : GEN) : null;
+    if (id) {
+      const entry = S[kind].find(e => e.id === id);
+      if (!entry) return toast("This entry is no longer here. Copy your text to a new entry.", true);
+      entry.text = text; entry.u = now; if (d) entry.d = d; if (track) entry.track = track;
+      entryEdit[kind] = null;
+    } else {
+      S[kind].push({ id: Store.uid(), text, c: now, u: now, ...(d ? { d } : { done: false, track }) });
+      entryFocus = key;
+    }
+    delete drafts[key]; delete drafts[key + ":d"]; delete drafts[key + ":t"];
+    touch(); save(); rerender();
+  }
+  function focusEntry() {
+    const key = entryFocus; entryFocus = null;
+    const ta = key && document.querySelector(`.entryform[data-key="${CSS.escape(key)}"] [name="text"]`);
+    if (ta) { ta.focus(); ta.setSelectionRange(ta.value.length, ta.value.length); }
   }
 
   // ---------- notes ----------
+  const noteExpanded = new Set();
   const NF = { track: "", q: "" };      // Notes view: selected bucket ("" = all) and search
   const drafts = {};                     // unsaved text per form key — survives re-renders
   let noteEdit = null, focusKey = null;  // noteEdit = "v:<id>" (Notes view) or "d:<id>" (drawer)
-  const URL_RE = /https?:\/\/[^\s<>"'`]*[^\s<>"'`.,;:!?)\]]/g;
-  const fmt = s => md(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
-  function inl(s) {
-    s = String(s || ""); let out = "", i = 0;
-    s.replace(URL_RE, (u, at) => { out += fmt(s.slice(i, at)) + `<a href="${esc(u)}" target="_blank" rel="noopener">${esc(u)}</a>`; i = at + u.length; return u; });
-    return out + fmt(s.slice(i));
-  }
-  function mdBlock(s) {
-    return String(s || "").split(/(```[^\n]*\n[\s\S]*?\n```)/).map(p => {
-      const f = p.match(/^```[^\n]*\n([\s\S]*?)\n```$/);
-      if (f) return `<pre class="code"><code>${esc(f[1])}</code></pre>`;
-      return p.trim().split(/\n{2,}/).filter(Boolean).map(par => {
-        const lines = par.split("\n");
-        if (lines.every(l => /^\s*[-*] /.test(l))) return `<ul>${lines.map(l => `<li>${inl(l.replace(/^\s*[-*] /, ""))}</li>`).join("")}</ul>`;
-        return `<p>${lines.map(inl).join("<br>")}</p>`;
-      }).join("");
-    }).join("");
-  }
   const noteSort = list => list.map((n, i) => [n, i]).sort((a, b) => (b[0].u || "").localeCompare(a[0].u || "") || b[1] - a[1]).map(x => x[0]);
   const trackOpts = sel => `<option value="${GEN}" ${sel === GEN ? "selected" : ""}>General</option>` + P.tracks.map(t => `<option value="${t.id}" ${sel === t.id ? "selected" : ""}>${esc(t.name)}</option>`).join("");
   function noteForm(key, { text = "", track = GEN, topic = "", nid = "", pick = true } = {}) {
     const tv = drafts[key + ":t"] ?? track;
     return `<form class="nform" data-key="${esc(key)}" ${nid ? `data-nid="${esc(nid)}"` : ""} ${topic ? `data-topic="${esc(topic)}"` : ""}>
-      <textarea name="text" placeholder="${nid ? "" : "Write a note — the first line becomes its title. **bold**, `code`, - lists and ``` code blocks work; links become clickable."}">${esc(drafts[key] ?? text)}</textarea>
-      <div class="row">${pick ? `<select name="track" title="Track">${trackOpts(tv)}</select>` : ""}
+      <div class="editor-shell">${formatToolbar("Note formatting")}
+      <textarea name="text" aria-label="Note text" placeholder="${nid ? "" : "Title on the first line, then your note…"}">${esc(drafts[key] ?? text)}</textarea></div>
+      <div class="row form-actions">${pick ? `<select name="track" title="Track">${trackOpts(tv)}</select>` : ""}
         <button class="btn primary sm">${nid ? "Save" : "Add note"}</button>${nid ? `<button type="button" class="btn sm" data-act="ncancel">Cancel</button>` : ""}
-        <span class="muted small">Ctrl+Enter</span></div></form>`;
+        <span class="muted small">${MOD}Enter to save</span></div></form>`;
   }
   function noteCard(n, inDrawer) {
     const k = (inDrawer ? "d:" : "v:") + n.id;
@@ -467,19 +299,18 @@
     const [first, ...rest] = n.text.split("\n"), body = rest.join("\n").trim();
     const text = [n.text, trackLabel(n.track), n.topic ? n.topic + " " + it(n.topic).name : ""].join(" ").toLowerCase();
     return `<div class="nt" data-text="${esc(text)}">
-      <div class="nt-head"><div class="nt-title">${inl(first)}</div><span class="nt-tools"><button class="icon sm" data-act="nedit" data-nk="${esc(k)}" title="Edit">✎</button><button class="icon sm" data-act="ndel" data-nid="${esc(n.id)}" title="Delete">🗑</button></span></div>
-      ${body ? `<div class="nt-body">${mdBlock(body)}</div>` : ""}
+      <div class="nt-head">${body ? `<details class="note-content" data-note-key="${esc(k)}" ${noteExpanded.has(k) ? "open" : ""}><summary><span class="nt-title">${inl(first)}</span></summary><div class="nt-body">${mdBlock(body)}</div></details>` : `<div class="nt-title">${inl(first)}</div>`}<span class="nt-tools"><button class="icon sm" data-act="nedit" data-nk="${esc(k)}" title="Edit">${icon("edit")}</button><button class="icon sm" data-act="ndel" data-nid="${esc(n.id)}" title="Delete">${icon("trash")}</button></span></div>
       <div class="nt-foot small muted">${inDrawer ? "" : `<span class="ttag">${esc(trackLabel(n.track))}</span>`}${n.topic && !inDrawer ? `<button class="tchip" data-open="${n.topic}" title="Open topic">${n.topic} · ${esc(it(n.topic).name)}</button>` : ""}<span class="nt-date">${esc(n.u || n.c || "")}</span></div></div>`;
   }
   function vNotes() {
     const cnt = {}; S.notes.forEach(n => cnt[n.track] = (cnt[n.track] || 0) + 1);
     const sel = NF.track, list = noteSort(S.notes.filter(n => !sel || n.track === sel));
     const b = (id, name) => `<button class="nb ${sel === id ? "on" : ""} ${id && !cnt[id] ? "empty" : ""}" data-nb="${id}"><span>${esc(name)}</span><b>${id ? cnt[id] || 0 : S.notes.length}</b></button>`;
-    return `<div class="panel"><div class="rm-head"><div class="grow"><h2>Notes</h2>
-        <p class="muted">Your findings in your own words — one bucket per track, nothing else to sort. The first line is the title. Notes you add from a topic's panel are linked to that topic.</p></div>
-        <div class="rm-tools"><button class="btn" data-act="exportmd" ${S.notes.length ? "" : "disabled"}>⬇ Download as Markdown</button></div></div></div>
+    return `<div class="page-head"><div class="grow"><div class="eyebrow">Your knowledge</div><h2>Notes</h2>
+        <p class="muted">Keep what you learn, organized by track. Click a note to expand it.</p></div>
+        <div class="page-actions"><button class="btn" data-act="notesexpand">Expand all</button><button class="btn" data-act="notescollapse">Collapse all</button><button class="btn" data-act="exportmd" ${S.notes.length ? "" : "disabled"}>Download Markdown</button></div></div>
       <div class="notes-layout"><aside class="panel nside">${b("", "All notes")}${b(GEN, "General")}<div class="nsep"></div>${P.tracks.map(t => b(t.id, t.name)).join("")}</aside>
-      <div class="nmain"><div class="panel nadd">${noteForm("new:" + (sel || "all"), { track: sel || GEN })}</div>
+      <div class="nmain"><div class="panel nadd composer"><h3>Write a note</h3>${noteForm("new:" + (sel || "all"), { track: sel || GEN })}</div>
         ${S.notes.length ? `<div class="filters"><input id="nq" type="search" placeholder="Search ${sel ? esc(trackLabel(sel)) + " " : ""}notes…" value="${esc(NF.q)}"></div>` : ""}
         <div class="nlist" id="nlist">${list.map(n => noteCard(n)).join("") || `<div class="panel muted">No notes ${sel ? "in " + esc(trackLabel(sel)) + " " : ""}yet — type above and press <b>Add note</b>.</div>`}</div>
         <p class="muted" id="nnone" hidden>No notes match your search.</p></div></div>`;
@@ -555,8 +386,7 @@
         <section><h4>How to practice</h4><div class="checks">${x.practice.map((t, i) => `<label><input type="checkbox" data-pc="${id}|${i}" ${pc[i] ? "checked" : ""}> <span>${md(t)}</span></label>`).join("")}</div></section>
         <section><h4>Learn from</h4><div class="res-list">${x.learn.map(resolve).map(rr => resRow(id, rr)).join("")}</div></section>
         ${drawerNotes(id)}
-        <section class="quick"><h4>Log time on this topic</h4><div class="row"><input type="number" id="qh" min="0.25" step="0.25" value="1"> <span class="small">hours today as <b style="color:${role(id).color}">${role(id).name}</b></span>
-          <button class="btn primary" data-act="quicklog">Log</button><span id="qmsg" class="small muted"></span></div></section>
+        <section><h4>Daily progress</h4><p class="small muted">Write about what you worked on in your daily log.</p><button class="btn" data-act="dailylog">Open daily log →</button></section>
       </div>`;
     d.querySelector(".dr-scroll").scrollTop = scroll;
   }
@@ -571,7 +401,9 @@
   }
 
   // ---------- routing / render ----------
-  const views = { roadmap: vRoadmap, skills: vSkills, dashboard: vDashboard, resources: vResources, notes: vNotes, log: vLog };
+  const practice = globalThis.AEPractice.create({ catalog: globalThis.AEPracticeCatalog, getState: () => S, save, touch, toast });
+  $("#trackerSubnav").innerHTML = practice.model.tools.map(t => `<a href="#trackers/${esc(t.id)}">${esc(t.name)}</a>`).join("");
+  const views = { trackers: practice.hub, ...Object.fromEntries(practice.model.tools.map(t => ["trackers/" + t.id, () => practice.toolView(t.id)])), roadmap: vRoadmap, skills: vSkills, dashboard: vDashboard, resources: vResources, notes: vNotes, log: vLog, todo: vTodo };
   const ALIAS = { kb: "notes", knowledge: "notes", interview: "roadmap", library: "resources" };
   function route() {
     let r = location.hash.replace("#", "");
@@ -580,11 +412,29 @@
   }
   function render() {
     const r = route();
+    $("#view").dataset.route = r;
     $("#view").innerHTML = views[r]();
-    document.querySelectorAll("nav a").forEach(a => a.classList.toggle("active", a.getAttribute("href") === "#" + r));
+    $("#trackerSubnav").hidden = !r.startsWith("trackers");
+    $("#trackerNavLink").setAttribute("aria-expanded", String(r.startsWith("trackers")));
+    document.querySelectorAll("nav a").forEach(a => {
+      const active = a.getAttribute("href") === "#" + r;
+      a.classList.toggle("active", active || (a.id === "trackerNavLink" && r.startsWith("trackers/"))); a.setAttribute?.("aria-current", active ? "page" : "false");
+      if (active && matchMedia("(max-width: 1049px)").matches) {
+        const nav = a.closest("nav"), box = a.getBoundingClientRect(), rail = nav.getBoundingClientRect();
+        if (box.left < rail.left || box.right > rail.right) nav.scrollLeft += box.left - rail.left;
+      }
+    });
     if (openId) document.querySelectorAll(`#view [data-open="${openId}"]`).forEach(e => e.classList.add("sel"));
     if (r === "resources" && S.ui.res !== "lib") filterResources();
-    if (r === "notes") filterNotes();
+    if (r === "notes") {
+      filterNotes();
+      if (matchMedia("(max-width: 900px)").matches) {
+        const selected = $(".nside .nb.on"), container = selected?.parentElement;
+        if (container) container.scrollLeft = Math.max(0, selected.offsetLeft - 12);
+      }
+    }
+    practice.afterRender();
+    focusEntry();
   }
   const rerender = () => { render(); renderDrawer(); focusNote(); };
 
@@ -605,12 +455,12 @@
       }
     }));
     s.g["s0-0"] = true;
-    const roles = ["P", "P", "T", "B", "B", "J"], ids = allSteps.filter(sp => doneSteps.concat(partial).includes(sp.id)).flatMap(sp => sp.items);
+    const ids = allSteps.filter(sp => doneSteps.concat(partial).includes(sp.id)).flatMap(sp => sp.items);
     for (let i = 70; i >= 0; i--) {
       if (rnd() < 0.45) continue;
       const d = new Date(); d.setDate(d.getDate() - i);
       const id = ids[Math.floor(rnd() * ids.length)];
-      s.log.push({ d: dayKey(d), h: [0.5, 1, 1, 1.5, 2, 3][Math.floor(rnd() * 6)], role: rnd() < 0.7 ? it(id).role : roles[Math.floor(rnd() * roles.length)], item: id, note: "Sample entry" });
+      s.log.push({ id: Store.uid() + "-" + i, d: dayKey(d), text: `Worked on ${it(id).name}.\nTried an exercise and wrote down what I learned.`, c: dayKey(d), u: dayKey(d) });
       s.act[dayKey(d)] = 1 + Math.floor(rnd() * 6);
     }
     const day = n => { const d = new Date(); d.setDate(d.getDate() - n); return dayKey(d); };
@@ -625,13 +475,8 @@
     ];
     s.lib = { ytKahanStar: "done", ytCafferkyDim: "later", podAE: "later", arWhatIsAE: "done" };
     s.savedAt = Date.now();
-    return s;
-  }
-  function dl(text, name, type) {
-    const a = document.createElement("a");
-    a.href = URL.createObjectURL(new Blob([text], { type }));
-    a.download = name; a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    s.todo = [{ id: Store.uid(), text: "Try FILTER for conditional SQL counts", done: false, c: Store.today(), u: Store.today() }];
+    return migrate(s);
   }
   const download = () => dl(JSON.stringify(S, null, 2), `ae-roadmap-progress-${dayKey(new Date())}.json`, "application/json");
 
@@ -651,8 +496,24 @@
   function updatePill() {
     const i = Store.info(), b = $("#dataBtn");
     if (!b) return;
+    const cloud = Cloud?.info();
+    const accountButton = $("#cloudBtn");
+    if (accountButton) {
+      accountButton.hidden = !cloud?.configured;
+      accountButton.textContent = cloud?.user ? "Google account" : "Sign in with Google";
+      accountButton.dataset.act = cloud?.user ? "data" : "cloudsignin";
+    }
+    if (cloud?.configured && cloud.user) {
+      const labels = { synced: "Cloud saved", saving: "Saving…", offline: "Offline · saved here", connecting: "Connecting…", error: "Sync needs attention" };
+      b.textContent = labels[cloud.status] || "Connecting…";
+      b.className = "btn pill" + (cloud.status === "synced" ? " ok" : ["offline", "error"].includes(cloud.status) ? " warn" : "");
+      b.title = cloud.error || `Signed in as ${cloud.user.email}${cloud.pending ? ` · ${cloud.pending} changes waiting to sync` : ""}`;
+      if ($("#dataDlg").open) renderData();
+      renderCloudGate(); return;
+    }
+    renderCloudGate();
     const ok = i.state === "connected" && !i.err, warn = i.state === "locked" || !!i.err;
-    b.textContent = i.state === "connected" ? (i.err ? "⚠️ Save failed" : `📁 ${i.name}`) : i.state === "locked" ? "⚠️ Reconnect folder" : "💾 Browser only";
+    b.textContent = i.state === "connected" ? (i.err ? "Save failed" : i.name) : i.state === "locked" ? "Reconnect folder" : "Browser only";
     b.className = "btn pill" + (ok ? " ok" : warn ? " warn" : "");
     b.title = i.state === "connected" ? `Saving to folder “${i.name}”${i.lastSaved ? " · last saved " + i.lastSaved.toLocaleTimeString() : ""}` : "Where your progress is stored";
     if ($("#dataDlg").open) renderData();
@@ -667,21 +528,34 @@
       <div class="row"><button class="btn primary" data-act="fsunlock">🔓 Reconnect “${esc(i.name)}”</button><button class="btn" data-act="fspick">Choose another folder…</button><button class="btn" data-act="fsdisconnect">Forget it</button></div>`;
     else status = `<div class="note">Right now everything lives only in this browser's storage — clearing site data or switching computers loses it.</div>
       <div class="row"><button class="btn primary" data-act="fspick">📁 Connect a data folder…</button></div>`;
+    const cloud = Cloud?.info();
+    if (cloud?.configured && cloud.user) {
+      const labels = { synced: "Your changes are saved to the cloud.", saving: "Saving your changes…", offline: "Your changes are saved on this device and will sync when you reconnect.", connecting: "Connecting to your saved progress…", error: "Your local changes are retained. Cloud syncing needs attention." };
+      $("#dataDlg").innerHTML = `<form method="dialog" class="dlg-x"><button class="icon" title="Close">✕</button></form>
+        <h2>Your data</h2><p class="muted">${esc(cloud.user.email)}</p>
+        <div class="note ${cloud.status === "synced" ? "ok" : "warn"}">${labels[cloud.status] || "Connecting…"}${cloud.error ? `<p>${esc(cloud.error)}</p>` : ""}${cloud.pending ? `<p class="small">${cloud.pending} changes waiting to sync.</p>` : ""}</div>
+        <div class="row"><button class="btn" data-act="cloudretry">Sync now</button><button class="btn" data-act="cloudsignout" ${cloud.pending ? "disabled" : ""}>Sign out</button></div>
+        ${cloud.candidate ? `<div class="note"><p>This browser also has earlier local progress. You can add entries missing from the cloud; existing cloud entries are kept.</p><button class="btn" data-act="cloudimportlocal">Add earlier local progress</button></div>` : ""}
+        <h4>Backup & restore</h4><p class="small muted">Export a copy whenever you want. Import replaces the signed-in account’s current data on all devices.</p>
+        <div class="row"><button class="btn" data-act="export">Export JSON</button><button class="btn" data-act="import">Import JSON</button><button class="btn" data-act="exportmd" ${S.notes.length ? "" : "disabled"}>Notes as Markdown</button></div>`;
+      return;
+    }
     $("#dataDlg").innerHTML = `<form method="dialog" class="dlg-x"><button class="icon" title="Close">✕</button></form>
-      <h2>Your data</h2>${status}
+      <h2>Your data</h2>${cloud?.configured ? `<div class="note"><p>Sign in to sync your tracker across devices.</p><button class="btn primary" data-act="cloudsignin">Continue with Google</button></div>` : ""}${status}
       <h4>What's saved in the folder</h4>
-      <ul class="small"><li><code>progress.json</code> — ratings, practice and resource ticks, library, log</li>
+      <ul class="small"><li><code>progress.json</code> — ratings, practice and resource ticks, library, daily log and to dos</li>
         <li><code>notes/</code> — your notes as Markdown, one file per track (<code>general.md</code> for the rest). Open and edit them in VS Code, Obsidian or GitHub; changes show up here when you return to this tab. An older <code>knowledge/</code> folder is imported once and left untouched.</li>
         <li><code>backups/</code> — a full snapshot each day you use it (last 14 kept). Restore one with Import.</li></ul>
       <h4>Moving to your personal laptop</h4>
       <ol class="small"><li>Keep the data folder somewhere synced or versioned: personal OneDrive / Dropbox, or a <b>private GitHub repo</b> (you also get a history of your notes).</li>
-        <li>Copy the app folder (<code>index.html</code>, <code>app.js</code>, <code>store.js</code>, <code>data.js</code>) — keep it <b>separate</b> from the data folder so app updates never touch your data.</li>
+        <li>Copy the entire <code>ae-tracker/</code> app folder — keep it <b>separate</b> from the data folder so app updates never touch your data.</li>
         <li>Open <code>index.html</code> in Edge or Chrome → 💾 → <b>Connect a data folder</b> → pick the same folder.</li></ol>
       <h4>Backup & tools</h4>
       <div class="row"><button class="btn" data-act="export">⬇ Export JSON</button><button class="btn" data-act="import">⬆ Import JSON</button><button class="btn" data-act="exportmd" ${S.notes.length ? "" : "disabled"}>⬇ Notes as Markdown</button><button class="btn" data-act="sample">Sample data</button><button class="btn danger" data-act="reset">Reset</button></div>`;
   }
   // Decide between the folder copy and this browser's copy, then load/write.
   async function syncFolder(reason) {
+    if (Cloud?.info().user) return;
     const f = await Store.read(fileTrack), name = Store.info().name;
     if (f.empty) {
       Store.schedule(S, trackLabel); await Store.flush();
@@ -703,31 +577,37 @@
     Store.backup(S).catch(() => {});
     rerender(); updatePill();
   }
-  const folderNote = () => Store.info().state === "connected" ? `\n\nThis also changes the data folder “${Store.info().name}” (today's backup in backups/ stays).` : "";
+  const folderNote = () => Cloud?.info().user ? "\n\nThis replaces data in your cloud account and syncs to your other devices." : Store.info().state === "connected" ? `\n\nThis also changes the data folder “${Store.info().name}” (today's backup in backups/ stays).` : "";
 
   // ---------- theme ----------
   const sysDark = matchMedia("(prefers-color-scheme: dark)");
   const curTheme = () => document.documentElement.dataset.theme || (sysDark.matches ? "dark" : "light");
-  function themeLabel() { const b = $("#themeBtn"); if (b) b.textContent = curTheme() === "dark" ? "☀️ Light mode" : "🌙 Dark mode"; }
+  function themeLabel() {
+    const b = $("#themeBtn"); if (!b) return;
+    const dark = curTheme() === "dark", label = dark ? "Switch to light theme" : "Switch to dark theme";
+    b.innerHTML = icon(dark ? "sun" : "moon"); b.title = label; b.setAttribute?.("aria-label", label);
+  }
   function toggleTheme() {
     const t = curTheme() === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = t; localStorage.setItem("ae-theme", t); themeLabel();
   }
   sysDark.addEventListener("change", themeLabel);
-  const setHeaderH = () => document.documentElement.style.setProperty("--hh", $("header").offsetHeight + "px");
+  const setHeaderH = () => document.documentElement.style.setProperty("--hh", (matchMedia("(min-width: 1050px)").matches ? 0 : $("header").offsetHeight) + "px");
   window.addEventListener("resize", setHeaderH);
   setHeaderH();
 
   // ---------- events ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-rate],[data-act],[data-dellog],[data-nb],[data-rtab],[data-area],[data-time]");
+    const t = e.target.closest("[data-open],[data-rate],[data-act],[data-nb],[data-rtab],[data-area],[data-time],[data-note-format],[data-list]");
     if (!t || t.disabled) return;
+    if (t.dataset.list) return formatList($("textarea", t.closest(".editor-shell")), t.dataset.list === "number");
+    if (t.dataset.noteFormat === "link") return formatLink($("textarea", t.closest(".editor-shell")));
+    if (t.dataset.noteFormat) return formatNote($("textarea", t.closest(".editor-shell")), NOTE_FORMAT[t.dataset.noteFormat]);
     if (t.dataset.open !== undefined) { if (t.tagName === "BUTTON") e.preventDefault(); return openItem(t.dataset.open); }
     if (t.dataset.rate) {
       const [id, i, v] = t.dataset.rate.split("|");
       const a = ratings(id); a[+i] = +v; S.r[id] = a; touch(); save(); return rerender();
     }
-    if (t.dataset.dellog !== undefined) { S.log.splice(+t.dataset.dellog, 1); save(); return render(); }
     if (t.dataset.nb !== undefined) { e.preventDefault(); NF.track = t.dataset.nb; if (route() !== "notes") location.hash = "#notes"; else render(); return; }
     if (t.dataset.rtab) { S.ui.res = t.dataset.rtab; save(); return render(); }
     if (t.dataset.area !== undefined) {
@@ -739,12 +619,30 @@
     switch (t.dataset.act) {
       case "close": openId = null; if (noteEdit && noteEdit.startsWith("d:")) noteEdit = null; document.querySelectorAll(".sel").forEach(x => x.classList.remove("sel")); return renderDrawer();
       case "jump": { const c = currentStep(); const el = c && document.getElementById("step-" + c.id); if (el) el.scrollIntoView({ behavior: "smooth", block: "start" }); return; }
-      case "quicklog": {
-        const h = parseFloat($("#qh").value); if (!(h > 0)) return;
-        S.log.push({ d: dayKey(new Date()), h, role: it(openId).role, item: openId, note: "" }); touch(); save();
-        render(); $("#qmsg").textContent = `Logged ${h}h ✓`; return;
+      case "dailylog": {
+        openId = null; renderDrawer(); entryFocus = entryKey("log");
+        if (route() !== "log") location.hash = "#log"; else render();
+        return;
+      }
+      case "entryedit": {
+        const kind = t.dataset.kind;
+        if (!Object.hasOwn(entryEdit, kind) || !S[kind].some(x => x.id === t.dataset.id)) return;
+        cancelEntry(kind); entryEdit[kind] = t.dataset.id; entryFocus = entryKey(kind, t.dataset.id); return rerender();
+      }
+      case "entrycancel": cancelEntry(t.dataset.kind); return rerender();
+      case "entrydelete": {
+        const kind = t.dataset.kind;
+        if (!Object.hasOwn(entryEdit, kind) || !confirm(`Delete this ${kind === "log" ? "entry" : "to do"}?`)) return;
+        if (entryEdit[kind] === t.dataset.id) cancelEntry(kind);
+        S[kind] = S[kind].filter(x => x.id !== t.dataset.id); save(); return rerender();
       }
       // notes
+      case "notesexpand":
+      case "notescollapse": {
+        const open = t.dataset.act === "notesexpand";
+        document.querySelectorAll("#nlist details[data-note-key]").forEach(el => { el.open = open; if (open) noteExpanded.add(el.dataset.noteKey); else noteExpanded.delete(el.dataset.noteKey); });
+        return;
+      }
       case "nedit": cancelEdit(); noteEdit = t.dataset.nk; focusKey = "e" + noteEdit; return rerender();
       case "ncancel": cancelEdit(); return rerender();
       case "ndel": {
@@ -758,6 +656,10 @@
       case "libsave": { const k = t.dataset.key; if (libLater(k)) delete S.lib[k]; else S.lib[k] = "later"; save(); return updLib(); }
       case "libpick": return libPick();
       // data
+      case "cloudsignin": return guard(Cloud.signIn());
+      case "cloudsignout": return guard(Cloud.signOut());
+      case "cloudretry": return guard(Cloud.retry());
+      case "cloudimportlocal": Cloud.importLocal(); return;
       case "data": renderData(); return $("#dataDlg").showModal();
       case "fspick": return guard(Store.pick().then(() => syncFolder("connect")));
       case "fsunlock": return guard(Store.unlock().then(ok => ok && syncFolder("unlock")));
@@ -766,18 +668,30 @@
       case "theme": return toggleTheme();
       case "export": return download();
       case "import": return $("#importFile").click();
-      case "sample": if (confirm("Replace your progress with sample data? (Export first if you want to keep it.)" + folderNote())) { S = sample(); noteEdit = null; save(); rerender(); updatePill(); } return;
-      case "reset": if (confirm("Clear all progress, ratings, log, notes and library ticks?" + folderNote())) { S = blank(); save(); openId = null; noteEdit = null; rerender(); updatePill(); } return;
+      case "sample": if (confirm("Replace your progress with sample data? (Export first if you want to keep it.)" + folderNote())) { S = sample(); clearDrafts(); save(); rerender(); updatePill(); } return;
+      case "reset": if (confirm("Clear all progress, ratings, log, notes, to dos, library ticks and practice progress?" + folderNote())) { S = blank(); clearDrafts(); save(); openId = null; noteEdit = null; rerender(); updatePill(); } return;
     }
   });
   function cancelEdit() {
     if (noteEdit) { delete drafts["e" + noteEdit]; delete drafts["e" + noteEdit + ":t"]; }
     noteEdit = null;
   }
+  const inEntryForm = t => !!(t && t.form && t.form.classList.contains("entryform"));
+  const inTextForm = t => !!(t?.form?.matches(".nform,.entryform,.practice-notes-form"));
   const inNoteForm = t => !!(t && t.form && t.form.classList.contains("nform"));
   document.addEventListener("change", e => {
     const t = e.target;
+    if (inEntryForm(t)) {
+      if (t.name === "d") drafts[t.form.dataset.key + ":d"] = t.value;
+      if (t.name === "track") drafts[t.form.dataset.key + ":t"] = t.value;
+      return;
+    }
     if (inNoteForm(t)) { if (t.name === "track") drafts[t.form.dataset.key + ":t"] = t.value; return; }
+    if (t.dataset.todo) {
+      const entry = S.todo.find(x => x.id === t.dataset.todo);
+      if (entry) { entry.done = t.checked; entry.u = Store.today(); touch(); save(); render(); }
+      return;
+    }
     if (t.dataset.gate) { S.g[t.dataset.gate] = t.checked; touch(); save(); return render(); }
     if (t.dataset.pc) { const [id, i] = t.dataset.pc.split("|"); (S.pc[id] = S.pc[id] || [])[+i] = t.checked; touch(); save(); return rerender(); }
     if (t.dataset.rc) {
@@ -797,7 +711,7 @@
           const s = JSON.parse(txt);
           if (!s || typeof s !== "object" || !("r" in s)) throw 0;
           if (!confirm("Replace your current progress with this file?" + folderNote())) return;
-          S = migrate(s); noteEdit = null; save(); rerender(); toast("Imported ✓");
+          S = migrate(s); clearDrafts(); save(); rerender(); toast("Imported ✓");
         } catch { alert("That file doesn't look like a roadmap export."); }
         finally { t.value = ""; }
       });
@@ -805,6 +719,12 @@
   });
   document.addEventListener("input", e => {
     const t = e.target;
+    if (inEntryForm(t)) {
+      if (t.name === "text") drafts[t.form.dataset.key] = t.value;
+      if (t.name === "d") drafts[t.form.dataset.key + ":d"] = t.value;
+      if (t.name === "track") drafts[t.form.dataset.key + ":t"] = t.value;
+      return;
+    }
     if (inNoteForm(t)) { if (t.name === "text") drafts[t.form.dataset.key] = t.value; return; }
     if (t.id === "rsearch") filterResources();
     if (t.id === "nq") { NF.q = t.value; filterNotes(); }
@@ -812,35 +732,80 @@
   });
   document.addEventListener("submit", e => {
     if (e.target.classList.contains("nform")) { e.preventDefault(); return saveNote(e.target); }
-    if (e.target.id !== "logform") return;
-    e.preventDefault();
-    const f = new FormData(e.target);
-    S.log.push({ d: f.get("d"), h: parseFloat(f.get("h")), role: f.get("role"), item: f.get("item"), note: f.get("note") });
-    touch(); save(); render();
+    if (e.target.classList.contains("entryform")) { e.preventDefault(); return saveEntry(e.target); }
+  });
+  document.addEventListener("mousedown", e => {
+    if (e.button === 0 && e.target.closest("[data-note-format],[data-list]")) e.preventDefault();
   });
   document.addEventListener("keydown", e => {
-    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && inNoteForm(e.target)) { e.preventDefault(); return e.target.form.requestSubmit(); }
-    if ($("#dataDlg").open) return;
+    const editor = inTextForm(e.target) && e.target.name === "text" && e.target.tagName === "TEXTAREA";
+    if (editor && !e.isComposing && !e.altKey && !(e.ctrlKey || e.metaKey)) {
+      if (e.key === "Enter" && !e.shiftKey && continueList(e.target)) { e.preventDefault(); return; }
+      if (e.key === "Tab" && indentList(e.target, e.shiftKey)) { e.preventDefault(); return; }
+    }
+    if (!e.isComposing && !e.altKey && (e.ctrlKey || e.metaKey) && editor) {
+      if (e.shiftKey && ["Digit7", "Digit8"].includes(e.code)) { e.preventDefault(); if (!e.repeat) formatList(e.target, e.code === "Digit7"); return; }
+      if (e.key.toLowerCase() === "k") { e.preventDefault(); if (!e.repeat) formatLink(e.target); return; }
+      const mark = ({ b: "**", i: "*", e: "`" })[e.key.toLowerCase()];
+      if (mark) { e.preventDefault(); if (!e.repeat) formatNote(e.target, mark); return; }
+    }
+    if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && inTextForm(e.target)) { e.preventDefault(); return e.target.form.requestSubmit(); }
+    if ($("#dataDlg").open || $("#practiceDlg").open) return;
     if (e.key === "Escape") {
       if (noteEdit) { cancelEdit(); return rerender(); }
+      const kind = route();
+      if (entryEdit[kind]) { cancelEntry(kind); return rerender(); }
       if (openId) { openId = null; return renderDrawer(); }
     }
   });
-  // default the log "type" to the selected topic's role
-  document.addEventListener("change", e => {
-    if (e.target.name === "item" && e.target.form?.id === "logform" && e.target.value) e.target.form.role.value = it(e.target.value).role;
-  });
+  document.addEventListener("toggle", e => {
+    if (e.target.id === "todoCompleted") todoDoneOpen = e.target.open;
+    if (e.target.dataset.noteKey) { if (e.target.open) noteExpanded.add(e.target.dataset.noteKey); else noteExpanded.delete(e.target.dataset.noteKey); }
+  }, true);
   window.addEventListener("hashchange", render);
   $("#dataDlg").addEventListener("click", e => { if (e.target === e.currentTarget) e.currentTarget.close(); });
 
   // folder storage: reconnect on load, pick up edits made outside the app, flush before leaving
+  function renderCloudGate() {
+    const gate = $("#cloudGate"), cloud = Cloud?.info();
+    if (!gate) return;
+    const locked = !!cloud?.configured && !cloud.localHost && !cloud.user;
+    gate.hidden = !locked;
+    document.querySelector("header").inert = locked;
+    document.querySelector(".workspace").inert = locked;
+    const error = $("#cloudGateError");
+    if (error) { error.textContent = cloud?.error || ""; error.hidden = !cloud?.error; }
+    const signIn = $("#cloudGateSignIn");
+    if (signIn) signIn.disabled = cloud?.status === "starting";
+  }
+  function applyCloud(state, uid) {
+    const active = document.activeElement, formKey = active?.form?.dataset.key, name = active?.name;
+    const selection = active?.tagName === "TEXTAREA" ? [active.selectionStart, active.selectionEnd] : null;
+    const scroll = [window.scrollX, window.scrollY];
+    activeKey = Cloud.stateKey(uid);
+    S = migrate(Object.assign(state, { ui: S.ui, savedAt: Date.now() })); persistLocal();
+    rerender();
+    if (formKey && name) {
+      const form = [...document.querySelectorAll("form[data-key]")].find(f => f.dataset.key === formKey);
+      const input = form?.elements.namedItem(name);
+      if (input) { input.focus({ preventScroll: true }); if (selection) input.setSelectionRange(...selection); }
+    }
+    window.scrollTo(...scroll);
+  }
   Store.on(updatePill);
+  Cloud?.on(updatePill);
   window.addEventListener("focus", () => guard(Store.changedOnDisk().then(ch => ch && syncFolder("external"))));
   document.addEventListener("visibilitychange", () => { if (document.hidden) Store.flush(); });
 
-  window.AE = { state: () => S, openItem, order, isDone, score, currentStep, syncFolder, Store, LIB };
+  window.AE = { build: "2026-10-06.10", state: () => S, openItem, order, isDone, score, currentStep, syncFolder, Store, Cloud, LIB, Practice: practice };
   themeLabel();
   render();
   updatePill();
-  guard(Store.init().then(i => i.state === "connected" && syncFolder("startup")));
+  guard(Store.init().then(async i => {
+    if (i.state === "connected") await syncFolder("startup");
+    if (Cloud) await Cloud.init({ current: () => S, empty: blank, hasData, apply: applyCloud,
+      account: uid => { activeKey = Cloud.stateKey(uid); if (accountUid !== uid) { clearDrafts(); } accountUid = uid; },
+      signedOut: () => { accountUid = null; activeKey = KEY; S = load(); clearDrafts(); openId = null; rerender(); }
+    });
+  }));
 })();

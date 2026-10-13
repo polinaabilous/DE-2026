@@ -1,28 +1,57 @@
 {
   "app": "ae-roadmap",
-  "version": 4,
-  "savedAt": 1791235203836,
+  "version": 5,
+  "savedAt": 1791306307368,
   "data": {
-    "v": 4,
+    "v": 5,
     "setupV": 2,
     "curriculumV": 4,
-    "savedAt": 1791235203836,
-    "r": {},
+    "savedAt": 1791306307368,
+    "r": {
+      "SETUP": [
+        3,
+        3,
+        3,
+        3
+      ]
+    },
     "pc": {
       "SETUP": [
         true,
         true,
-        false,
-        false
+        true,
+        true,
+        true
       ]
     },
     "rc": {},
-    "g": {},
+    "g": {
+      "s0-0": true
+    },
     "lib": {},
     "act": {
-      "2026-10-05": 8
+      "2026-10-05": 20,
+      "2026-10-06": 6
     },
-    "log": [],
+    "log": [
+      {
+        "id": "nmuwxhus4pu4o",
+        "text": "- Started with **DataLemur SQL** tasks to refresh my memory on basic concepts and solved **5 easy problems**.\n- Started reading **The Data Warehouse Toolkit**.\n- Learned about **DuckDB** as a local database option that allows querying different file formats with SQL, such as CSV, Avro, Parquet, etc.",
+        "c": "2026-10-06",
+        "u": "2026-10-06",
+        "d": "2026-10-06"
+      }
+    ],
+    "todo": [
+      {
+        "id": "nmuwxiwq06p1n",
+        "text": "Read about different data file formats (avro, parquet, etc.) and what they are good for, take some notes for future reference",
+        "c": "2026-10-06",
+        "u": "2026-10-06",
+        "done": false,
+        "track": "general"
+      }
+    ],
     "ui": {
       "hideDone": false,
       "showOpt": true,

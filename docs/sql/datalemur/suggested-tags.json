@@ -1,0 +1,444 @@
+{
+  "reviewed_at": "2026-10-06",
+  "method": "Editorial suggestions after reviewing each public SQL problem description. Labels describe the topic or a plausible solving approach; they are not official DataLemur tags or a guarantee that one specific solution is required.",
+  "problems": {
+    "16": [
+      "Histogram",
+      "Two-stage aggregation"
+    ],
+    "62": [
+      "Relational division",
+      "Group-level filtering"
+    ],
+    "31": [
+      "Anti join",
+      "Missing relationships"
+    ],
+    "60": [
+      "NULL checks",
+      "Deduplication"
+    ],
+    "14": [
+      "Conditional aggregation",
+      "Pivoting"
+    ],
+    "32": [
+      "Date arithmetic",
+      "Group-level filtering"
+    ],
+    "46": [
+      "Top N",
+      "Aggregation"
+    ],
+    "17": [
+      "Duplicate detection",
+      "Two-stage aggregation"
+    ],
+    "18": [
+      "Join then aggregate",
+      "Top N"
+    ],
+    "33": [
+      "Date bucketing",
+      "Aggregation"
+    ],
+    "331": [
+      "Self join",
+      "Hierarchy"
+    ],
+    "66": [
+      "Conditional aggregation",
+      "Signed arithmetic"
+    ],
+    "13": [
+      "Conditional aggregation",
+      "Ratios & denominators"
+    ],
+    "55": [
+      "Temporal joins",
+      "Date arithmetic"
+    ],
+    "330": [
+      "Histogram",
+      "Zero-count groups",
+      "Outer joins"
+    ],
+    "175": [
+      "Group extrema",
+      "Aggregation"
+    ],
+    "171": [
+      "Weighted statistics",
+      "Ratios & denominators"
+    ],
+    "176": [
+      "Top N",
+      "Profit arithmetic"
+    ],
+    "177": [
+      "Filter then aggregate",
+      "Profit arithmetic"
+    ],
+    "178": [
+      "Aggregation",
+      "Numeric formatting"
+    ],
+    "191": [
+      "Group-level filtering",
+      "Aggregation"
+    ],
+    "25": [
+      "Nth event",
+      "Row numbering"
+    ],
+    "327": [
+      "Ranking & ties",
+      "Nth distinct value"
+    ],
+    "4": [
+      "Conditional aggregation",
+      "Ratios & denominators",
+      "Join then aggregate"
+    ],
+    "20": [
+      "Rolling windows",
+      "Window frames"
+    ],
+    "19": [
+      "Top N per group",
+      "Aggregate then rank"
+    ],
+    "328": [
+      "Top N per group",
+      "Ranking & ties"
+    ],
+    "52": [
+      "Outer joins",
+      "Ratios & denominators"
+    ],
+    "57": [
+      "Combine history & increments",
+      "Outer joins"
+    ],
+    "201": [
+      "Relational division",
+      "Distinct category coverage"
+    ],
+    "7": [
+      "Row numbering",
+      "Conditional aggregation",
+      "Pivoting"
+    ],
+    "333": [
+      "Adjacent-row access",
+      "Row swapping",
+      "Boundary cases"
+    ],
+    "272": [
+      "Argmin & argmax",
+      "Ranking & ties"
+    ],
+    "45": [
+      "Top N per group",
+      "Tie breaking"
+    ],
+    "58": [
+      "Gaps & islands",
+      "Consecutive dates"
+    ],
+    "29": [
+      "Latest rows per group",
+      "Ties at latest date",
+      "Aggregation"
+    ],
+    "172": [
+      "Frequency tables",
+      "Mode",
+      "Ranking & ties"
+    ],
+    "174": [
+      "First event per group",
+      "Date ordering"
+    ],
+    "189": [
+      "Multiple joins to one dimension",
+      "Ratios & denominators"
+    ],
+    "192": [
+      "NULL checks",
+      "Conditional aggregation",
+      "Ratios & denominators"
+    ],
+    "2": [
+      "Retention",
+      "Calendar adjacency",
+      "Distinct user counting"
+    ],
+    "11": [
+      "Period-over-period growth",
+      "Aggregate then lag"
+    ],
+    "38": [
+      "Capacity allocation",
+      "Conditional aggregation",
+      "Floor arithmetic"
+    ],
+    "27": [
+      "Weighted statistics",
+      "Median",
+      "Cumulative frequency"
+    ],
+    "51": [
+      "State transitions",
+      "Outer joins",
+      "Conditional mapping"
+    ],
+    "87": [
+      "Gaps & islands",
+      "Consecutive years"
+    ],
+    "89": [
+      "Gaps & islands",
+      "Consecutive weeks",
+      "Group-level filtering"
+    ],
+    "110": [
+      "Combinations",
+      "Self join",
+      "Duplicate prevention"
+    ],
+    "193": [
+      "Adjacent-row access",
+      "Time-gap detection",
+      "Distinct user counting"
+    ],
+    "199": [
+      "Period-over-period growth",
+      "Aggregate then lag"
+    ],
+    "103": [
+      "Repeated-event detection",
+      "Time-gap detection",
+      "Adjacent-row access"
+    ],
+    "10": [
+      "Reactivation",
+      "Calendar adjacency",
+      "Distinct user counting"
+    ],
+    "48": [
+      "Hierarchy",
+      "Self join",
+      "Existence & exclusion"
+    ],
+    "56": [
+      "Start-stop pairing",
+      "Time arithmetic",
+      "Aggregation"
+    ]
+  },
+  "topic_method": "One or two broad, curated topics per SQL problem, for a smaller practice taxonomy. Detailed editorial suggestions and original site tags remain in the source snapshot.",
+  "topics": {
+    "16": [
+      "Aggregation"
+    ],
+    "62": [
+      "Sets & coverage",
+      "Aggregation"
+    ],
+    "31": [
+      "Joins"
+    ],
+    "60": [
+      "NULLs & duplicates"
+    ],
+    "14": [
+      "Conditional logic",
+      "Aggregation"
+    ],
+    "32": [
+      "Dates & time",
+      "Aggregation"
+    ],
+    "46": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "17": [
+      "NULLs & duplicates",
+      "Aggregation"
+    ],
+    "18": [
+      "Joins",
+      "Aggregation"
+    ],
+    "33": [
+      "Dates & time",
+      "Aggregation"
+    ],
+    "331": [
+      "Joins"
+    ],
+    "66": [
+      "Conditional logic",
+      "Aggregation"
+    ],
+    "13": [
+      "Conditional logic",
+      "Ratios & statistics"
+    ],
+    "55": [
+      "Joins",
+      "Dates & time"
+    ],
+    "330": [
+      "Aggregation",
+      "Joins"
+    ],
+    "175": [
+      "Aggregation"
+    ],
+    "171": [
+      "Ratios & statistics",
+      "Aggregation"
+    ],
+    "176": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "177": [
+      "Aggregation"
+    ],
+    "178": [
+      "Aggregation"
+    ],
+    "191": [
+      "Aggregation"
+    ],
+    "25": [
+      "Ranking"
+    ],
+    "327": [
+      "Ranking"
+    ],
+    "4": [
+      "Conditional logic",
+      "Ratios & statistics"
+    ],
+    "20": [
+      "Window functions"
+    ],
+    "19": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "328": [
+      "Ranking"
+    ],
+    "52": [
+      "Joins",
+      "Ratios & statistics"
+    ],
+    "57": [
+      "Joins",
+      "Aggregation"
+    ],
+    "201": [
+      "Sets & coverage",
+      "Aggregation"
+    ],
+    "7": [
+      "Ranking",
+      "Conditional logic"
+    ],
+    "333": [
+      "Window functions"
+    ],
+    "272": [
+      "Ranking"
+    ],
+    "45": [
+      "Ranking"
+    ],
+    "58": [
+      "Gaps & islands",
+      "Dates & time"
+    ],
+    "29": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "172": [
+      "Ratios & statistics",
+      "Ranking"
+    ],
+    "174": [
+      "Ranking",
+      "Dates & time"
+    ],
+    "189": [
+      "Joins",
+      "Ratios & statistics"
+    ],
+    "192": [
+      "Conditional logic",
+      "Ratios & statistics"
+    ],
+    "2": [
+      "Retention",
+      "Dates & time"
+    ],
+    "11": [
+      "Window functions",
+      "Dates & time"
+    ],
+    "38": [
+      "Conditional logic",
+      "Aggregation"
+    ],
+    "27": [
+      "Ratios & statistics",
+      "Window functions"
+    ],
+    "51": [
+      "Joins",
+      "Conditional logic"
+    ],
+    "87": [
+      "Gaps & islands",
+      "Dates & time"
+    ],
+    "89": [
+      "Gaps & islands",
+      "Dates & time"
+    ],
+    "110": [
+      "Joins",
+      "Sets & coverage"
+    ],
+    "193": [
+      "Window functions",
+      "Dates & time"
+    ],
+    "199": [
+      "Window functions",
+      "Dates & time"
+    ],
+    "103": [
+      "Window functions",
+      "Dates & time"
+    ],
+    "10": [
+      "Retention",
+      "Dates & time"
+    ],
+    "48": [
+      "Joins",
+      "Sets & coverage"
+    ],
+    "56": [
+      "Dates & time",
+      "Aggregation"
+    ]
+  }
+}

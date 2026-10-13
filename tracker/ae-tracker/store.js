@@ -1,18 +1,13 @@
 // Folder storage for the roadmap (File System Access API, Edge/Chrome).
 // Layout of the data folder:
-//   progress.json                    ratings, practice, resources, log, activity
+//   progress.json                    ratings, practice, resources, daily log, to dos, activity
 //   notes/<track>.md                 your notes, one Markdown file per track (readable/editable in VS Code, Obsidian, GitHub)
 //   notes/general.md                 notes not tied to a track
 //   backups/ae-roadmap-<date>.json   daily full snapshot, newest 14 kept
 window.AEStore = (() => {
   const GENERAL = "general";
   const KEEP_BACKUPS = 14;
-  const pad = n => String(n).padStart(2, "0");
-  const today = (d = new Date()) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  const uid = () => "n" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  const slug = s => String(s).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 48) || "notes";
-  const oneLine = s => String(s || "").replace(/\s*\n\s*/g, " ").trim();
-  const norm = t => String(t ?? "").replace(/^\uFEFF/, "").replace(/\r\n?/g, "\n");
+  const { today, uid, slug, oneLine, norm } = globalThis.AEUtils;
 
   // ---------- markdown ----------
   // A body line starting with "## " would start a new note, so it is written as "\## " (outside code fences).
@@ -199,7 +194,7 @@ window.AEStore = (() => {
 
   async function write(S, title) {
     const { notes = [], ...data } = S;
-    const pj = JSON.stringify({ app: "ae-roadmap", version: 4, savedAt: S.savedAt, data }, null, 2);
+    const pj = JSON.stringify({ app: "ae-roadmap", version: 6, savedAt: S.savedAt, data }, null, 2);
     if (cache.get("progress.json") !== pj) { await writeText(dir, "progress.json", pj); cache.set("progress.json", pj); }
     const by = {};
     notes.forEach(n => (by[n.track || GENERAL] = by[n.track || GENERAL] || []).push(n));

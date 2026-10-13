@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AE Roadmap · Topics & parallel roadmap preview</title>
+<style>
+:root{--bg:#f8faf6;--white:#fff;--ink:#26382e;--muted:#657368;--green:#246b4a;--soft:#e8f2e7;--line:#dde6da;--amber:#856425;--amberbg:#fbf2dd;font-family:Inter,ui-sans-serif,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:var(--bg);font-synthesis:none}*{box-sizing:border-box}body{margin:0;font-size:15px;line-height:1.55}button,input,a{font:inherit}button{cursor:pointer;color:inherit;border:0;background:none}button:disabled{opacity:.5;cursor:not-allowed}button,a{touch-action:manipulation}a{color:var(--green);text-underline-offset:3px}button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #91b878;outline-offset:3px}h1,h2,h3,p{margin:0}h1{font-size:29px;letter-spacing:-.9px;line-height:1.25}h2{font-size:21px;letter-spacing:-.4px;line-height:1.3}h3{font-size:16px}small,.small{font-size:12px}.muted{color:var(--muted)}.eyebrow{font-size:11px;letter-spacing:1.1px;text-transform:uppercase;font-weight:750;color:var(--muted)}.row{display:flex;align-items:center;gap:10px}.spread{justify-content:space-between}.grow{flex:1;min-width:0}.badge{display:inline-flex;align-items:center;border-radius:5px;background:var(--soft);color:var(--green);padding:3px 8px;font-size:11px;font-weight:650;white-space:nowrap}.badge.neutral{background:#eff2ec;color:var(--muted)}.badge.amber{background:var(--amberbg);color:var(--amber)}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:#fff;border:1px solid var(--line);border-radius:7px;padding:9px 14px;min-height:40px;font-size:13px;font-weight:650;text-decoration:none}.btn:hover{background:var(--soft)}.btn.primary{background:var(--green);border-color:var(--green);color:white}.btn.primary:hover{background:#1e573e}.text-btn{display:inline-flex;align-items:center;gap:7px;padding:5px 0;font-size:13px;font-weight:650;color:var(--green);text-align:left;text-decoration:none}.text-btn:hover{text-decoration:underline}.icon{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:middle}.demo{padding:7px 28px;background:#eef4e8;border-bottom:1px solid var(--line);font-size:11px;color:#526543;display:flex;align-items:center;justify-content:space-between;gap:15px}.demo button{font-size:11px;text-decoration:underline;white-space:nowrap;padding:4px}.topbar{background:#fff;border-bottom:1px solid var(--line);padding:14px 28px;display:flex;align-items:center;gap:40px}.brand{display:flex;gap:9px;align-items:center;white-space:nowrap;font-weight:750;font-size:15px}.brand-icon{width:31px;height:31px;border-radius:8px;display:grid;place-items:center;background:var(--green);color:white}.topbar nav{display:flex;gap:6px}.nav-btn{display:flex;align-items:center;gap:8px;min-height:39px;padding:8px 15px;font-size:14px;border-radius:7px;color:var(--muted)}.nav-btn.active{background:var(--soft);color:var(--green);font-weight:700}.topbar>.small{margin-left:auto}.main{max-width:1330px;margin:0 auto;padding:28px 30px 50px}.page-head{margin-bottom:23px}.page-head p{color:var(--muted);font-size:14px;margin-top:7px}.topic-layout{display:grid;grid-template-columns:218px minmax(0,1fr);gap:28px;align-items:start}.subject-nav{position:sticky;top:18px}.subject-nav>.eyebrow{padding:0 11px;margin-bottom:10px}.subject-btn{display:flex;align-items:center;gap:10px;width:100%;padding:12px 11px;border-radius:8px;text-align:left;margin-bottom:4px}.subject-btn:hover{background:#edf3e8}.subject-btn.active{background:#e5efdf}.subject-number{font-size:12px;color:#6f8272;align-self:flex-start;padding-top:2px}.subject-btn strong{font-size:14px;display:block}.subject-btn small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.subject-btn .dot{margin-left:auto}.dot{width:17px;height:17px;border:1px solid #c2d2bd;border-radius:50%;display:grid;place-items:center;font-size:10px;flex:none}.dot.done{background:var(--green);color:white;border-color:var(--green)}.subject-nav>.note{padding:15px 11px;font-size:12px;color:var(--muted);border-top:1px solid var(--line);margin-top:17px}.subject-header{padding-bottom:18px}.subject-header .row{align-items:flex-start}.subject-header p{font-size:14px;color:var(--muted);margin-top:8px;max-width:710px}.subject-header h2{font-size:25px}.chapter{border:1px solid var(--line);border-radius:11px;margin-bottom:10px;background:white;overflow:hidden}.chapter>summary{list-style:none;display:flex;align-items:center;gap:11px;cursor:pointer;padding:14px 17px}.chapter>summary::-webkit-details-marker{display:none}.chapter>summary::after{content:'+';color:var(--green);font-size:19px;line-height:1;margin-left:6px}.chapter[open]>summary::after{content:'−'}.chapter-index{display:grid;place-items:center;width:29px;height:29px;background:#eff4e9;border-radius:7px;color:var(--green);font-size:12px;font-weight:650;flex:none}.chapter>summary strong{font-size:15px;display:block}.chapter>summary small{color:var(--muted);font-size:12px}.chapter-progress{font-size:12px;color:var(--muted);white-space:nowrap}.lesson-list{border-top:1px solid var(--line);padding:0 17px}.lesson-row{display:flex;align-items:center;gap:11px;width:100%;padding:12px 0;text-align:left;border-bottom:1px solid #edf1e8;min-height:65px}.lesson-row:last-child{border-bottom:0}.lesson-row:hover .lesson-title{color:var(--green)}.lesson-title{display:block;font-size:14px;font-weight:600}.practice-label{display:block;font-size:11px;color:var(--muted);margin-top:4px}.lesson-row .row-status{font-size:11px;color:var(--muted);white-space:nowrap}.lesson-row.current .dot{border:5px solid var(--green)}.subject-footer{font-size:12px;color:var(--muted);margin:15px 0}.crumbs{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-bottom:15px}.crumbs button{padding:0;color:var(--green);font-size:12px;text-decoration:underline}.lesson-heading{padding-bottom:20px;border-bottom:1px solid var(--line)}.lesson-heading h2{font-size:26px;letter-spacing:-.7px;margin:8px 0}.lesson-heading p{font-size:14px;color:var(--muted);max-width:780px}.lesson-heading>.row{margin-top:12px;flex-wrap:wrap}.prereq{font-size:12px;margin-top:12px;color:var(--muted)}.prereq button{font-size:12px;color:var(--green);text-decoration:underline;padding:2px 3px}.lesson-section{padding:23px 0;border-bottom:1px solid var(--line)}.section-title{display:flex;align-items:center;gap:9px;font-size:18px;margin-bottom:14px;letter-spacing:-.2px}.section-number{width:24px;height:24px;display:grid;place-items:center;background:var(--soft);border-radius:6px;font-size:12px;color:var(--green);flex:none}.learn-list{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:1fr 1fr;gap:12px 23px}.learn-list li{font-size:13px;display:flex;gap:8px;align-items:flex-start}.learn-list .bullet{color:var(--green);font-weight:700}.resource{display:flex;align-items:center;gap:12px;padding:12px 14px;background:white;border:1px solid var(--line);border-radius:8px;margin-top:12px;font-size:13px;text-decoration:none}.resource small{display:block;color:var(--muted);font-size:11px;margin-top:3px}.resource.inactive{color:var(--muted);background:#f1f4ed}.practice-intro{font-size:13px;color:var(--muted);margin-bottom:13px}.practice-card{padding:16px 18px;border:1px solid var(--line);border-radius:9px;background:white;margin-top:11px}.practice-card .row{align-items:flex-start}.practice-card h3{font-size:15px}.practice-card p,.practice-card li{font-size:13px}.practice-card p{margin-top:9px}.practice-card ol{margin:10px 0 0;padding-left:21px}.practice-card li{margin-top:5px}.practice-card summary{cursor:pointer;font-size:12px;font-weight:650;color:var(--green)}.practice-card details{padding-top:10px;margin-top:12px;border-top:1px solid var(--line)}.practice-card details p{font-size:12px}.problem{display:flex;align-items:center;gap:10px;padding:11px 0;border-bottom:1px solid #edf1e8}.problem:last-child{border:0;padding-bottom:0}.problem a{font-size:13px;font-weight:550;text-decoration:none}.problem a:hover{text-decoration:underline}.problem small{font-size:11px;display:block;color:var(--muted);margin-top:2px}.problem label{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);white-space:nowrap}.problem input,input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;flex:none}.project-link{padding:15px 17px;border:1px solid #c9ddbf;border-radius:9px;background:#edf5e6;margin-top:11px}.project-link p{font-size:13px;margin-top:6px}.project-link h3{font-size:15px}.no-project{padding:13px 16px;background:#f0f3ec;border-radius:8px;font-size:13px;margin-top:11px;color:var(--muted)}.checks{display:grid;gap:9px}.checks label{display:flex;align-items:flex-start;gap:8px;font-size:13px}.checks input{margin-top:3px}.completion{display:flex;justify-content:space-between;align-items:center;gap:18px;padding-top:17px}.completion p{font-size:12px;color:var(--muted)}.back-link{font-size:12px;padding:0;margin-bottom:14px;color:var(--green);text-decoration:underline}.road-intro{display:flex;justify-content:space-between;gap:20px;align-items:center;padding:14px 17px;border:1px solid var(--line);border-radius:10px;background:white;margin-bottom:19px}.road-intro p{font-size:13px;color:var(--muted)}.road-intro strong{color:var(--ink)}.legend{display:flex;gap:13px;align-items:center;font-size:11px;white-space:nowrap}.road-headers{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);margin-bottom:11px;padding:0 3px}.road-headers h2{font-size:16px;display:flex;align-items:center;gap:8px}.road-headers p{font-size:12px;color:var(--muted);margin-top:3px}.road-row{display:grid;grid-template-columns:minmax(0,1fr) 42px minmax(0,1fr);align-items:stretch;margin-bottom:17px;scroll-margin-top:24px}.road-row.highlight .learn-card,.road-row.highlight .project-card{outline:2px solid #8eb07c;outline-offset:3px}.learn-card,.project-card{background:white;border:1px solid var(--line);border-radius:11px;padding:17px 19px;position:relative;min-width:0}.learn-card::after,.project-card::after{content:'';position:absolute;bottom:-18px;left:27px;width:1px;height:17px;background:#bed1b6}.road-row:last-child .learn-card::after,.road-row:last-child .project-card::after{display:none}.road-connector{display:flex;justify-content:center;align-items:center;color:#73976a}.road-connector .icon{width:22px}.learn-card h3,.project-card h3{font-size:17px;margin:9px 0 6px}.learn-card>p,.project-card>p{font-size:12px;color:var(--muted)}.road-lesson{display:flex;align-items:center;gap:7px;width:100%;padding:7px 0;text-align:left;font-size:12px;color:var(--green)}.road-lesson:hover{text-decoration:underline}.road-lesson .dot{width:14px;height:14px;font-size:9px}.road-lessons{padding:9px 0;margin-top:7px;border-top:1px solid #edf1e8}.project-card.ready{border-color:#9ab68c;background:#f3f8ee}.requirements{border-top:1px solid var(--line);padding-top:11px;margin-top:12px;font-size:11px;color:var(--muted)}.dependency-details{margin-top:5px}.dependency-details summary{cursor:pointer;color:var(--green);font-size:12px}.requirements strong{color:var(--ink);font-weight:600}.requirements .road-lesson{padding:5px 0;font-size:11px}.deliverable{margin-top:12px;padding-top:11px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}.deliverable strong{color:var(--ink)}.project-card .text-btn{font-size:12px}.project-card .btn{margin-top:12px;font-size:12px;padding:7px 11px;min-height:36px}.extra{margin-top:8px;font-size:11px;color:var(--muted)}.extra button{font-size:11px;color:var(--green);text-decoration:underline;padding:0}.road-footnote{padding:16px 19px;border-radius:10px;background:#edf3e7;font-size:13px;margin-top:21px}.road-footnote p{margin-top:5px;color:var(--muted);font-size:12px}.table-wrap{overflow-x:auto;margin-top:10px}table{width:100%;border-collapse:collapse;text-align:left;font-size:12px}th,td{padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}th{background:#f1f5ec;color:var(--muted);font-weight:600}code{font:12px ui-monospace,SFMono-Regular,Consolas,monospace;background:#edf2e8;padding:1px 4px;border-radius:4px}dialog{border:1px solid var(--line);border-radius:13px;padding:24px;width:min(510px,calc(100% - 30px));background:var(--bg);color:var(--ink)}dialog::backdrop{background:#1b32265c;backdrop-filter:blur(2px)}dialog h2{font-size:22px;margin:10px 0}dialog p{font-size:13px;color:var(--muted)}dialog .checks{margin:18px 0}dialog .btn{margin-top:8px}.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);max-width:calc(100vw - 30px);background:#214f39;color:white;padding:11px 17px;font-size:13px;border-radius:9px;box-shadow:0 5px 25px #17332220;z-index:5}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}[hidden]{display:none!important}
+@media(min-width:1450px){.main{padding-top:35px}.topic-layout{gap:36px;grid-template-columns:230px minmax(0,1fr)}}
+@media(max-width:1000px){.topbar>.small{display:none}.topic-layout{grid-template-columns:184px minmax(0,1fr);gap:20px}.main{padding:24px}.learn-list{grid-template-columns:1fr}.legend{display:none}.learn-card,.project-card{padding:15px}.road-headers,.road-row{grid-template-columns:minmax(0,1fr) 28px minmax(0,1fr)}.road-connector .icon{width:19px}}
+@media(max-width:700px){.topbar{padding:12px 16px;gap:15px;justify-content:space-between}.brand{font-size:13px;gap:6px}.brand-icon{height:27px;width:27px}.nav-btn{font-size:12px;padding:7px 9px;gap:5px}.nav-btn .icon{width:15px}.demo{padding:7px 16px;font-size:10px;gap:8px}.demo button{font-size:10px}.main{padding:23px 16px 35px}.page-head{margin-bottom:19px}h1{font-size:26px}.page-head p{font-size:13px}.topic-layout{display:block}.subject-nav{position:static;margin-bottom:22px}.subject-nav>.eyebrow,.subject-nav>.note{display:none}.subject-buttons{display:flex;overflow:auto;gap:7px;padding:2px 2px 8px;scrollbar-width:thin}.subject-btn{width:auto;min-width:max-content;padding:9px 12px;border:1px solid var(--line);background:white;margin:0}.subject-btn small,.subject-btn>.subject-number,.subject-btn>.dot{display:none}.subject-btn strong{font-size:12px}.subject-header h2{font-size:22px}.subject-header .row{gap:8px;flex-wrap:wrap}.subject-header .btn{font-size:12px;min-height:35px;padding:6px 10px}.chapter>summary{padding:13px 12px;gap:9px}.chapter>summary strong{font-size:14px}.chapter>summary small{font-size:11px}.chapter-progress{font-size:11px}.lesson-list{padding:0 12px}.lesson-row{gap:9px}.lesson-title{font-size:13px}.practice-label{font-size:10px}.lesson-row .row-status{display:none}.lesson-heading h2{font-size:23px}.lesson-section{padding:20px 0}.practice-card{padding:14px}.problem{flex-wrap:wrap}.problem label{margin-left:auto}.resource{padding:11px}.completion{align-items:flex-start;gap:10px}.completion .btn{font-size:12px;padding:8px 10px;white-space:nowrap}.completion p{font-size:11px}.road-intro{padding:12px}.road-headers{display:none}.road-row{display:grid;grid-template-columns:minmax(0,1fr);gap:0;border-left:2px solid #b9cdb1;padding-left:14px;margin:0 0 20px 5px}.learn-card::after,.project-card::after{display:none}.learn-card,.project-card{padding:15px}.road-connector{height:27px;justify-content:flex-start;padding-left:22px}.road-connector .icon{transform:rotate(90deg)}.road-row .learn-card>.row::before{content:'LEARN';font-size:10px;letter-spacing:1px;color:var(--green);font-weight:700}.road-row .project-card>.row::before{content:'BUILD';font-size:10px;letter-spacing:1px;color:var(--green);font-weight:700}.road-footnote{padding:15px}.prereq{line-height:1.9}.toast{font-size:12px}.topic-layout section{min-width:0}}
+@media(max-width:360px){.topbar{padding:10px 12px;gap:6px}.brand-icon{display:none}.nav-btn{padding:7px;font-size:12px}.nav-btn .icon{display:none}.main{padding-left:12px;padding-right:12px}.demo{padding-left:12px;padding-right:12px}.chapter-index{width:24px;height:24px}.chapter>summary{gap:7px}.chapter-progress{font-size:10px}.chapter>summary small{display:none}.completion{flex-direction:column}.completion .btn{width:100%}}
+html{scrollbar-gutter:stable}.topbar{padding-top:12px;padding-bottom:12px}.lesson-summary{display:block;font-size:12px;color:var(--muted);margin-top:4px}.lesson-row{min-height:74px}.road-lessons{padding-bottom:0}.road-lesson .icon{width:14px;height:14px;opacity:.75}.project-card .btn{margin-top:17px}.project-card>p{max-width:510px}.road-row{margin-bottom:14px}.learn-card::after,.project-card::after{bottom:-15px;height:14px}.learn-card,.project-card{padding:16px 19px}.road-footnote{margin-top:18px}.panel-icon{width:35px;height:35px;border:1px solid var(--line);background:#fff;border-radius:7px;display:grid;place-items:center}.panel-icon:hover{background:var(--soft)}.panel-controls{display:flex;gap:5px}.panel-icon.close{margin-left:6px}#detail-panel{margin:0 0 0 auto;width:min(720px,100%);height:100dvh;max-width:100%;max-height:100dvh;border:0;border-left:1px solid var(--line);border-radius:0;padding:0;background:var(--bg);color:var(--ink);box-shadow:-10px 0 45px #17392726}#detail-panel::backdrop{background:#19372747;backdrop-filter:blur(1.5px)}.panel-shell{height:100%;display:flex;flex-direction:column}.panel-head{flex:none;background:white;border-bottom:1px solid var(--line);padding:18px 25px}.panel-head h2{margin:14px 0 7px;font-size:25px;line-height:1.25;letter-spacing:-.6px;outline:none}.panel-head>.badge{margin-top:12px}.panel-head .panel-description{font-size:13px;line-height:1.55}.panel-head>.row>.eyebrow{font-size:10px}.panel-context{font-size:11px;color:var(--green);text-decoration:underline;padding:10px 0 0;text-align:left}.panel-scroll{flex:1;min-height:0;overflow-y:auto;padding:0 25px 22px;overscroll-behavior:contain}.panel-foot{flex:none;padding:13px 25px;border-top:1px solid var(--line);background:white;display:flex;justify-content:space-between;align-items:center;gap:16px}.panel-foot p{font-size:11px;line-height:1.5;color:var(--muted)}.panel-foot .btn{margin:0;font-size:13px;white-space:nowrap}.panel-scroll .learn-list{grid-template-columns:1fr;gap:10px}.panel-scroll .lesson-section{padding:21px 0}.panel-scroll .lesson-section:last-child{border-bottom:0;padding-bottom:8px}.panel-scroll .section-title{font-size:17px;margin-bottom:13px}.panel-scroll .checks{margin:16px 0 0;gap:11px}.panel-scroll .checks label{font-size:13px;padding:10px 12px;background:white;border:1px solid var(--line);border-radius:7px}.panel-scroll .resource{font-size:13px}.panel-scroll .lab-part{padding-top:12px;margin-top:12px}.panel-scroll .lab-part>summary{font-size:13px}.panel-prereq{padding:16px 0 0}.panel-prereq .road-lesson{font-size:12px}.prereq-list{border:1px solid var(--line);background:white;border-radius:9px;padding:4px 12px}.prereq-list .road-lesson{padding:10px 0;border-bottom:1px solid #edf1e8;font-size:13px}.prereq-list .road-lesson:last-child{border-bottom:0}.scope-list{font-size:13px;line-height:1.65;padding-left:20px;margin:0}.scope-list li{margin:7px 0}.scope-list li::marker{color:var(--green)}.scope-note{padding:12px 14px;background:#eef3e8;border-radius:8px;margin-top:13px;font-size:12px!important}.task-list{list-style:none;counter-reset:task;margin:0;padding:0;display:grid;gap:17px}.task-list li{position:relative;padding-left:34px;counter-increment:task}.task-list li::before{content:counter(task);position:absolute;left:0;top:0;display:grid;place-items:center;width:23px;height:23px;border:1px solid var(--line);border-radius:50%;font-size:11px;font-weight:700;color:var(--green);background:white}.task-list strong{font-size:14px}.task-list p{font-size:13px;margin-top:3px}.deliverable-box{padding:14px 16px;background:#edf5e7;border:1px solid #cfdfc5;border-radius:9px;font-size:13px}.deliverable-box p{margin-top:6px;font-size:12px}.toast{z-index:20}
+@media(max-width:700px){.panel-head{padding:15px 17px}.panel-head h2{font-size:22px;margin-top:12px}.panel-scroll{padding:0 17px 20px}.panel-foot{padding:12px 17px;gap:10px}.panel-foot p{font-size:10px}.panel-foot .btn{font-size:12px;padding:8px 10px}.panel-controls{gap:4px}.panel-icon{width:32px;height:32px}.panel-head .row{gap:7px}.panel-head>.row>.eyebrow{font-size:9px;letter-spacing:.7px}.panel-scroll .practice-card{padding:13px}.learn-card,.project-card{padding:15px}.road-row{margin-bottom:18px}.lesson-summary{font-size:11px}.road-row .project-card>.row::before{display:none}.panel-scroll .project-link .row{flex-wrap:wrap}}
+@media(max-width:360px){.panel-head{padding-left:12px;padding-right:12px}.panel-scroll{padding-left:12px;padding-right:12px}.panel-foot{padding:11px 12px}.panel-foot .btn{font-size:11px;padding:8px}.panel-head>.row>.eyebrow{max-width:135px}.panel-scroll .practice-card>.row{flex-wrap:wrap}.panel-description{font-size:12px!important}}
+
+
+.area-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;align-items:start}.area-card{background:white;border:1px solid var(--line);border-radius:12px;overflow:hidden;scroll-margin-top:20px}.area-head{padding:19px 21px 16px;border-bottom:1px solid var(--line);background:#f2f7ee}.area-head h2{font-size:21px;margin:9px 0 7px}.area-head p{font-size:13px;color:var(--muted);max-width:530px;line-height:1.6;min-height:42px}.area-lessons{padding:0 20px}.area-lesson{display:flex;align-items:center;gap:11px;width:100%;min-height:54px;padding:12px 0;text-align:left;border-bottom:1px solid #edf1e8}.area-lesson:last-child{border-bottom:0}.area-lesson:hover .lesson-title{color:var(--green)}.area-lesson .lesson-title{font-size:14px;font-weight:550}.area-lesson .icon{width:15px;height:15px;color:var(--muted)}.lesson-order{width:22px;height:22px;display:grid;place-items:center;flex:none;font-size:11px;color:var(--muted);border-radius:50%;border:1px solid var(--line)}.lesson-order.done{background:var(--green);border-color:var(--green);color:white}.area-lesson.current .lesson-title{font-weight:700;color:var(--green)}.area-lesson.current .lesson-order{border-color:var(--green);color:var(--green);background:var(--soft)}.area-foot{display:flex;align-items:center;justify-content:flex-end;padding:10px 20px;border-top:1px solid var(--line);background:#fbfcf9}.area-foot .text-btn{font-size:12px}.area-more>summary{cursor:pointer;color:var(--green);font-size:12px;font-weight:600;padding:12px 0;min-height:43px}.area-more .show-less{display:none}.area-more[open] .show-more{display:none}.area-more[open] .show-less{display:inline}.area-more[open]>summary{border-bottom:1px solid var(--line)}.practice-directory .resource{padding:12px;margin-top:10px}.practice-directory p{color:var(--muted)}
+@media(max-width:760px){.area-grid{grid-template-columns:1fr;gap:16px}.area-head{padding:16px 17px 13px}.area-head h2{font-size:20px}.area-head p{font-size:12px;min-height:0}.area-lessons{padding:0 17px}.area-lesson .lesson-title{font-size:13px}.area-foot{padding:9px 17px}}
+
+</style></head><body>
+<svg hidden xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-book" viewBox="0 0 24 24"><path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z M12 5v15"/></symbol>
+<symbol id="i-map" viewBox="0 0 24 24"><path d="m3 5 6-2 6 2 6-2v16l-6 2-6-2-6 2V5Zm6-2v16m6-14v16"/></symbol>
+<symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h15m-6-6 6 6-6 6"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><rect x="3" y="6" width="18" height="15" rx="2"/><path d="M8 6V3h8v3 M3 12h18 M10 12v3h4v-3"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+</defs></svg>
+<div class="demo"><span><strong>Interactive mockup</strong> · Sample progress only · Lessons & project stages open in side panels</span><button id="reset">Reset demo</button></div>
+<header class="topbar"><div class="brand"><span class="brand-icon"><svg class="icon"><use href="#i-book"/></svg></span>AE Roadmap</div><nav aria-label="Main navigation"><button class="nav-btn active" data-view="topics" aria-current="page"><svg class="icon"><use href="#i-book"/></svg>Topics</button><button class="nav-btn" data-view="roadmap"><svg class="icon"><use href="#i-map"/></svg>Roadmap</button></nav><span class="small muted">Learn a skill. Practise it. Know when you can use it.</span></header>
+<main class="main" id="main"></main><dialog id="detail-panel" aria-labelledby="panel-title"></dialog><div class="toast" role="status" id="toast" hidden></div>
+<script>
+'use strict';
+const lessons = {
+  "grain": {
+    "id": "grain",
+    "title": "Joins, grain & trustworthy counts",
+    "subject": "sql",
+    "learn": [
+      "State the input and output grain before joining.",
+      "Recognize one-to-many fan-out and repeated measures.",
+      "Pre-aggregate to the intended join grain.",
+      "Check NULL handling and where an outer-join filter is applied."
+    ],
+    "exercise": "Join two orders to three order lines. Show why summing a repeated order total gives the wrong result, then repair the calculation.",
+    "answer": "Reconcile at the order grain before summing order-level measures, or sum valid line-level amounts. State a uniqueness check for each side of the join.",
+    "prereqs": [],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-33",
+        "title": "SQL correctness refresher",
+        "coverage": "Lesson 33 covers common traps; a dedicated joins lab is still needed"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  },
+  "aggregation": {
+    "id": "aggregation",
+    "title": "Conditional aggregation & subtotals",
+    "subject": "sql",
+    "learn": [
+      "COUNT(*) versus COUNT(column), including NULLs.",
+      "Conditional aggregation with CASE and FILTER.",
+      "GROUPING SETS, ROLLUP and GROUPING markers.",
+      "Ratios from summed numerators and denominators.",
+      "Pivoting and percentile choices."
+    ],
+    "exercise": "Create an order-status report that returns total orders, completed orders and completion share. Add a subtotal without confusing it with a missing category.",
+    "answer": "COUNT(*) includes all rows; conditional counts include only matching rows. Divide the summed completed count by the summed eligible count, handle zero denominators, and distinguish subtotal rows with GROUPING.",
+    "prereqs": [],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  },
+  "patterns": {
+    "id": "patterns",
+    "title": "Gaps, islands & sessionization",
+    "subject": "sql",
+    "learn": [
+      "Recognize consecutive groups and inactivity gaps.",
+      "Use a difference of row numbers when its assumptions hold.",
+      "Use LAG plus a cumulative change counter to identify sessions.",
+      "Handle threshold boundaries and equal timestamps."
+    ],
+    "exercise": "Split events into sessions when the gap exceeds 30 minutes. Include gaps of exactly 30 and 31 minutes.",
+    "answer": "With a strictly greater-than-30 rule, 30 minutes stays in the same session and 31 starts a new one. Accumulate the new-session flags within each user.",
+    "prereqs": [
+      "windows"
+    ],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-20",
+        "title": "Consecutive groups & sessions",
+        "coverage": "Lessons 20–21"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "optionalProject": "This is an interview and standalone data-analysis skill. Add sessionization to a project only if the business question needs it.",
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  },
+  "recursion": {
+    "id": "recursion",
+    "title": "Recursive CTEs & hierarchies",
+    "subject": "sql",
+    "learn": [
+      "Anchor member, recursive member and termination.",
+      "UNION ALL versus UNION and their implications.",
+      "Hierarchy traversal with depth and path columns.",
+      "Detecting cycles and preventing unbounded recursion.",
+      "Choosing recursion versus a simpler non-recursive query."
+    ],
+    "exercise": "Traverse an org chart containing a root, two reports and one nested report. Introduce a cycle and explain how you stop the traversal.",
+    "answer": "Produce each reachable employee with its depth and path. Detect a repeated identifier in the path and stop that branch; a depth limit is a secondary safeguard.",
+    "prereqs": [],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-24",
+        "title": "Recursive CTEs",
+        "coverage": "Lessons 24–30: mechanics, hierarchies, cycles and practice"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "noProject": "Standalone practice. The GitHub activity project does not need a hierarchy, so this lesson does not unlock a portfolio task.",
+    "practiceLinks": []
+  },
+  "time": {
+    "id": "time",
+    "title": "Date spines, cohorts & time analysis",
+    "subject": "sql",
+    "learn": [
+      "Calendar rows versus observed-event rows.",
+      "UTC storage, reporting time zones and day boundaries.",
+      "Period-over-period comparisons with missing periods.",
+      "Cohort denominators, retention windows and funnel ordering."
+    ],
+    "exercise": "Build a three-day calendar where the middle day has no events. Compare a period change before and after filling that gap.",
+    "answer": "The calendar establishes the reporting grain. Explicitly decide whether missing activity means zero or unknown before calculating the change.",
+    "prereqs": [
+      "windows"
+    ],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-25",
+        "title": "Calendar generation example",
+        "coverage": "Lesson 25 covers the calendar example; cohorts and funnels need their own material"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  },
+  "structure": {
+    "id": "structure",
+    "title": "CTEs, subqueries & readable SQL",
+    "subject": "sql",
+    "learn": [
+      "Use named CTEs for meaningful transformation stages.",
+      "Distinguish joins, existence checks and scalar subqueries.",
+      "Choose set operations and understand duplicate handling.",
+      "Evaluate performance with a plan rather than assuming a CTE is faster."
+    ],
+    "exercise": "Refactor an unreadable report into stages with explicit grains. Explain when an EXISTS test expresses the requirement more clearly than a join.",
+    "answer": "Use named stages to reveal the data flow. EXISTS expresses presence without multiplying rows; verify the engine plan before making performance claims.",
+    "prereqs": [],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-31",
+        "title": "Clean SQL",
+        "coverage": "Lessons 31–37"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  },
+  "json": {
+    "id": "json",
+    "title": "JSON, arrays & nested data",
+    "subject": "sql",
+    "learn": [
+      "Extract nested values with explicit types.",
+      "Distinguish missing values from empty arrays.",
+      "Understand how UNNEST / EXPLODE changes row counts.",
+      "Reconcile before and after flattening nested data."
+    ],
+    "exercise": "Flatten two event records, one with two array elements and one with an empty array. State the expected parent and child row counts.",
+    "answer": "An inner flatten yields two child rows and drops the empty-array parent. Preserve the parent separately or use an appropriate outer pattern when the requirement needs it.",
+    "prereqs": [],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "writes": {
+    "id": "writes",
+    "title": "MERGE, reruns & late updates",
+    "subject": "sql",
+    "learn": [
+      "Choose stable target keys and define which source version wins.",
+      "Deduplicate the source before MERGE.",
+      "Distinguish insert, update and explicit delete behavior.",
+      "Prove idempotency by comparing contents after a rerun.",
+      "Handle late arrivals without overwriting a newer version.",
+      "Compare MERGE with replacing a complete affected partition."
+    ],
+    "exercise": "Use a two-row target and a batch containing one update, one insert and a duplicate key. Run twice, then send an older version for the updated key.",
+    "answer": "Assert unique target keys, the exact expected values, identical contents after the second run, and no replacement by an older version. A partition replacement is valid only if the replacement batch contains the complete intended partition.",
+    "prereqs": [
+      "windows"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "optionalProject": "Apply this in a later incremental-loading release. It is not a dependency of the fixed-sample first release.",
+    "practiceLinks": []
+  },
+  "py_core": {
+    "id": "py_core",
+    "title": "Python values, collections & functions",
+    "subject": "python",
+    "learn": [
+      "Core types, None, truthiness and control flow.",
+      "Lists, dictionaries, sets and comprehensions.",
+      "Functions, arguments, exceptions and simple type hints.",
+      "Mutability, sorting and dictionary-based grouping."
+    ],
+    "exercise": "Transform ten small event dictionaries: validate required keys, count events by repository and collect unique contributors.",
+    "answer": "Use a documented rule for invalid records. Repository counts must reconcile to the accepted input count; use a set for distinct contributors.",
+    "prereqs": [],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "py_files": {
+    "id": "py_files",
+    "title": "Files, generators & structured records",
+    "subject": "python",
+    "learn": [
+      "Paths, encodings and context managers.",
+      "CSV, JSON and JSONL records.",
+      "Iterators, generators and bounded batches.",
+      "Timezone-aware timestamps and explicit field types."
+    ],
+    "exercise": "Read a JSONL fixture one record at a time. Quarantine one malformed record without silently discarding it.",
+    "answer": "Reconcile accepted and rejected counts to the input lines; report the rejected record and reason.",
+    "prereqs": [
+      "py_core"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "py_load": {
+    "id": "py_load",
+    "title": "Bounded ingestion & safe publication",
+    "subject": "python",
+    "learn": [
+      "Fixed sampling rules and reproducible outputs.",
+      "Timeouts, retryable failures and backoff.",
+      "Validation, quarantine and counts.",
+      "Write a manifest and keep an offline fixture."
+    ],
+    "exercise": "Create a tiny deterministic loader that republishes the same output when rerun on the same fixture.",
+    "answer": "The rerun should preserve accepted IDs and values. Record the source window, sampling limits, rejected rows and output counts.",
+    "prereqs": [
+      "py_files"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "py_tests": {
+    "id": "py_tests",
+    "title": "Test the ingester",
+    "subject": "python",
+    "learn": [
+      "Unit versus integration tests for a data script.",
+      "Fixtures, expected outputs and error paths.",
+      "Rerun and interrupted-run behavior.",
+      "Run the test suite with one documented command."
+    ],
+    "exercise": "Test valid input, malformed input, a transient failure and rerunning the same sample.",
+    "answer": "Each test must assert behavior rather than repeat implementation details. Include expected records as well as row counts.",
+    "prereqs": [
+      "py_load"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "model_grain": {
+    "id": "model_grain",
+    "title": "Business question & fact grain",
+    "subject": "model",
+    "learn": [
+      "Translate a question into a business process.",
+      "State what one fact row represents.",
+      "Choose transaction, periodic or accumulating snapshot facts.",
+      "Explain which measures are additive."
+    ],
+    "exercise": "Choose a fact grain for a PR-event activity report, then contrast it with a current-PR-state report.",
+    "answer": "The activity report uses one row per observed event. A current-state report uses one row per PR and needs a rule for selecting the latest valid state.",
+    "prereqs": [
+      "grain"
+    ],
+    "resources": [
+      {
+        "url": "../data-modeling/dimensional-modeling.html#slide-13",
+        "title": "Grain, facts & measures",
+        "coverage": "Lessons 13–19 and 27–31"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "model_dims": {
+    "id": "model_dims",
+    "title": "Dimensions, keys & history",
+    "subject": "model",
+    "learn": [
+      "Choose dimensions from the analysis questions.",
+      "Natural and surrogate keys.",
+      "Unknown dimension members and missing context.",
+      "SCD Type 1 versus Type 2 and point-in-time joins.",
+      "Role-playing and conformed dimensions."
+    ],
+    "exercise": "Define repository, contributor and date dimensions. Explain which attributes need history for this bounded project.",
+    "answer": "Use only the dimensions that support the question. Do not implement historical tracking without a requirement; document the chosen behavior.",
+    "prereqs": [
+      "model_grain"
+    ],
+    "resources": [
+      {
+        "url": "../data-modeling/dimensional-modeling.html#slide-20",
+        "title": "Keys & history",
+        "coverage": "Lessons 20–26; date and special dimensions in 32–39"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "model_validate": {
+    "id": "model_validate",
+    "title": "Validate the model & metric definitions",
+    "subject": "model",
+    "learn": [
+      "Keep ratios tied to explicit numerators and denominators.",
+      "Reconcile counts before and after joins.",
+      "Test missing context and duplicate source events.",
+      "Distinguish sample observations from broader claims."
+    ],
+    "exercise": "Specify event count, observed contributors and merged/closed-event share. Explain why that share is not the eventual merge rate of all PRs opened in the sample.",
+    "answer": "Define the population and observation window for every metric. Check join counts and key uniqueness before trusting a dashboard.",
+    "prereqs": [
+      "model_dims"
+    ],
+    "resources": [
+      {
+        "url": "../data-modeling/dimensional-modeling.html#slide-43",
+        "title": "Model checks",
+        "coverage": "Lessons 43–45; worked project checks in lesson 51"
+      }
+    ],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "dbt_models": {
+    "id": "dbt_models",
+    "title": "Sources, staging & marts",
+    "subject": "dbt",
+    "learn": [
+      "source and ref dependencies.",
+      "Staging, intermediate and mart responsibilities.",
+      "Views versus tables for a small local project.",
+      "Compile, run, build and documentation."
+    ],
+    "exercise": "Build staging models plus the fact and dimensions from the approved small model.",
+    "answer": "Models should reproduce the expected fixture results and have declared keys and grains.",
+    "prereqs": [
+      "model_validate",
+      "py_load"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "dbt_tests": {
+    "id": "dbt_tests",
+    "title": "Test data, models & metric outputs",
+    "subject": "dbt",
+    "learn": [
+      "Unique, not-null and relationship checks.",
+      "Accepted values and row-level business rules.",
+      "Small unit-test fixtures and edge cases.",
+      "Reproducible builds and readable failures."
+    ],
+    "exercise": "Add checks for duplicate event IDs, missing required fields and a known metric result.",
+    "answer": "Make a deliberately broken fixture fail with a meaningful error, then verify the valid fixture passes.",
+    "prereqs": [
+      "dbt_models",
+      "py_tests"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "report": {
+    "id": "report",
+    "title": "Build a useful dashboard & README",
+    "subject": "reporting",
+    "learn": [
+      "Choose a visual for the actual business question.",
+      "Label the population, time window and units.",
+      "Show limits and avoid unsupported claims.",
+      "Document setup, build commands and key decisions."
+    ],
+    "exercise": "Publish one page comparing the three sampled repositories, together with reproducible run instructions.",
+    "answer": "The visuals must reconcile with tested metrics. A reviewer should be able to reproduce the fixture build and explain the coverage limits.",
+    "prereqs": [
+      "dbt_tests"
+    ],
+    "resources": [],
+    "checks": [
+      "I can explain the concepts above in my own words.",
+      "I completed the independent lab and checked the result.",
+      "I can explain my assumptions and one failure case."
+    ],
+    "practiceLinks": []
+  },
+  "windows": {
+    "id": "windows",
+    "title": "Window functions",
+    "subject": "sql",
+    "prereqs": [],
+    "summary": "Ranking, offsets, running totals and frames — one complete lesson.",
+    "learn": [
+      "Window mechanics: preserve row grain; understand PARTITION BY, ORDER BY and frames.",
+      "Ranking: choose ROW_NUMBER, RANK or DENSE_RANK; make tie handling deterministic.",
+      "Patterns: top-N per group, the Nth distinct value and the latest record per key.",
+      "Offsets: use LAG / LEAD and distinguish the previous observation from the previous calendar period.",
+      "Aggregate windows: totals, running totals and moving averages; choose ROWS or RANGE deliberately.",
+      "Value functions: FIRST_VALUE, LAST_VALUE and NTH_VALUE; avoid the default-frame trap.",
+      "Distribution functions: recognize NTILE, PERCENT_RANK and CUME_DIST.",
+      "Query structure: when windows run, how to combine them with aggregation and how to filter their results."
+    ],
+    "resources": [
+      {
+        "url": "../sql/sql-windows-recursion-clean.html#slide-3",
+        "title": "SQL beyond GROUP BY · Window functions",
+        "coverage": "Read lessons 3–19 and 22–23. The topics below are sections within this one lesson."
+      }
+    ],
+    "labs": [
+      {
+        "title": "Mechanics & grain",
+        "exercise": "On six orders, return both each order amount and the total for its customer. Explain why GROUP BY would change the result shape.",
+        "answer": "The window result retains six rows. A grouped customer total has one row per customer. Filtering a window result requires an outer query or a supported QUALIFY clause."
+      },
+      {
+        "title": "Ranking & deduplication",
+        "exercise": "Using salaries 100, 100, 90, 80, calculate all three ranking functions. Then keep the two highest distinct salaries. Finally, describe a rule for choosing one event when event IDs repeat.",
+        "answer": "Ordered by salary descending, ROW_NUMBER gives 1,2,3,4 (which tied row is first needs a tie-breaker); RANK gives 1,1,3,4; DENSE_RANK gives 1,1,2,3. For the top two distinct salaries use DENSE_RANK <= 2, returning both 100s and 90. Deduplicate events by event_id using an explicit version and tie-break rule."
+      },
+      {
+        "title": "LAG / LEAD",
+        "exercise": "Compare daily totals for Monday and Wednesday. Explain whether LAG gives Tuesday or Monday for the Wednesday row.",
+        "answer": "LAG returns the previous available row, Monday. Add a calendar spine if the business question requires Tuesday, and decide how to represent missing data."
+      },
+      {
+        "title": "Frames & running calculations",
+        "exercise": "Create two orders on the same day. Compare a running SUM using ROWS and the default peer-aware frame. Then fix a LAST_VALUE query that returns the current row rather than the final value.",
+        "answer": "Peer-aware frames include tied ordering values together. A deterministic ROWS ordering gives a row-by-row running total. A full-partition LAST_VALUE needs a frame ending at UNBOUNDED FOLLOWING."
+      }
+    ],
+    "practiceRule": "Work through the four mini-lab sections. For extra interview practice, use the links below and choose your own problems.",
+    "checks": [
+      "I completed all four lab parts and explained the expected results.",
+      "I can choose an appropriate function and explain its partition and ordering.",
+      "I can justify grain, ordering, tie handling and the frame in my solutions."
+    ],
+    "practiceLinks": [
+      {
+        "title": "DataLemur · SQL questions",
+        "url": "https://datalemur.com/questions",
+        "description": "Choose SQL and filter by the topic you want to practise."
+      },
+      {
+        "title": "LeetCode · SQL study plan",
+        "url": "https://leetcode.com/studyplan/top-sql-50/",
+        "description": "Browse SQL exercises and choose problems relevant to this lesson."
+      }
+    ]
+  }
+};
+const subjects = [
+  {
+    "id": "sql",
+    "title": "Advanced SQL",
+    "desc": "Broad, practical lessons. Each keeps the concepts, exercises and project connection together.",
+    "chapters": [
+      [
+        "analysis",
+        "Analytical SQL",
+        "Windows, recurring patterns and time analysis",
+        [
+          "windows",
+          "patterns",
+          "time"
+        ]
+      ],
+      [
+        "correctness",
+        "Query correctness & structure",
+        "Grain, aggregation, readable SQL and recursion",
+        [
+          "grain",
+          "aggregation",
+          "structure",
+          "recursion"
+        ]
+      ],
+      [
+        "data",
+        "Working with data",
+        "Nested records and reliable writes",
+        [
+          "json",
+          "writes"
+        ]
+      ]
+    ]
+  },
+  {
+    "id": "python",
+    "title": "Python basics & ingestion",
+    "desc": "Learn the language, work with files, then build and test a bounded loader.",
+    "chapters": [
+      [
+        "core",
+        "Python fundamentals",
+        "Values, collections and functions",
+        [
+          "py_core"
+        ]
+      ],
+      [
+        "files",
+        "Working with data",
+        "Files and streamed records",
+        [
+          "py_files"
+        ]
+      ],
+      [
+        "ingest",
+        "Reliable ingestion",
+        "Publication and testing",
+        [
+          "py_load",
+          "py_tests"
+        ]
+      ]
+    ]
+  },
+  {
+    "id": "model",
+    "title": "Data modeling",
+    "desc": "Choose the grain, tables and definitions that answer your business question.",
+    "chapters": [
+      [
+        "facts",
+        "Facts & measures",
+        "Question, grain and fact types",
+        [
+          "model_grain"
+        ]
+      ],
+      [
+        "dimensions",
+        "Dimensions & history",
+        "Keys, relationships and changes",
+        [
+          "model_dims"
+        ]
+      ],
+      [
+        "validate",
+        "Validate the design",
+        "Metric definitions and reconciliation",
+        [
+          "model_validate"
+        ]
+      ]
+    ]
+  },
+  {
+    "id": "dbt",
+    "title": "dbt & data quality",
+    "desc": "Turn the model into a reproducible, tested transformation project.",
+    "chapters": [
+      [
+        "models",
+        "Transform the data",
+        "Sources, staging and marts",
+        [
+          "dbt_models"
+        ]
+      ],
+      [
+        "tests",
+        "Verify the results",
+        "Tests and expected outcomes",
+        [
+          "dbt_tests"
+        ]
+      ]
+    ]
+  },
+  {
+    "id": "reporting",
+    "title": "Dashboards & delivery",
+    "desc": "Make the result understandable, useful and reproducible.",
+    "chapters": [
+      [
+        "delivery",
+        "Deliver the answer",
+        "Dashboard and project documentation",
+        [
+          "report"
+        ]
+      ]
+    ]
+  }
+];
+const milestones = [
+  {
+    "id": "sample",
+    "subject": "sql",
+    "name": "Explore & validate a small sample",
+    "description": "Use a provided offline fixture to understand event grain, remove duplicate IDs and check counts.",
+    "req": [
+      "grain",
+      "windows"
+    ],
+    "before": [],
+    "output": "A profile query, deduplication rule and checked sample counts.",
+    "checks": [
+      "The sample profile states the event grain.",
+      "Duplicate event IDs are handled by a documented rule.",
+      "The counts reconcile to the accepted sample."
+    ],
+    "scope": [
+      "Understand a small, provided GitHub-event fixture before writing an ingester.",
+      "Identify event grain, duplicates and missing fields.",
+      "Define the one question and the observations this sample can support."
+    ],
+    "tasks": [
+      [
+        "Inspect the fixture",
+        "List repositories, event types, timestamps and missing fields. State the input grain."
+      ],
+      [
+        "Profile the records",
+        "Count raw rows, distinct event IDs and activity per repository. Include a query that reveals duplicate IDs."
+      ],
+      [
+        "Choose a duplicate rule",
+        "Use a deterministic ordering rule for repeated IDs. Verify it with deliberately repeated sample rows."
+      ],
+      [
+        "Reconcile and explain",
+        "Compare accepted, duplicate and rejected counts. Save the query and a short explanation of sample coverage."
+      ]
+    ],
+    "files": "sample_profile.sql · sample_notes.md",
+    "boundary": "Use the supplied offline fixture here. API ingestion, orchestration and incremental refreshes come later."
+  },
+  {
+    "id": "ingester",
+    "subject": "python",
+    "name": "Build the bounded ingester",
+    "description": "Publish a fixed 24-hour sample from three repositories, with a manifest and a tiny offline fixture.",
+    "req": [
+      "py_core",
+      "py_files",
+      "py_load",
+      "py_tests"
+    ],
+    "before": [
+      "sample"
+    ],
+    "output": "A reproducible loader, fixture, manifest and passing tests.",
+    "checks": [
+      "The sampling rule and limits are recorded.",
+      "Reruns reproduce the same accepted records.",
+      "Validation and failure-path tests pass."
+    ],
+    "scope": [
+      "Create a reproducible sample for a fixed 24-hour UTC window and three public repositories.",
+      "Cap the retained sample at 100,000 events and record any truncation.",
+      "Validate, quarantine and publish data with a repeatable run command."
+    ],
+    "tasks": [
+      [
+        "Define the sample",
+        "Record the UTC interval, repositories, retained-event cap and deterministic selection rule."
+      ],
+      [
+        "Read and validate events",
+        "Read the hourly source files in bounded batches. Keep invalid records with their rejection reason."
+      ],
+      [
+        "Publish data and a manifest",
+        "Write the sample output, counts, coverage and sampling settings; retain a tiny offline fixture."
+      ],
+      [
+        "Prove safe reruns",
+        "Test valid and malformed inputs, transient failures and running the same sample twice. Document the command."
+      ]
+    ],
+    "files": "ingest.py · dataset.yml · fixture/ · tests/ · README.md",
+    "boundary": "Keep this loader bounded and local. A scheduler and a lakehouse are later extensions."
+  },
+  {
+    "id": "model",
+    "subject": "model",
+    "name": "Design the analytical model",
+    "description": "Define the event fact, dimensions and three metrics before implementing the transformations.",
+    "req": [
+      "model_grain",
+      "model_dims",
+      "model_validate"
+    ],
+    "before": [
+      "sample"
+    ],
+    "output": "A small schema, grain statements and metric definitions.",
+    "checks": [
+      "Each table has a defined grain and key.",
+      "The three metrics have explicit definitions.",
+      "The design passes the sample reconciliation checks."
+    ],
+    "scope": [
+      "Design one fact at the observed PR-event grain.",
+      "Choose repository, contributor and date dimensions.",
+      "Define the metrics and observation limits before implementation."
+    ],
+    "tasks": [
+      [
+        "State the grains",
+        "Write what one fact row and one row in each dimension represent; identify their keys."
+      ],
+      [
+        "Draw the small model",
+        "Show relationships and a deliberate rule for missing contributor or repository context."
+      ],
+      [
+        "Define the three metrics",
+        "Specify PR-event count, distinct observed contributors and merged/closed-event share, including bot filters and zero denominators."
+      ],
+      [
+        "Validate on the fixture",
+        "Trace a few records through the design. Reconcile counts and explain why the observed share is not an eventual PR merge rate."
+      ]
+    ],
+    "files": "model_diagram · grain_statements.md · metric_spec.md",
+    "boundary": "Use the first question to limit the model. Add historical dimension tracking only when a later requirement needs it."
+  },
+  {
+    "id": "marts",
+    "subject": "dbt",
+    "name": "Build tested analytical models",
+    "description": "Implement the design on DuckDB + dbt and verify it against the offline fixture.",
+    "req": [
+      "dbt_models",
+      "dbt_tests"
+    ],
+    "before": [
+      "ingester",
+      "model"
+    ],
+    "output": "Tested staging models and marts, with a reproducible build.",
+    "checks": [
+      "The fixture builds from a clean environment.",
+      "Keys, relationships and metric checks pass.",
+      "Known bad records produce useful test failures."
+    ],
+    "scope": [
+      "Implement the agreed design with DuckDB and dbt.",
+      "Build sources, staging, an event fact and the relevant dimensions.",
+      "Verify keys, relationships and the expected metric results."
+    ],
+    "tasks": [
+      [
+        "Set up the fixture build",
+        "Configure local sources and a documented clean-environment build command."
+      ],
+      [
+        "Create staging models",
+        "Cast fields, apply the duplicate rule and make rejected or missing values explicit."
+      ],
+      [
+        "Build facts and dimensions",
+        "Use ref dependencies and implement the grain and metric definitions from the model stage."
+      ],
+      [
+        "Add tests and run the build",
+        "Check uniqueness, required fields, relationships and known metric values. Show that a broken fixture fails clearly."
+      ]
+    ],
+    "files": "models/ · tests/ · dbt documentation · README build command",
+    "boundary": "Use simple materializations for the bounded sample. Production incremental strategies are a later step."
+  },
+  {
+    "id": "release",
+    "subject": "reporting",
+    "name": "Ship the first portfolio release",
+    "description": "Answer one question about observed PR activity across the three sampled repositories.",
+    "req": [
+      "report"
+    ],
+    "before": [
+      "marts"
+    ],
+    "output": "One dashboard, tested metrics and a clear README.",
+    "checks": [
+      "Dashboard values match tested query outputs.",
+      "The sampling limits are visible.",
+      "The README reproduces the fixture-based result."
+    ],
+    "scope": [
+      "Answer the GitHub activity question on one dashboard.",
+      "Make metric definitions and sample limitations visible.",
+      "Package a project that another person can reproduce and review."
+    ],
+    "tasks": [
+      [
+        "Choose a useful comparison",
+        "Compare activity and the defined merge/closed-event share across the three repositories."
+      ],
+      [
+        "Build and reconcile the visuals",
+        "Give measures clear names and units. Check every number against the tested queries."
+      ],
+      [
+        "Explain the result",
+        "State the sample window, cap, bot policy and limits on generalizing the findings."
+      ],
+      [
+        "Publish the project story",
+        "Include the diagram, setup/build commands, metric definitions and a short walkthrough in the README."
+      ]
+    ],
+    "files": "dashboard · README.md · metric definitions · reproducible fixture build",
+    "boundary": "Ship this small release first. Orchestration, portability and AI are later releases."
+  }
+];
+const $=s=>document.querySelector(s);
+const icon=n=>`<svg class="icon" aria-hidden="true"><use href="#i-${n}"/></svg>`;
+let view='topics',subject='sql',highlight=null;
+let done=new Set(['grain']),built=new Set(),checks=new Map(),buildChecks=new Map();
+let panel=null,panelTrail=[],rootOpener=null,toastTimer;
+const expandedAreas=new Set();
+const subjectBy=id=>subjects.find(s=>s.id===id),milestoneBy=id=>milestones.find(m=>m.id===id);
+const allIds=s=>s.chapters.flatMap(c=>c[3]);
+const known=id=>done.has(id)&&lessons[id].prereqs.every(known);
+const ready=m=>m.req.every(known)&&m.before.every(id=>built.has(id));
+const dependsOn=(id,target)=>lessons[id].prereqs.some(p=>p===target||dependsOn(p,target));
+const connections=id=>{const direct=milestones.filter(m=>m.req.includes(id));return direct.length?direct:milestones.filter(m=>m.req.some(r=>dependsOn(r,id)))};
+function notify(text){clearTimeout(toastTimer);$('#toast').textContent=text;$('#toast').hidden=false;toastTimer=setTimeout(()=>$('#toast').hidden=true,4000)}
+function learningButton(id){return `<button class="road-lesson" data-lesson="${id}"><span class="dot ${done.has(id)?'done':''}">${done.has(id)?'✓':''}</span><span class="grow">${lessons[id].title}</span>${icon('arrow')}</button>`}
+function areaLesson(id,index){const l=lessons[id];return `<button class="area-lesson ${id==='windows'&&!done.has(id)?'current':''}" data-lesson="${id}"><span class="lesson-order ${done.has(id)?'done':''}">${done.has(id)?'✓':String(index+1).padStart(2,'0')}</span><span class="grow"><span class="lesson-title">${l.title}</span></span>${icon('arrow')}</button>`}
+function topicView(){return `<header class="page-head"><h1>Learning areas</h1><p>Choose an area, then open a lesson. Learning material and practice links stay together in its side panel.</p></header><div class="area-grid">${subjects.map((s,i)=>{const ids=allIds(s),complete=ids.filter(id=>done.has(id)).length;return `<section class="area-card" id="area-${s.id}"><header class="area-head"><div class="row spread"><span class="eyebrow">Area ${String(i+1).padStart(2,'0')}</span><span class="small muted">${complete} / ${ids.length} complete</span></div><h2>${s.title}</h2><p>${s.desc}</p></header><div class="area-lessons">${ids.slice(0,4).map(areaLesson).join('')}${ids.length>4?`<details class="area-more" data-area="${s.id}" ${expandedAreas.has(s.id)?'open':''}><summary><span class="show-more">Show ${ids.length-4} more lessons</span><span class="show-less">Show fewer lessons</span></summary>${ids.slice(4).map((id,index)=>areaLesson(id,index+4)).join('')}</details>`:''}</div><footer class="area-foot"><button class="text-btn" data-road="${milestones.find(m=>m.subject===s.id).id}">See on roadmap ${icon('arrow')}</button></footer></section>`}).join('')}</div>`}
+function roadmapView(){return `<header class="page-head"><h1>Learning & portfolio</h1><p>Learn on the left. Build on the right. Open a lesson or stage without leaving this roadmap.</p></header><section class="road-intro"><p><strong>First release · GitHub activity</strong><br>A bounded sample, tested models and one useful dashboard.</p><span class="small muted">${built.size} of ${milestones.length} stages built</span></section><div class="road-headers"><div><h2>${icon('book')}Learning roadmap</h2><p>The lessons needed for each project stage.</p></div><div></div><div><h2>${icon('box')}Portfolio roadmap</h2><p>Open a stage for scope, prerequisites and tasks.</p></div></div><div id="road-rows">${milestones.map((m,i)=>{const isReady=ready(m),finished=built.has(m.id);return `<section class="road-row ${highlight===m.id?'highlight':''}" id="road-${m.id}"><article class="learn-card"><div class="row spread"><span class="eyebrow">${String(i+1).padStart(2,'0')}</span><span class="small muted">${m.req.filter(known).length} / ${m.req.length} learned</span></div><h3>${subjectBy(m.subject).title}</h3><div class="road-lessons">${m.req.map(learningButton).join('')}</div></article><div class="road-connector" aria-label="Knowledge contributes to this project stage">${icon('arrow')}</div><article class="project-card ${isReady||finished?'ready':''}"><div class="row spread"><span class="eyebrow">Stage ${i+1}</span><span class="badge ${isReady||finished?'':'neutral'}">${finished?'Built':isReady?'Ready to build':'Prerequisites needed'}</span></div><h3>${m.name}</h3><p>${m.description}</p><button class="btn ${isReady&&!finished?'primary':''}" data-build="${m.id}">Open stage ${icon('arrow')}</button></article></section>`}).join('')}</div><aside class="road-footnote"><strong>Interview practice and standalone skills still have a place.</strong><p>Lessons such as recursion can remain independent of the first portfolio release.</p><button class="text-btn" data-lesson="recursion">Open the recursion lesson ${icon('arrow')}</button></aside><p class="small muted" style="margin-top:16px">Illustrative learning sequence and sample progress. The live tracker is not connected.</p>`}
+function render(){document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.toggle('active',b.dataset.view===view);if(b.dataset.view===view)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current')});$('#main').innerHTML=view==='topics'?topicView():roadmapView()}
+function sectionTitle(n,title){return `<h3 class="section-title"><span class="section-number">${n}</span>${title}</h3>`}
+function lessonBody(l){const linked=connections(l.id);return `${l.prereqs.length?`<section class="panel-prereq"><p class="eyebrow">Learn first</p>${l.prereqs.map(learningButton).join('')}</section>`:''}<section class="lesson-section">${sectionTitle(1,'What to learn')}<ul class="learn-list">${l.learn.map(t=>`<li><span class="bullet">·</span><span>${t}</span></li>`).join('')}</ul>${l.resources.length?l.resources.map(r=>`<a class="resource" href="${r.url}" target="_blank" rel="noopener">${icon('book')}<span class="grow"><strong>${r.title}</strong><small>${r.coverage}</small></span>${icon('arrow')}</a>`).join(''):`<div class="resource inactive">${icon('book')}<span><strong>Learning material to add</strong><small>The concepts above define this lesson’s scope. A walkthrough would be added in the full roadmap.</small></span></div>`}</section><section class="lesson-section">${sectionTitle(2,'How to practise')}<p class="practice-intro">${l.practiceRule||'Complete the mini-lab and explain the result. Extra practice is labelled below.'}</p><article class="practice-card"><div class="row spread"><h3>Mini-lab</h3><span class="badge">Required</span></div>${l.labs?l.labs.map((lab,i)=>`<details class="lab-part" ${i===0?'open':''}><summary>Part ${i+1} · ${lab.title}</summary><p>${lab.exercise}</p><details><summary>Check the expected result</summary><p>${lab.answer}</p></details></details>`).join(''):`<p>${l.exercise}</p><details><summary>Check the expected result</summary><p>${l.answer}</p></details>`}</article>${l.practiceLinks.length?`<article class="practice-card practice-directory"><h3>Where to find more problems</h3><p>Choose your own questions. Track your problem-solving progress separately.</p>${l.practiceLinks.map(link=>`<a class="resource" href="${link.url}" target="_blank" rel="noopener"><span class="grow"><strong>${link.title}</strong><small>${link.description}</small></span>${icon('arrow')}</a>`).join('')}</article>`:''}</section><section class="lesson-section">${sectionTitle(3,'Portfolio connection')}${linked.length?linked.map(m=>`<article class="project-link"><h3>${m.name}</h3><p>${l.id==='windows'?'Use the ranking and deduplication part to choose one record per event ID and validate the sample. The other window patterns also prepare you for interviews.':m.description}</p><button class="text-btn" data-build="${m.id}">Open portfolio stage ${icon('arrow')}</button></article>`).join(''):`<div class="no-project">${l.noProject||l.optionalProject||'Standalone practice. This lesson is not required for the first portfolio release.'}</div>`}</section><section class="lesson-section">${sectionTitle(4,'Check your understanding')}<div class="checks">${l.checks.map((t,i)=>`<label><input type="checkbox" data-check="${i}" ${checks.get(l.id).has(i)?'checked':''} ${done.has(l.id)?'disabled':''}><span>${t}</span></label>`).join('')}</div></section>`}
+function stageBody(m){return `<section class="lesson-section">${sectionTitle(1,'Knowledge needed')}<p class="practice-intro">${m.req.filter(known).length} of ${m.req.length} required lessons learned. Open a lesson here to review or practise it.</p><div class="prereq-list">${m.req.map(learningButton).join('')}</div>${m.before.length?`<p class="eyebrow" style="margin-top:17px">Earlier portfolio work</p>${m.before.map(id=>`<button class="road-lesson" data-build="${id}"><span class="dot ${built.has(id)?'done':''}">${built.has(id)?'✓':''}</span><span class="grow">${milestoneBy(id).name}</span>${icon('arrow')}</button>`).join('')}`:''}</section><section class="lesson-section">${sectionTitle(2,'What this stage covers')}<ul class="scope-list">${m.scope.map(s=>`<li>${s}</li>`).join('')}</ul><p class="scope-note">${m.boundary}</p></section><section class="lesson-section">${sectionTitle(3,'What to do')}<ol class="task-list">${m.tasks.map(([title,detail])=>`<li><strong>${title}</strong><p>${detail}</p></li>`).join('')}</ol></section><section class="lesson-section">${sectionTitle(4,'Deliverable & completion')}<div class="deliverable-box"><strong>${m.output}</strong><p>Suggested files: ${m.files}</p></div><div class="checks">${m.checks.map((text,i)=>`<label><input type="checkbox" data-build-check="${i}" ${buildChecks.get(m.id).has(i)?'checked':''} ${!ready(m)||built.has(m.id)?'disabled':''}><span>${text}</span></label>`).join('')}</div>${!ready(m)?'<p class="small muted" style="margin-top:12px">Review the stage now. Finish its knowledge and earlier project prerequisites before marking it built.</p>':''}</section>`}
+function panelTitle(p){return p.kind==='lesson'?lessons[p.id].title:milestoneBy(p.id).name}
+function panelControls(){const ids=panel.kind==='lesson'?allIds(subjectBy(lessons[panel.id].subject)):milestones.map(m=>m.id),i=ids.indexOf(panel.id);return `<div class="panel-controls"><button class="panel-icon" data-adjacent="${ids[i-1]||''}" ${i===0?'disabled':''} aria-label="Previous ${panel.kind==='lesson'?'lesson':'stage'}" title="Previous ${panel.kind==='lesson'?'lesson':'stage'}"><span style="display:inline-flex;transform:rotate(180deg)">${icon('arrow')}</span></button><button class="panel-icon" data-adjacent="${ids[i+1]||''}" ${i===ids.length-1?'disabled':''} aria-label="Next ${panel.kind==='lesson'?'lesson':'stage'}" title="Next ${panel.kind==='lesson'?'lesson':'stage'}">${icon('arrow')}</button><button class="panel-icon close" data-close aria-label="Close side panel" title="Close (Esc)">${icon('close')}</button></div>`}
+function panelFooter(){if(panel.kind==='lesson'){const l=lessons[panel.id],set=checks.get(l.id);return `<p>${done.has(l.id)?'Completed in demo':set.size+' / '+l.checks.length+' checks confirmed'}<br>${l.prereqs.some(id=>!known(id))?'Finish the prerequisite lessons first.':'Learning updates portfolio readiness.'}</p><button class="btn primary" id="complete-lesson" ${done.has(l.id)||set.size!==l.checks.length||l.prereqs.some(id=>!known(id))?'disabled':''}>${done.has(l.id)?'Lesson complete':'Complete lesson'} ${icon('check')}</button>`}const m=milestoneBy(panel.id),set=buildChecks.get(m.id);return `<p>${built.has(m.id)?'Completed in demo':ready(m)?'Ready to build':'Prerequisites needed'}<br>Mark complete after building the deliverable.</p><button class="btn primary" id="complete-build" ${built.has(m.id)||!ready(m)||set.size!==m.checks.length?'disabled':''}>${built.has(m.id)?'Stage built':'Mark stage built'} ${icon('check')}</button>`}
+function renderPanel(scroll=0){const isLesson=panel.kind==='lesson',item=isLesson?lessons[panel.id]:milestoneBy(panel.id),parent=panelTrail.at(-1);const status=isLesson?(done.has(item.id)?'Completed':'Lesson'):(built.has(item.id)?'Built':ready(item)?'Ready to build':'Prerequisites needed');$('#detail-panel').innerHTML=`<div class="panel-shell"><header class="panel-head"><div class="row spread"><p class="eyebrow">${isLesson?subjectBy(item.subject).title:'Portfolio · Stage '+(milestones.indexOf(item)+1)}</p>${panelControls()}</div>${parent?`<button class="panel-context" data-parent>Related ${parent.kind==='lesson'?'lesson':'stage'}: ${panelTitle(parent)}</button>`:''}<h2 id="panel-title" tabindex="-1">${item.title||item.name}</h2><p class="panel-description">${isLesson?(item.summary||'Learn the concepts, practise them and check your understanding.'):item.description}</p><span class="badge ${status==='Prerequisites needed'?'neutral':''}">${status}</span></header><div class="panel-scroll">${isLesson?lessonBody(item):stageBody(item)}</div><footer class="panel-foot">${panelFooter()}</footer></div>`;$('.panel-scroll').scrollTop=scroll}
+function initializeChecks(kind,id){const map=kind==='lesson'?checks:buildChecks,complete=kind==='lesson'?done.has(id):built.has(id),item=kind==='lesson'?lessons[id]:milestoneBy(id);if(!map.has(id))map.set(id,new Set(complete?item.checks.map((_,i)=>i):[]))}
+function rememberOpener(){const el=document.activeElement;rootOpener={el,selector:el?.dataset.lesson?`#main [data-lesson="${el.dataset.lesson}"]`:el?.dataset.build?`#main [data-build="${el.dataset.build}"]`:null}}
+function openPanel(kind,id,{adjacent=false}={}){if(kind==='lesson'&&!lessons[id]||kind==='stage'&&!milestoneBy(id))return;const dialog=$('#detail-panel');if(dialog.open){if(panel.kind===kind&&panel.id===id)return;if(!adjacent){panelTrail.push({...panel,scroll:$('.panel-scroll').scrollTop});if(panelTrail.length>6)panelTrail.shift()}}else{rememberOpener();panelTrail=[]}panel={kind,id};initializeChecks(kind,id);renderPanel();if(!dialog.open){dialog.showModal();document.body.style.overflow='hidden'}$('#panel-title').focus({preventScroll:true})}
+function openLesson(id){openPanel('lesson',id)}
+function openBuild(id){openPanel('stage',id)}
+function closePanel(){if($('#detail-panel').open)$('#detail-panel').close()}
+function returnToParent(){const parent=panelTrail.pop();if(!parent)return;panel={kind:parent.kind,id:parent.id};renderPanel(parent.scroll);$('#panel-title').focus({preventScroll:true})}
+function refreshProgress(){const scroll=$('.panel-scroll').scrollTop,y=window.scrollY;render();window.scrollTo(0,y);renderPanel(scroll)}
+function updateFooter(){const active=document.activeElement;$('.panel-foot').innerHTML=panelFooter();if(active?.isConnected)active.focus({preventScroll:true})}
+function openSubject(id){closePanel();subject=id;view='topics';highlight=null;render();$('#area-'+id)?.scrollIntoView({block:'start',behavior:'instant'})}
+function openRoad(id=null){closePanel();view='roadmap';highlight=id;render();if(id)$('#road-'+id).scrollIntoView({block:'start',behavior:'instant'});else window.scrollTo({top:0,behavior:'instant'})}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b||b.disabled)return;
+ if(b.dataset.view){closePanel();view=b.dataset.view;highlight=null;render();window.scrollTo({top:0,behavior:'instant'})}
+ else if(b.dataset.subject)openSubject(b.dataset.subject);
+ else if(b.dataset.lesson)openLesson(b.dataset.lesson);
+ else if(b.dataset.road)openRoad(b.dataset.road);
+ else if(b.dataset.build)openBuild(b.dataset.build);
+ else if(b.hasAttribute('data-close'))closePanel();
+ else if(b.hasAttribute('data-parent'))returnToParent();
+ else if(b.dataset.adjacent)openPanel(panel.kind,b.dataset.adjacent,{adjacent:true});
+ else if(b.id==='complete-lesson'){const l=lessons[panel.id];if(checks.get(l.id).size!==l.checks.length||l.prereqs.some(id=>!known(id)))return;done.add(l.id);refreshProgress();$('#complete-lesson').focus({preventScroll:true});notify('Lesson complete. Portfolio readiness updated in the roadmap.')}
+ else if(b.id==='complete-build'){const m=milestoneBy(panel.id);if(!ready(m)||buildChecks.get(m.id).size!==m.checks.length)return;built.add(m.id);refreshProgress();notify('Stage built in the demo. Dependent stages updated.')}
+ else if(b.id==='reset'){closePanel();done=new Set(['grain']);built.clear();checks.clear();buildChecks.clear();panel=null;panelTrail=[];view='topics';subject='sql';highlight=null;expandedAreas.clear();render();window.scrollTo(0,0);notify('Demo reset. Real tracker data is not connected.')}});
+document.addEventListener('change',e=>{const el=e.target;
+ if(el.matches('[data-check]')){const set=checks.get(panel.id),n=Number(el.dataset.check);el.checked?set.add(n):set.delete(n);updateFooter()}
+ if(el.matches('[data-build-check]')){const set=buildChecks.get(panel.id),n=Number(el.dataset.buildCheck);el.checked?set.add(n):set.delete(n);updateFooter()}});
+document.addEventListener('toggle',e=>{if(e.target.matches?.('.area-more')&&e.target.isConnected){const id=e.target.dataset.area;e.target.open?expandedAreas.add(id):expandedAreas.delete(id)}},true);
+$('#detail-panel').addEventListener('close',()=>{document.body.style.overflow='';panel=null;panelTrail=[];if(rootOpener?.el?.isConnected)rootOpener.el.focus({preventScroll:true});else if(rootOpener?.selector)document.querySelector(rootOpener.selector)?.focus({preventScroll:true})});
+$('#detail-panel').addEventListener('click',e=>{if(e.target===$('#detail-panel')){const r=e.target.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right)closePanel()}});
+render();
+
+</script></body></html>

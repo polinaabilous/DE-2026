@@ -1,0 +1,1691 @@
+{
+  "source_url": "https://datalemur.com/questions",
+  "extracted_at": "2026-10-06T20:11:11.065Z",
+  "method": "Isolated signed-out Chrome via DevTools Protocol; each of 22 tag controls clicked and displayed problem URLs compared with the same public list-questions response used by the site.",
+  "coverage": {
+    "scope": "All problems returned by the public signed-out catalog, across all categories. No private session or premium problem content accessed.",
+    "problem_count": 106,
+    "sql_problem_count": 54,
+    "tag_count": 22,
+    "problems_without_returned_tags": 52,
+    "badge_count_note": "Sidebar badges can exceed the number of problems returned by the corresponding public filter. Those additional problem identities and tag memberships were not returned, so this export does not claim to cover the full premium catalog.",
+    "empty_tags_note": "An empty tags array means no membership was returned by any available public tag filter; it does not infer the problem has no topics."
+  },
+  "tags": [
+    {
+      "id": "fce2dbd6-c265-4ad2-bbb1-5ca66326320a",
+      "name": "Distinct and Unique Handling",
+      "site_badge_count": 23,
+      "accessible_count": 15,
+      "problem_slugs": [
+        "amazon-shopping-spree",
+        "consecutive-filing-years",
+        "duplicate-job-listings",
+        "histogram-users-purchases",
+        "marketing-touch-streak",
+        "patient-call-history",
+        "prime-warehouse-storage",
+        "reactivated-users",
+        "second-day-confirmation",
+        "senior-managers-reportees",
+        "signup-confirmation-rate",
+        "sql-ibm-db2-product-analytics",
+        "supercloud-customer",
+        "tesla-unfinished-parts",
+        "user-retention"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "6552354e-5117-4d9d-9afe-c56ef33170da",
+      "name": "Aggregate Functions",
+      "site_badge_count": 84,
+      "accessible_count": 39,
+      "problem_slugs": [
+        "alibaba-compressed-mean",
+        "alibaba-compressed-mode",
+        "card-launch-success",
+        "cards-issued-difference",
+        "click-through-rate",
+        "completed-trades",
+        "consecutive-filing-years",
+        "duplicate-job-listings",
+        "frequent-callers",
+        "histogram-users-purchases",
+        "international-call-percentage",
+        "long-calls-growth",
+        "matching-skills",
+        "median-search-freq",
+        "non-profitable-drugs",
+        "odd-even-measurements",
+        "patient-call-history",
+        "pizzas-topping-cost",
+        "prime-warehouse-storage",
+        "reactivated-users",
+        "repeated-payments",
+        "rolling-average-tweets",
+        "senior-managers-reportees",
+        "signup-confirmation-rate",
+        "spotify-streaming-history",
+        "sql-average-post-hiatus-1",
+        "sql-avg-review-ratings",
+        "sql-bloomberg-stock-min-max-1",
+        "sql-highest-grossing",
+        "sql-histogram-tweets",
+        "sql-ibm-db2-product-analytics",
+        "sql-second-highest-salary",
+        "supercloud-customer",
+        "teams-power-users",
+        "time-spent-snaps",
+        "total-drugs-sales",
+        "total-utilization-time",
+        "uncategorized-calls-percentage",
+        "user-retention"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "8ad0bf81-b09d-4e0d-82f8-ec4fff7f7f1e",
+      "name": "Set Operations",
+      "site_badge_count": 16,
+      "accessible_count": 3,
+      "problem_slugs": [
+        "best-selling-products",
+        "pizzas-topping-cost",
+        "sql-page-with-no-likes"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "72dd2ecf-0146-4898-b5cc-3d231924e3e3",
+      "name": "Data Type Conversion",
+      "site_badge_count": 29,
+      "accessible_count": 17,
+      "problem_slugs": [
+        "alibaba-compressed-mean",
+        "amazon-shopping-spree",
+        "card-launch-success",
+        "consecutive-filing-years",
+        "long-calls-growth",
+        "median-search-freq",
+        "odd-even-measurements",
+        "patient-call-history",
+        "pizzas-topping-cost",
+        "prime-warehouse-storage",
+        "reactivated-users",
+        "repeated-payments",
+        "signup-confirmation-rate",
+        "sql-bloomberg-stock-min-max-1",
+        "total-drugs-sales",
+        "total-utilization-time",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "8fbbb42d-2279-47e2-9968-94d8147dd86e",
+      "name": "Null Handling",
+      "site_badge_count": 7,
+      "accessible_count": 5,
+      "problem_slugs": [
+        "sql-ibm-db2-product-analytics",
+        "sql-page-with-no-likes",
+        "tesla-unfinished-parts",
+        "uncategorized-calls-percentage",
+        "updated-status"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "03d9e530-48d5-4031-9f25-5c36ed07e210",
+      "name": "Percentage Calculations",
+      "site_badge_count": 20,
+      "accessible_count": 8,
+      "problem_slugs": [
+        "alibaba-compressed-mean",
+        "click-through-rate",
+        "international-call-percentage",
+        "long-calls-growth",
+        "signup-confirmation-rate",
+        "time-spent-snaps",
+        "uncategorized-calls-percentage",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "0970acb9-ebe0-4f94-9dcf-22540e401f40",
+      "name": "Array Functions",
+      "site_badge_count": 3,
+      "accessible_count": 1,
+      "problem_slugs": [
+        "pizzas-topping-cost"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "707fdf5f-8fd9-437c-bf95-70e714e5ea4f",
+      "name": "Ace the Data Science Interview",
+      "site_badge_count": 28,
+      "accessible_count": 16,
+      "problem_slugs": [
+        "click-through-rate",
+        "completed-trades",
+        "duplicate-job-listings",
+        "histogram-users-purchases",
+        "laptop-mobile-viewership",
+        "odd-even-measurements",
+        "reactivated-users",
+        "rolling-average-tweets",
+        "sql-average-post-hiatus-1",
+        "sql-avg-review-ratings",
+        "sql-highest-grossing",
+        "sql-histogram-tweets",
+        "sql-third-transaction",
+        "time-spent-snaps",
+        "user-retention",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "ed9cb5ca-81b8-45c6-8c24-3ae0508e2a1f",
+      "name": "String Functions",
+      "site_badge_count": 5,
+      "accessible_count": 2,
+      "problem_slugs": [
+        "pizzas-topping-cost",
+        "total-drugs-sales"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "5076d69a-7323-4484-8914-b15386b683b6",
+      "name": "Date-Time Functions",
+      "site_badge_count": 30,
+      "accessible_count": 19,
+      "problem_slugs": [
+        "amazon-shopping-spree",
+        "card-launch-success",
+        "consecutive-filing-years",
+        "long-calls-growth",
+        "marketing-touch-streak",
+        "patient-call-history",
+        "reactivated-users",
+        "repeated-payments",
+        "second-day-confirmation",
+        "spotify-streaming-history",
+        "sql-average-post-hiatus-1",
+        "sql-avg-review-ratings",
+        "sql-bloomberg-stock-min-max-1",
+        "sql-highest-grossing",
+        "sql-histogram-tweets",
+        "teams-power-users",
+        "total-utilization-time",
+        "user-retention",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "ad7c2d68-b84f-41a2-a4fe-0559e4f3a2a1",
+      "name": "Control Flow Functions",
+      "site_badge_count": 1,
+      "accessible_count": 1,
+      "problem_slugs": [
+        "pizzas-topping-cost"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "ffb233e6-bfbd-4286-9906-b9e83447da66",
+      "name": "User Behavior",
+      "site_badge_count": 14,
+      "accessible_count": 9,
+      "problem_slugs": [
+        "amazon-shopping-spree",
+        "click-through-rate",
+        "marketing-touch-streak",
+        "reactivated-users",
+        "second-day-confirmation",
+        "signup-confirmation-rate",
+        "sql-avg-review-ratings",
+        "updated-status",
+        "user-retention"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "ea764b84-acfb-494b-b74f-2449e6659a45",
+      "name": "Common Table Expressions (CTE) or Subquery",
+      "site_badge_count": 40,
+      "accessible_count": 20,
+      "problem_slugs": [
+        "best-selling-products",
+        "card-launch-success",
+        "frequent-callers",
+        "long-calls-growth",
+        "median-search-freq",
+        "odd-even-measurements",
+        "patient-call-history",
+        "pizzas-topping-cost",
+        "prime-warehouse-storage",
+        "reactivated-users",
+        "repeated-payments",
+        "sql-bloomberg-stock-min-max-1",
+        "sql-ibm-db2-product-analytics",
+        "sql-second-highest-salary",
+        "sql-swapped-food-delivery",
+        "sql-third-transaction",
+        "sql-top-three-salaries",
+        "supercloud-customer",
+        "uncategorized-calls-percentage",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "800d335b-50db-4dae-a1f3-d95921aa77b5",
+      "name": "Window Functions",
+      "site_badge_count": 38,
+      "accessible_count": 16,
+      "problem_slugs": [
+        "best-selling-products",
+        "card-launch-success",
+        "consecutive-filing-years",
+        "histogram-users-purchases",
+        "long-calls-growth",
+        "marketing-touch-streak",
+        "odd-even-measurements",
+        "patient-call-history",
+        "repeated-payments",
+        "rolling-average-tweets",
+        "sql-bloomberg-stock-min-max-1",
+        "sql-highest-grossing",
+        "sql-third-transaction",
+        "sql-top-three-salaries",
+        "total-utilization-time",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "79a93416-9d00-462f-bd11-4348c9e0c1b2",
+      "name": "Data Generation Functions",
+      "site_badge_count": 1,
+      "accessible_count": 0,
+      "problem_slugs": [],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "05018419-073f-48c2-9cc9-253a7cf3a7bd",
+      "name": "Joins",
+      "site_badge_count": 12,
+      "accessible_count": 9,
+      "problem_slugs": [
+        "international-call-percentage",
+        "pizzas-topping-cost",
+        "signup-confirmation-rate",
+        "sql-ibm-db2-product-analytics",
+        "sql-top-three-salaries",
+        "sql-well-paid-employees",
+        "supercloud-customer",
+        "time-spent-snaps",
+        "updated-status"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "c21d83d3-f622-498c-a907-1ee0fac4678f",
+      "name": "Existence Check",
+      "site_badge_count": 9,
+      "accessible_count": 5,
+      "problem_slugs": [
+        "alibaba-compressed-mode",
+        "pizzas-topping-cost",
+        "reactivated-users",
+        "senior-managers-reportees",
+        "sql-page-with-no-likes"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "5c70d40d-57c1-454c-96b6-24296d2dd746",
+      "name": "Mathematical Functions",
+      "site_badge_count": 20,
+      "accessible_count": 9,
+      "problem_slugs": [
+        "alibaba-compressed-mean",
+        "click-through-rate",
+        "international-call-percentage",
+        "median-search-freq",
+        "prime-warehouse-storage",
+        "signup-confirmation-rate",
+        "time-spent-snaps",
+        "total-drugs-sales",
+        "yoy-growth-rate"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "966ba1a1-5c5e-4d27-9b73-988065940a81",
+      "name": "Conditional Expression",
+      "site_badge_count": 39,
+      "accessible_count": 19,
+      "problem_slugs": [
+        "alibaba-compressed-mode",
+        "best-selling-products",
+        "card-launch-success",
+        "click-through-rate",
+        "frequent-callers",
+        "international-call-percentage",
+        "long-calls-growth",
+        "non-profitable-drugs",
+        "patient-call-history",
+        "pizzas-topping-cost",
+        "reactivated-users",
+        "repeated-payments",
+        "signup-confirmation-rate",
+        "sql-average-post-hiatus-1",
+        "sql-second-highest-salary",
+        "sql-third-transaction",
+        "sql-top-three-salaries",
+        "sql-well-paid-employees",
+        "updated-status"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "b59f2adb-6a57-41f1-ae44-c0ec926949b6",
+      "name": "Arithmetic Operators",
+      "site_badge_count": 4,
+      "accessible_count": 4,
+      "problem_slugs": [
+        "patient-call-history",
+        "sql-swapped-food-delivery",
+        "sql-well-paid-employees",
+        "uncategorized-calls-percentage"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "aa09b484-ce90-4b44-9ea8-80631d9e6142",
+      "name": "Top N Results",
+      "site_badge_count": 12,
+      "accessible_count": 6,
+      "problem_slugs": [
+        "best-selling-products",
+        "completed-trades",
+        "sql-highest-grossing",
+        "sql-top-three-salaries",
+        "teams-power-users",
+        "top-profitable-drugs"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    },
+    {
+      "id": "e7bc8772-1b58-446d-88c5-c7895c723e85",
+      "name": "Conditional Logic",
+      "site_badge_count": 30,
+      "accessible_count": 11,
+      "problem_slugs": [
+        "click-through-rate",
+        "final-account-balance",
+        "international-call-percentage",
+        "laptop-mobile-viewership",
+        "odd-even-measurements",
+        "prime-warehouse-storage",
+        "reactivated-users",
+        "sql-ibm-db2-product-analytics",
+        "sql-swapped-food-delivery",
+        "time-spent-snaps",
+        "updated-status"
+      ],
+      "validation": "browser filter rows equal public catalog response"
+    }
+  ],
+  "problems": [
+    {
+      "id": 16,
+      "title": "Histogram of Tweets",
+      "company": "Twitter",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-histogram-tweets",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Date-Time Functions"
+      ]
+    },
+    {
+      "id": 62,
+      "title": "Data Science Skills",
+      "company": "LinkedIn",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/matching-skills",
+      "tags": [
+        "Aggregate Functions"
+      ]
+    },
+    {
+      "id": 31,
+      "title": "Page With No Likes",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-page-with-no-likes",
+      "tags": [
+        "Set Operations",
+        "Null Handling",
+        "Existence Check"
+      ]
+    },
+    {
+      "id": 60,
+      "title": "Unfinished Parts",
+      "company": "Tesla",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/tesla-unfinished-parts",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Null Handling"
+      ]
+    },
+    {
+      "id": 14,
+      "title": "Laptop vs. Mobile Viewership",
+      "company": "NY Times",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/laptop-mobile-viewership",
+      "tags": [
+        "Ace the Data Science Interview",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 105,
+      "title": "Coin Fairness Test",
+      "company": "Facebook",
+      "category": "Statistics",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/coin-fairness-test",
+      "tags": []
+    },
+    {
+      "id": 181,
+      "title": "Precision/Recall Tradeoff",
+      "company": "BCG Gamma",
+      "category": "Machine Learning",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/precision-recall-tradeoff",
+      "tags": []
+    },
+    {
+      "id": 32,
+      "title": "Average Post Hiatus (Part 1)",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-average-post-hiatus-1",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 46,
+      "title": "Teams Power Users",
+      "company": "Microsoft",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/teams-power-users",
+      "tags": [
+        "Aggregate Functions",
+        "Date-Time Functions",
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 151,
+      "title": "4 Rolls To 4",
+      "company": "Visa",
+      "category": "Statistics",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/4-rolls-to-4",
+      "tags": []
+    },
+    {
+      "id": 359,
+      "title": "Base 13 Conversion",
+      "company": "Capital One",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-base-13-conversion",
+      "tags": []
+    },
+    {
+      "id": 354,
+      "title": "Same Stripes",
+      "company": "ServiceNow",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-same-stripes",
+      "tags": []
+    },
+    {
+      "id": 317,
+      "title": "Factorial Formula",
+      "company": "Microsoft",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-factorial-formula",
+      "tags": []
+    },
+    {
+      "id": 299,
+      "title": "Intersection of Two Lists",
+      "company": "Amazon",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-intersection-of-two-lists",
+      "tags": []
+    },
+    {
+      "id": 378,
+      "title": "Another One",
+      "company": "Spotify",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-add-another-one",
+      "tags": []
+    },
+    {
+      "id": 365,
+      "title": "Weakest Strong Link",
+      "company": "Intuit",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-weakest-strong-link",
+      "tags": []
+    },
+    {
+      "id": 311,
+      "title": "Fizz Buzz Sum",
+      "company": "Google",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-fizz-buzz-sum",
+      "tags": []
+    },
+    {
+      "id": 367,
+      "title": "Compound Interest",
+      "company": "Fintech",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-compound-interest",
+      "tags": []
+    },
+    {
+      "id": 337,
+      "title": "Triangular Sum",
+      "company": "TikTok",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-triangular-sum-of-an-array",
+      "tags": []
+    },
+    {
+      "id": 17,
+      "title": "Duplicate Job Listings",
+      "company": "LinkedIn",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/duplicate-job-listings",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Ace the Data Science Interview"
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Cities With Completed Trades",
+      "company": "Robinhood",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/completed-trades",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 314,
+      "title": "Contains Duplicate",
+      "company": "Apple",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-contains-duplicate",
+      "tags": []
+    },
+    {
+      "id": 347,
+      "title": "Roman to Integer",
+      "company": "Palantir",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-roman-to-integer",
+      "tags": []
+    },
+    {
+      "id": 346,
+      "title": "Counting Letters In Numbers",
+      "company": "Tesla",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-counting-letters-in-numbers",
+      "tags": []
+    },
+    {
+      "id": 33,
+      "title": "Average Review Ratings",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-avg-review-ratings",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "User Behavior"
+      ]
+    },
+    {
+      "id": 331,
+      "title": "Well Paid Employees",
+      "company": "FAANG",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-well-paid-employees",
+      "tags": [
+        "Joins",
+        "Conditional Expression",
+        "Arithmetic Operators"
+      ]
+    },
+    {
+      "id": 66,
+      "title": "Final Account Balance",
+      "company": "PayPal",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/final-account-balance",
+      "tags": [
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 381,
+      "title": "Is Anagram?",
+      "company": "Workday",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-is-anagram",
+      "tags": []
+    },
+    {
+      "id": 334,
+      "title": "Pascals Triangle",
+      "company": "Uber",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-pascals-triangle",
+      "tags": []
+    },
+    {
+      "id": 13,
+      "title": "App Click-through Rate (CTR)",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/click-through-rate",
+      "tags": [
+        "Aggregate Functions",
+        "Percentage Calculations",
+        "Ace the Data Science Interview",
+        "User Behavior",
+        "Mathematical Functions",
+        "Conditional Expression",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 55,
+      "title": "Second Day Confirmation",
+      "company": "TikTok",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/second-day-confirmation",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Date-Time Functions",
+        "User Behavior"
+      ]
+    },
+    {
+      "id": 343,
+      "title": "Is Palindrome",
+      "company": "Spotify",
+      "category": "Python",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/python-palindrome",
+      "tags": []
+    },
+    {
+      "id": 330,
+      "title": "IBM db2 Product Analytics",
+      "company": "IBM",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/sql-ibm-db2-product-analytics",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Null Handling",
+        "Common Table Expressions (CTE) or Subquery",
+        "Joins",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 175,
+      "title": "Cards Issued Difference",
+      "company": "JPMorgan",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/cards-issued-difference",
+      "tags": [
+        "Aggregate Functions"
+      ]
+    },
+    {
+      "id": 171,
+      "title": "Compressed Mean",
+      "company": "Alibaba",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/alibaba-compressed-mean",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Percentage Calculations",
+        "Mathematical Functions"
+      ]
+    },
+    {
+      "id": 176,
+      "title": "Pharmacy Analytics (Part 1)",
+      "company": "CVS Health",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/top-profitable-drugs",
+      "tags": [
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 177,
+      "title": "Pharmacy Analytics (Part 2)",
+      "company": "CVS Health",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/non-profitable-drugs",
+      "tags": [
+        "Aggregate Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 178,
+      "title": "Pharmacy Analytics (Part 3)",
+      "company": "CVS Health",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/total-drugs-sales",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "String Functions",
+        "Mathematical Functions"
+      ]
+    },
+    {
+      "id": 179,
+      "title": "Assumptions of Linear Regression",
+      "company": "McKinsey",
+      "category": "Machine Learning",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/assumptions-linear-regression",
+      "tags": []
+    },
+    {
+      "id": 191,
+      "title": "Patient Support Analysis (Part 1)",
+      "company": "UnitedHealth",
+      "category": "SQL",
+      "difficulty": "Easy",
+      "url": "https://datalemur.com/questions/frequent-callers",
+      "tags": [
+        "Aggregate Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 249,
+      "title": "Lazy Movie Raters",
+      "company": "Netflix",
+      "category": "Probability",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/netflix-interview-lazy-raters",
+      "tags": []
+    },
+    {
+      "id": 25,
+      "title": "User's Third Transaction",
+      "company": "Uber",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-third-transaction",
+      "tags": [
+        "Ace the Data Science Interview",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 327,
+      "title": "Second Highest Salary",
+      "company": "FAANG",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-second-highest-salary",
+      "tags": [
+        "Aggregate Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Sending vs. Opening Snaps",
+      "company": "Snapchat",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/time-spent-snaps",
+      "tags": [
+        "Aggregate Functions",
+        "Percentage Calculations",
+        "Ace the Data Science Interview",
+        "Joins",
+        "Mathematical Functions",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 20,
+      "title": "Tweets' Rolling Averages",
+      "company": "Twitter",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/rolling-average-tweets",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Window Functions"
+      ]
+    },
+    {
+      "id": 99,
+      "title": "Consecutive Fives",
+      "company": "Akuna Capital",
+      "category": "Statistics",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/consecutive-fives",
+      "tags": []
+    },
+    {
+      "id": 19,
+      "title": "Highest-Grossing Items",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-highest-grossing",
+      "tags": [
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "Window Functions",
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 328,
+      "title": "Top Three Salaries",
+      "company": "FAANG",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-top-three-salaries",
+      "tags": [
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Joins",
+        "Conditional Expression",
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 52,
+      "title": "Signup Activation Rate",
+      "company": "TikTok",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/signup-confirmation-rate",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Percentage Calculations",
+        "User Behavior",
+        "Joins",
+        "Mathematical Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 57,
+      "title": "Spotify Streaming History",
+      "company": "Spotify",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/spotify-streaming-history",
+      "tags": [
+        "Aggregate Functions",
+        "Date-Time Functions"
+      ]
+    },
+    {
+      "id": 384,
+      "title": "Longest Consecutive Sequence",
+      "company": "FAANG",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-longest-consecutive-sequence",
+      "tags": []
+    },
+    {
+      "id": 376,
+      "title": "Looping Number",
+      "company": "Fintech",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-looping-number",
+      "tags": []
+    },
+    {
+      "id": 370,
+      "title": "Gift Card Satisfaction",
+      "company": "FAANG",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-gift-card-satisfaction",
+      "tags": []
+    },
+    {
+      "id": 341,
+      "title": "Matrix Rotation",
+      "company": "Salesforce",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-martix-rotation",
+      "tags": []
+    },
+    {
+      "id": 340,
+      "title": "Clock-wise Matrix Rotation",
+      "company": "Adobe",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-clock-wise-matrix-rotation",
+      "tags": []
+    },
+    {
+      "id": 360,
+      "title": "Min Amplitude",
+      "company": "Google",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-min-amplitude",
+      "tags": []
+    },
+    {
+      "id": 355,
+      "title": "Average Subarray",
+      "company": "Walmart",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-average-subarray",
+      "tags": []
+    },
+    {
+      "id": 356,
+      "title": "k-Radius Average",
+      "company": "Databricks",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-k-radius-average",
+      "tags": []
+    },
+    {
+      "id": 353,
+      "title": "Idle GPU Days",
+      "company": "FAANG",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-idle-gpu-days",
+      "tags": []
+    },
+    {
+      "id": 363,
+      "title": "Hill Climbing",
+      "company": "Swiggy",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-hill-climbing",
+      "tags": []
+    },
+    {
+      "id": 361,
+      "title": "Video Ads Insertion",
+      "company": "Facebook",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-video-ads-insertion",
+      "tags": []
+    },
+    {
+      "id": 351,
+      "title": "Spiral Matrix",
+      "company": "Walmart",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-spiral-matrix",
+      "tags": []
+    },
+    {
+      "id": 362,
+      "title": "Data Conference Attendees",
+      "company": "FAANG",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-data-conference-attendees",
+      "tags": []
+    },
+    {
+      "id": 201,
+      "title": "Supercloud Customer",
+      "company": "Microsoft",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/supercloud-customer",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Joins"
+      ]
+    },
+    {
+      "id": 211,
+      "title": "Real Estate Modelling",
+      "company": "Blackstone",
+      "category": "Machine Learning",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/real-estate-modelling",
+      "tags": []
+    },
+    {
+      "id": 382,
+      "title": "Most Popular Integers",
+      "company": "Google",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-most-popular-integers",
+      "tags": []
+    },
+    {
+      "id": 319,
+      "title": "Factorial Trailing Zeroes",
+      "company": "Microsoft",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-factorial-trailing-zeroes",
+      "tags": []
+    },
+    {
+      "id": 368,
+      "title": "Generate Fractions",
+      "company": "Blackstone",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-generate-fractions",
+      "tags": []
+    },
+    {
+      "id": 301,
+      "title": "Max Product of Three Numbers",
+      "company": "D.E. Shaw",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-maximum-product-three-numbers",
+      "tags": []
+    },
+    {
+      "id": 350,
+      "title": "Two Sum",
+      "company": "Amazon",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-two-sum",
+      "tags": []
+    },
+    {
+      "id": 338,
+      "title": "Two Sum (Part 2)",
+      "company": "Amazon",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-two-sum-2",
+      "tags": []
+    },
+    {
+      "id": 339,
+      "title": "Two Sum (Part 3)",
+      "company": "Amazon",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-two-sum-3",
+      "tags": []
+    },
+    {
+      "id": 308,
+      "title": "Pearson Correlation Coefficient",
+      "company": "AQR",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-pearson-correlation-coefficient",
+      "tags": []
+    },
+    {
+      "id": 309,
+      "title": "Largest Contiguous Subarray Sum",
+      "company": "Akuna Capital",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-largest-contiguous-subarray-sum",
+      "tags": []
+    },
+    {
+      "id": 101,
+      "title": "Biased Coin?",
+      "company": "D.E. Shaw",
+      "category": "Statistics",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/biased-coin",
+      "tags": []
+    },
+    {
+      "id": 7,
+      "title": "Odd and Even Measurements",
+      "company": "Google",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/odd-even-measurements",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Ace the Data Science Interview",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 333,
+      "title": "Swapped Food Delivery",
+      "company": "Zomato",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-swapped-food-delivery",
+      "tags": [
+        "Common Table Expressions (CTE) or Subquery",
+        "Arithmetic Operators",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 364,
+      "title": "Coin Change",
+      "company": "Amazon",
+      "category": "Python",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/python-coin-change",
+      "tags": []
+    },
+    {
+      "id": 272,
+      "title": "FAANG Stock Min-Max (Part 1)",
+      "company": "Bloomberg",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/sql-bloomberg-stock-min-max-1",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions"
+      ]
+    },
+    {
+      "id": 45,
+      "title": "Best-Selling Product",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/best-selling-products",
+      "tags": [
+        "Set Operations",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression",
+        "Top N Results"
+      ]
+    },
+    {
+      "id": 58,
+      "title": "User Shopping Sprees",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/amazon-shopping-spree",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "User Behavior"
+      ]
+    },
+    {
+      "id": 29,
+      "title": "Histogram of Users and Purchases",
+      "company": "Walmart",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/histogram-users-purchases",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Window Functions"
+      ]
+    },
+    {
+      "id": 172,
+      "title": "Compressed Mode",
+      "company": "Alibaba",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/alibaba-compressed-mode",
+      "tags": [
+        "Aggregate Functions",
+        "Existence Check",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 174,
+      "title": "Card Launch Success",
+      "company": "JPMorgan",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/card-launch-success",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 189,
+      "title": "International Call Percentage",
+      "company": "Verizon",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/international-call-percentage",
+      "tags": [
+        "Aggregate Functions",
+        "Percentage Calculations",
+        "Joins",
+        "Mathematical Functions",
+        "Conditional Expression",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 192,
+      "title": "Patient Support Analysis (Part 2)",
+      "company": "UnitedHealth",
+      "category": "SQL",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/uncategorized-calls-percentage",
+      "tags": [
+        "Aggregate Functions",
+        "Null Handling",
+        "Percentage Calculations",
+        "Common Table Expressions (CTE) or Subquery",
+        "Arithmetic Operators"
+      ]
+    },
+    {
+      "id": 210,
+      "title": "Connection Request Spam",
+      "company": "LinkedIn",
+      "category": "Machine Learning",
+      "difficulty": "Medium",
+      "url": "https://datalemur.com/questions/connection-request-spam",
+      "tags": []
+    },
+    {
+      "id": 2,
+      "title": "Active User Retention",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/user-retention",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "User Behavior"
+      ]
+    },
+    {
+      "id": 11,
+      "title": "Y-on-Y Growth Rate",
+      "company": "Wayfair",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/yoy-growth-rate",
+      "tags": [
+        "Data Type Conversion",
+        "Percentage Calculations",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Mathematical Functions"
+      ]
+    },
+    {
+      "id": 38,
+      "title": "Maximize Prime Item Inventory",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/prime-warehouse-storage",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Common Table Expressions (CTE) or Subquery",
+        "Mathematical Functions",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 27,
+      "title": "Median Google Search Frequency",
+      "company": "Google",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/median-search-freq",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Common Table Expressions (CTE) or Subquery",
+        "Mathematical Functions"
+      ]
+    },
+    {
+      "id": 51,
+      "title": "Advertiser Status",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/updated-status",
+      "tags": [
+        "Null Handling",
+        "User Behavior",
+        "Joins",
+        "Conditional Expression",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 335,
+      "title": "Word Search",
+      "company": "Apple",
+      "category": "Python",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/python-word-search",
+      "tags": []
+    },
+    {
+      "id": 87,
+      "title": "Consecutive Filing Years",
+      "company": "Intuit",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/consecutive-filing-years",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Window Functions"
+      ]
+    },
+    {
+      "id": 89,
+      "title": "Marketing Touch Streak",
+      "company": "Snowflake",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/marketing-touch-streak",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Date-Time Functions",
+        "User Behavior",
+        "Window Functions"
+      ]
+    },
+    {
+      "id": 110,
+      "title": "3-Topping Pizzas",
+      "company": "McKinsey",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/pizzas-topping-cost",
+      "tags": [
+        "Aggregate Functions",
+        "Set Operations",
+        "Data Type Conversion",
+        "Array Functions",
+        "String Functions",
+        "Control Flow Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Joins",
+        "Existence Check",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 115,
+      "title": "Product vs. Square",
+      "company": "Facebook",
+      "category": "Statistics",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/product-vs-square",
+      "tags": []
+    },
+    {
+      "id": 180,
+      "title": "Modeling User Churn",
+      "company": "Robinhood",
+      "category": "Machine Learning",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/modeling-user-churn",
+      "tags": []
+    },
+    {
+      "id": 193,
+      "title": "Patient Support Analysis (Part 3)",
+      "company": "UnitedHealth",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/patient-call-history",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression",
+        "Arithmetic Operators"
+      ]
+    },
+    {
+      "id": 199,
+      "title": "Patient Support Analysis (Part 4)",
+      "company": "UnitedHealth",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/long-calls-growth",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Percentage Calculations",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 103,
+      "title": "Repeated Payments",
+      "company": "Stripe",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/repeated-payments",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Common Table Expressions (CTE) or Subquery",
+        "Window Functions",
+        "Conditional Expression"
+      ]
+    },
+    {
+      "id": 71,
+      "title": "Minimum of Two Uniform Variables",
+      "company": "Google",
+      "category": "Statistics",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/minimum-two-uniform-variables",
+      "tags": []
+    },
+    {
+      "id": 142,
+      "title": "Frequentist vs. Bayesian",
+      "company": "Microsoft",
+      "category": "Statistics",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/frequentist-vs-bayesian",
+      "tags": []
+    },
+    {
+      "id": 10,
+      "title": "Reactivated Users",
+      "company": "Facebook",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/reactivated-users",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Ace the Data Science Interview",
+        "Date-Time Functions",
+        "User Behavior",
+        "Common Table Expressions (CTE) or Subquery",
+        "Existence Check",
+        "Conditional Expression",
+        "Conditional Logic"
+      ]
+    },
+    {
+      "id": 48,
+      "title": "Senior Managers",
+      "company": "Google",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/senior-managers-reportees",
+      "tags": [
+        "Distinct and Unique Handling",
+        "Aggregate Functions",
+        "Existence Check"
+      ]
+    },
+    {
+      "id": 56,
+      "title": "Server Utilization Time",
+      "company": "Amazon",
+      "category": "SQL",
+      "difficulty": "Hard",
+      "url": "https://datalemur.com/questions/total-utilization-time",
+      "tags": [
+        "Aggregate Functions",
+        "Data Type Conversion",
+        "Date-Time Functions",
+        "Window Functions"
+      ]
+    }
+  ]
+}

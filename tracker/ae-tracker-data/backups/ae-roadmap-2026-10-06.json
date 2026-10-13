@@ -1,0 +1,51 @@
+{
+  "v": 4,
+  "setupV": 2,
+  "curriculumV": 4,
+  "savedAt": 1791243732858,
+  "r": {
+    "SETUP": [
+      3,
+      3,
+      3,
+      3
+    ]
+  },
+  "pc": {
+    "SETUP": [
+      true,
+      true,
+      true,
+      true,
+      true
+    ]
+  },
+  "rc": {},
+  "g": {},
+  "notes": [
+    {
+      "id": "nmuvw9px6szl9",
+      "track": "general",
+      "text": "SQL Commands\n**EXCEPT** — Returns distinct rows from the first query that are not in the second query. Both queries must return the same number of columns with compatible data types.\n\nExample: find customers who have never placed an order.\n\n```sql\nSELECT customer_id\nFROM customers\nEXCEPT\nSELECT customer_id\nFROM orders;\n```\n\n**FILTER** — Limits the rows used by a specific aggregate, such as `COUNT` or `SUM`, without filtering the rows used by other aggregates in the same query.\n\nExample (PostgreSQL): count all orders and completed orders per customer.\n\n```sql\nSELECT\n    customer_id,\n    COUNT(*) AS total_orders,\n    COUNT(*) FILTER (WHERE status = 'completed') AS completed_orders\nFROM orders\nGROUP BY customer_id;\n```",
+      "c": "2026-10-05",
+      "u": "2026-10-05"
+    },
+    {
+      "id": "nmuvv8bg1ru7r",
+      "track": "sql",
+      "text": "SQL Tricks: Dates\n**Year filter for a date**:\nWHERE EXTRACT(YEAR FROM date) = 2023",
+      "c": "2026-10-05",
+      "u": "2026-10-05"
+    }
+  ],
+  "lib": {},
+  "act": {
+    "2026-10-05": 20
+  },
+  "log": [],
+  "ui": {
+    "hideDone": false,
+    "showOpt": true,
+    "res": "topic"
+  }
+}
