@@ -1,16 +1,121 @@
-# Data formats in data engineering
+# File formats: CSV, JSON, Avro, Parquet & ORC
 
-## Data formats in practice
+*Companion to `data-file-formats.html`: the same lessons with the same numbering.*
 
-The same orders can arrive from an API, travel through an event pipeline, become historical reporting data, and change later when a customer requests a refund. Different formats support different parts of that journey.
+No code in this deck is executed by the build; the one DuckDB example (CSV to typed Parquet) shows its expected result, which you can check by hand. Format features and engine support change between versions, so check the linked project documentation for the version you use. This deck is one half of the former “Data formats in practice” guide (the other half is *Table formats*).
 
-This guide covers **CSV, JSON, Avro, Parquet, and ORC**, then **Delta Lake, Apache Iceberg, and Apache Hudi**. It connects their strengths to how they store data, handle structure, and support real workloads.
+**Additions in this split:** On-the-job notes on the main lessons, an Avro scenario, and a file-format cheat sheet.
 
-Use **Read** for the article view, or navigate one slide at a time. The final slide is a complete cheatsheet covering all eight formats.
+## Contents
+
+1. [File formats](#slide-1)
+   - [Why this matters · Why this matters on the job](#why-1)
+   - [Why this matters · When to reach for it, and when not to](#why-2)
+2. [One dataset, several workloads](#slide-2)
+3. [File formats: representation shapes the work](#slide-3)
+4. [CSV: a portable boundary between tools](#slide-4)
+5. [JSON: preserve the structure of application data](#slide-5)
+6. [Nested JSON and the grain of your table](#slide-6)
+7. [Schemas make data predictable](#slide-7)
+8. [Avro: compact records with a shared schema](#slide-8)
+9. [Avro in an event pipeline](#slide-9)
+10. [Why store values by column?](#slide-10)
+11. [Parquet: organize data for selective reading](#slide-11)
+12. [How a Parquet query reads less](#slide-12)
+13. [ORC: columnar storage with built-in indexes](#slide-13)
+14. [Match the file format to the workload](#slide-14)
+15. [A practical conversion: CSV to typed Parquet](#slide-15)
+16. [Scenarios: evaluate the tradeoff](#slide-16)
+17. [Glossary: working vocabulary](#slide-17)
+18. [Recap: connect storage choices to pipeline design](#slide-18)
+19. [References: further reading, when you need it](#slide-19)
+20. [Cheat sheet: file formats](#slide-20)
 
 ---
 
-## One dataset, several workloads
+<a id="slide-1"></a>
+## 1. File formats
+
+The same orders can arrive through an API, travel as events, and become reporting data. Different file formats support different parts of that journey.
+
+Explore how CSV, JSON, Avro, Parquet and ORC store data, handle schemas, and support real workloads, with the technical terms explained in context.
+
+- **Share and receive data:** CSV · JSON. Simple tables, application data, and nested records
+- **Send structured records:** Avro. Messages with an agreed schema
+- **Store data for reports:** Parquet · ORC. Read only the columns a calculation needs
+- **Practise:** CSV to typed Parquet. Convert, then verify the row count and total
+
+**Part of a split series.** This deck is the first half of the former “Data formats in practice” guide; the second half is *Table formats* (Delta, Iceberg, Hudi, CDC).
+
+**Added in this split:** On-the-job notes on the main lessons, an Avro scenario, and a file-format cheat sheet.
+
+**Prefer an article?** Select Read to see every lesson together, or Markdown ↗ for the companion.
+
+---
+
+<a id="why-1"></a>
+## Why this matters · Why this matters on the job
+
+*Why this matters · the need behind the topic*
+
+Every pipeline starts and ends with files. Sources hand you CSV and JSON; event streams carry Avro; analytics platforms store Parquet. The file format decides how types survive, how much storage and compute a query costs, and how painful a schema change will be.
+
+#### Where you will use it
+
+- Landing partner CSV feeds and API JSON in a Bronze / raw layer.
+- Writing typed Parquet for analysis (usually inside a Delta or Iceberg table).
+- Consuming Avro events from Kafka or Event Hubs with a schema registry.
+
+#### What goes wrong without it
+
+- IDs like 001 lose their zeros and amounts become floats when CSV types are guessed.
+- Nested JSON flattened at the wrong grain double counts order totals.
+- Reports scan whole CSV files every day because nothing was converted to a columnar format.
+
+#### Who expects you to know it
+
+- Data engineers who build ingestion and storage layers.
+- Interviewers: “row vs columnar?”, “why Parquet?”, “how do you handle schema changes?”.
+
+> **On the job:** A typical first task on a data team is “land this new feed and make it queryable”. You keep the raw CSV or JSON unchanged, declare a schema, convert to typed Parquet, and check the row count and a total after the conversion.
+
+> **The main idea:** file formats are not trivia: they decide correctness (types), speed and cost of everything downstream.
+
+*Read more:* [Parquet overview](https://parquet.apache.org/docs/overview/), [DuckDB CSV import settings](https://duckdb.org/docs/current/data/csv/overview).
+
+---
+
+<a id="why-2"></a>
+## Why this matters · When to reach for it, and when not to
+
+*Why this matters · choosing the right tool*
+
+| Situation | Reach for | Why |
+|---|---|---|
+| Share a flat table with a person or partner | CSV with an agreed schema | Opens anywhere; declare types on import |
+| Receive application or API data | JSON, kept raw, then typed columns | Keeps nested structure; choose the grain later |
+| Stream many typed records between services | Avro + schema registry | Compact; schema evolution is checked |
+| Repeated analysis on growing history | Parquet (or ORC where the platform uses it) | Reads only needed columns; compresses well |
+| Updates, deletes and versions on a lake table | A table format (next deck) | Files alone cannot coordinate changes |
+
+#### How interviews test it
+
+- “Why is columnar storage faster for analytics?”
+- “CSV vs Parquet vs Avro: when would you use each?”
+- “How do you flatten nested JSON without double counting?”
+
+#### Where it sits in your learning path
+
+- Builds on: tables, rows, columns and basic SQL.
+- Next: Table formats (Delta, Iceberg, Hudi) and columnar warehouses.
+- Later: semi-structured SQL (UNNEST / EXPLODE) and reliable ingestion to Parquet.
+
+> **The main idea:** pick the file format by the job (share, receive, transport, analyse) and keep raw data unchanged in the landing layer.
+
+---
+
+<a id="slide-2"></a>
+## 2. One dataset, several workloads
 
 *Foundations · follow the orders through a pipeline*
 
@@ -32,9 +137,12 @@ A report totals sales across millions of orders but reads only a few columns. Me
 
 **Remember:** choose a format for the work being done with the data. The same dataset can use several formats at different stages.
 
+Sources: [Parquet overview](https://parquet.apache.org/docs/overview/), [DuckDB CSV import settings](https://duckdb.org/docs/current/data/csv/overview).
+
 ---
 
-## File formats: representation shapes the work
+<a id="slide-3"></a>
+## 3. File formats: representation shapes the work
 
 *Foundations · the same information, different arrangements*
 
@@ -63,7 +171,8 @@ Sources: [CSV specification](https://www.rfc-editor.org/rfc/rfc4180), [JSON spec
 
 ---
 
-## CSV: a portable boundary between tools
+<a id="slide-4"></a>
+## 4. CSV: a portable boundary between tools
 
 *File formats · .csv · comma-separated values*
 
@@ -86,13 +195,16 @@ CSV fits partner deliveries, extracts, small reference datasets, and human-facin
 
 For repeated analysis, text parsing adds work: the tool must interpret values again, and the file has no column statistics for skipping irrelevant sections. Keeping CSV as the exchange format and a typed analytical copy internally is a common pattern.
 
+> **On the job:** Partner and vendor feeds still arrive as CSV more than anything else. A typical ingestion job reads them with an explicit schema, rejects or quarantines rows that do not parse, and lands a typed copy (Parquet or a Delta table) for everything downstream.
+
 **Remember:** CSV's strength is broad compatibility. Use an explicit import schema when stable IDs, dates, and monetary values matter.
 
 Sources: [CSV specification](https://www.rfc-editor.org/rfc/rfc4180), [DuckDB CSV import settings](https://duckdb.org/docs/current/data/csv/overview).
 
 ---
 
-## JSON: preserve the structure of application data
+<a id="slide-5"></a>
+## 5. JSON: preserve the structure of application data
 
 *File formats · .json · named values, objects, and arrays*
 
@@ -117,13 +229,16 @@ JSON fits APIs, application events, and source data with optional or nested fiel
 
 That flexibility is valuable during collection. Before reporting, teams often validate the structure and convert selected fields to stable types. Repeated field names and text parsing make JSON less efficient than columnar files for large, recurring analytical scans.
 
+> **On the job:** Most REST APIs and app events you ingest are JSON. Pipelines usually land the raw JSON unchanged in a Bronze layer, then extract typed columns into Silver, so a schema change upstream never loses data.
+
 **Remember:** JSON preserves application structure well. A consistent reporting schema is usually established during processing.
 
 Sources: [JSON specification](https://www.rfc-editor.org/rfc/rfc8259), [MDN: working with JSON](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON).
 
 ---
 
-## Nested JSON and the grain of your table
+<a id="slide-6"></a>
+## 6. Nested JSON and the grain of your table
 
 *JSON in practice · one order can contain several items*
 
@@ -148,13 +263,16 @@ Turning `items` into rows produces two records for order 101. This operation is 
 
 This is useful for product-level reporting. Keep order totals in an orders table and item details in an order-items table when you need both grains; otherwise, repeating an order total on every item can inflate a sum.
 
+> **On the job:** Order headers with line items, events with nested properties, API pages with arrays: the first modeling decision is which grain the reporting table needs, then UNNEST / EXPLODE to reach it. This is the core of the semi-structured SQL lesson.
+
 **Remember:** transforming JSON is also a modeling decision: decide what each output row represents before calculating metrics.
 
 Sources: [MDN: JSON objects and arrays](https://developer.mozilla.org/en-US/docs/Learn_web_development/Core/Scripting/JSON).
 
 ---
 
-## Schemas make data predictable
+<a id="slide-7"></a>
+## 7. Schemas make data predictable
 
 *Foundations · types, contracts, and change over time*
 
@@ -178,7 +296,8 @@ Sources: [Avro schemas](https://avro.apache.org/docs/1.12.0/getting-started-java
 
 ---
 
-## Avro: compact records with a shared schema
+<a id="slide-8"></a>
+## 8. Avro: compact records with a shared schema
 
 *File formats · .avro · Apache Avro*
 
@@ -205,13 +324,16 @@ Suppose a new reader expects a `channel` field. Giving that field a default such
 
 This is **backward compatibility**: newer readers can understand older data. Compatibility follows specific rules; arbitrary type changes are not automatically safe. That makes Avro useful for long-lived event streams with separately updated producers and consumers.
 
+> **On the job:** Avro is common on Kafka and Event Hubs topics, usually with a schema registry. Data engineers meet it when consuming CDC or event streams and when a producer change breaks a consumer.
+
 **Remember:** Avro is a strong fit for complete records, compact exchange, and controlled schema evolution.
 
 Sources: [Avro encoding, container files, and schema resolution](https://avro.apache.org/docs/1.12.0/specification/).
 
 ---
 
-## Avro in an event pipeline
+<a id="slide-9"></a>
+## 9. Avro in an event pipeline
 
 *Avro in practice · separate the message from its transport*
 
@@ -235,7 +357,8 @@ Sources: [Confluent Avro serialization and schema registry](https://docs.conflue
 
 ---
 
-## Why store values by column?
+<a id="slide-10"></a>
+## 10. Why store values by column?
 
 *Storage layout · complete records versus analytical scans*
 
@@ -261,7 +384,8 @@ Sources: [Parquet layout concepts](https://parquet.apache.org/docs/concepts/), [
 
 ---
 
-## Parquet: organize data for selective reading
+<a id="slide-11"></a>
+## 11. Parquet: organize data for selective reading
 
 *File formats · .parquet · Apache Parquet*
 
@@ -279,13 +403,16 @@ Similar values within a column are good candidates for **encoding**, such as rep
 
 Parquet fits cleaned datasets, historical reporting, and data shared across analytical tools. It is especially useful when queries repeatedly scan many records but select a subset of fields.
 
+> **On the job:** Parquet is the default storage file for lakehouses (Fabric, Databricks, Snowflake external tables, BigQuery external data). Most of the files your pipelines write will be Parquet, often inside a Delta or Iceberg table.
+
 **Remember:** Parquet's value comes from typed storage, efficient compression, and the ability to read less data for a query.
 
 Sources: [Parquet file structure](https://parquet.apache.org/docs/file-format/), [Parquet motivation](https://parquet.apache.org/docs/overview/motivation/), [Parquet logical types](https://parquet.apache.org/docs/file-format/types/logicaltypes/).
 
 ---
 
-## How a Parquet query reads less
+<a id="slide-12"></a>
+## 12. How a Parquet query reads less
 
 *Parquet in practice · projection and filter pushdown*
 
@@ -308,13 +435,16 @@ Now imagine a much larger file and a filter `WHERE amount >= 100`. If a row grou
 
 This is one benefit of **filter pushdown**: the engine gives the condition to the reader early. Skipping requires useful statistics; groups that might contain a match still need their values checked.
 
+> **On the job:** Selecting only the columns you need and filtering on partition or sorted columns is how you keep scans, and cloud bills, small. EXPLAIN output and query profiles in Fabric, Databricks or Snowflake show how many files and bytes were actually read.
+
 **Remember:** selecting fewer columns and filtering on well-organized data can reduce reading. The format enables this; the query engine implements it.
 
 Sources: [DuckDB Parquet projection and filter pushdown](https://duckdb.org/docs/current/data/parquet/overview).
 
 ---
 
-## ORC: columnar storage with built-in indexes
+<a id="slide-13"></a>
+## 13. ORC: columnar storage with built-in indexes
 
 *File formats · .orc · Optimized Row Columnar*
 
@@ -338,7 +468,8 @@ Sources: [ORC background](https://orc.apache.org/docs/), [ORC indexes](https://o
 
 ---
 
-## Match the file format to the workload
+<a id="slide-14"></a>
+## 14. Match the file format to the workload
 
 *Choose a file · match it to the job*
 
@@ -354,229 +485,12 @@ These are common starting points, not exclusive uses. The same orders may move t
 
 **Remember:** first ask, “Am I sharing a file, receiving application data, moving events, or building reports?” That narrows the choice.
 
----
-
-## From one file to a table that keeps changing
-
-*Table formats · why we need another idea*
-
-Our shop grows. Orders are now saved across many files in cloud storage. A **data lake** is a place where a team stores datasets as files, often in a service such as Amazon S3.
-
-### Yesterday was straightforward
-
-A report reads yesterday's saved orders and adds up the amounts. If those orders are fixed, a collection of Parquet files may be enough for the job.
-
-Today, order 101 is refunded. We need to change its status. New orders are also arriving while someone runs a report.
-
-### Now we need coordination
-
-Which files contain the current orders? When is an update complete? Can a report see one consistent version while changes are happening?
-
-A **table format** adds bookkeeping and rules around the data files. Delta Lake, Iceberg, and Hudi help tools manage those files as a changing table.
-
-A **lakehouse** brings table-management features to data kept in a lake, allowing file storage and database-like operations to work together.
-
-**Remember:** the file format handles the contents of individual files. The table format helps manage the whole table over time.
-
-Sources: [Delta Lake introduction](https://docs.delta.io/), [Iceberg introduction](https://iceberg.apache.org/docs/latest/).
+Sources: [CSV specification](https://www.rfc-editor.org/rfc/rfc4180), [Avro introduction](https://avro.apache.org/docs/1.12.0/getting-started-java/), [Parquet overview](https://parquet.apache.org/docs/overview/).
 
 ---
 
-## A table format keeps track of the current data
-
-*Table formats · a concrete example of a table version*
-
-Imagine a simplified table with two files. One contains order 101; another contains orders 102 and 103. To record the refund, our tool writes a replacement for the first file and records a new table version.
-
-```diagram
-Version 1: original order 101 + orders 102 and 103
-Version 2: refunded order 101 + orders 102 and 103
-The table's bookkeeping tells the reader which files to use.
-```
-
-The bookkeeping is called **metadata**: information describing the data, such as its schema and which files belong to a version. A **snapshot** is a particular version of the table.
-
-A **commit** publishes the new version after its data is ready. The unchanged file can be reused across both versions; each snapshot does not need a complete copy of the table.
-
-**Remember:** Parquet and a table format can work together. Parquet holds the order values; the table format records how the files make up the table. The diagram is one simplified update strategy.
-
-Sources: [Delta table versions](https://docs.delta.io/delta-batch/), [Iceberg reliability](https://iceberg.apache.org/docs/latest/reliability/).
-
----
-
-## Transactions, versions, and schema changes
-
-*Table formats · what a managed table adds*
-
-Table formats give compatible engines rules for coordinating files, updates, and metadata. Their value becomes clear when several jobs read or change the same dataset.
-
-### Publish a complete change
-
-A **transaction** publishes a set of changes together. A refund job might write several files before committing the new version. Readers can keep using a consistent snapshot while that work completes.
-
-This is part of **ACID** behavior: atomicity (all-or-nothing changes), consistency (declared rules remain valid), isolation (concurrent work is coordinated), and durability (committed changes persist). These guarantees do not prove that a business calculation is correct.
-
-### Evolve and reproduce the table
-
-**Schema enforcement** checks incoming structure; **schema evolution** permits supported changes, such as adding a column. Their exact behavior depends on the engine and configuration.
-
-**Time travel** queries an earlier version so a report can be reproduced. Both its metadata and required data files must still be retained. An **upsert** updates a matching record or inserts a new one.
-
-**Remember:** table formats add coordinated changes and table-level structure around the files. Use tools that understand the table's metadata.
-
-Sources: [Delta Lake features](https://docs.delta.io/), [Delta schema and history](https://docs.delta.io/delta-batch/), [Iceberg reliability](https://iceberg.apache.org/docs/latest/reliability/).
-
----
-
-## Delta Lake: Parquet plus a transaction log
-
-*Table formats · updates, history, and batch or streaming workflows*
-
-A Delta table stores its data in Parquet files and records table changes in a **transaction log**, conventionally under `_delta_log`. A Delta-aware reader uses the log to identify a consistent table version.
-
-### Apply changes with MERGE
-
-Suppose a daily delivery contains a refund for order 101 and a new order 104. A **MERGE** operation can match on `order_id`, update 101, and insert 104 in one table operation.
-
-This is useful for maintaining a current reporting table from incoming changes. Delta also supports schema checks and retained table history, so you can inspect changes and reproduce earlier results.
-
-### Where Delta fits
-
-Delta is a natural fit for Spark and Databricks pipelines, including scheduled batches and streaming ingestion. Spark processes the data; Delta defines how the table is stored and updated.
-
-Read the dataset as a Delta table rather than selecting every Parquet file in its folder. Old files may still be present for earlier versions, so the transaction log determines which files belong to the selected version.
-
-**Remember:** Delta combines Parquet's analytical storage with a transaction log that coordinates changes to the whole table.
-
-Sources: [Delta Lake introduction](https://docs.delta.io/), [Delta MERGE operations](https://docs.delta.io/delta-update/), [Delta reads and history](https://docs.delta.io/delta-batch/).
-
----
-
-## Apache Iceberg: shared tables that can evolve
-
-*Table formats · multiple engines, snapshots, and partitioning*
-
-Iceberg tracks snapshots through metadata and **manifests**, lists describing data files. It commonly uses Parquet, and also supports ORC and Avro data files. A catalog helps engines locate the table's current metadata.
-
-### Share a table across engines
-
-One team might prepare orders with Spark while another queries the same Iceberg table with Trino. Both must use compatible connectors and the appropriate catalog; support for particular write operations still varies.
-
-Iceberg identifies columns internally with stable IDs. That allows supported changes such as renaming a column without confusing its identity with another field.
-
-### Partition by a useful business dimension
-
-**Partitioning** groups data by values such as order date so queries can avoid unrelated groups. Iceberg's **hidden partitioning** lets a date filter use that organization without requiring a separate partition column in the query.
-
-Its layout can also evolve. A table might start grouped by month and later write new data grouped by day; readers can work with both layouts without immediately rewriting the older files.
-
-**Remember:** Iceberg is a strong fit for shared analytical tables whose schema and storage layout need to evolve over time.
-
-Sources: [Iceberg introduction](https://iceberg.apache.org/docs/latest/), [Iceberg evolution](https://iceberg.apache.org/docs/latest/evolution/), [Iceberg partitioning](https://iceberg.apache.org/docs/latest/partitioning/).
-
----
-
-## CDC: keep a copy in step with database changes
-
-*Before Hudi · change data capture*
-
-The shop's application database stores the live orders. We also want a copy for reporting. **CDC means change data capture**: detecting inserts, updates, and deletes in the source database and passing those changes to another system.
-
-| What happens in the shop | Change to pass along | What the reporting copy should do |
-| --- | --- | --- |
-| Order 104 is placed | Insert order 104 | Add the new order. |
-| Order 101 is refunded | Update order 101 | Change its status to refunded. |
-| A test order is removed | Delete that order | Remove the corresponding record. |
-
-After an initial copy, a CDC tool can read database change logs and send the changes instead of recopying every row. Events typically identify the record, the operation, and an ordering position or timestamp.
-
-The destination uses those details to apply changes to the right record in the intended order. Capture and application are separate jobs: Debezium can capture the changes, while a pipeline applies them to a Delta, Iceberg, or Hudi table.
-
-**Remember:** CDC is a process, not a file format. It explains why a reporting table may need frequent updates as well as new rows.
-
-Sources: [Debezium: capturing database changes](https://debezium.io/documentation/reference/stable/).
-
----
-
-## Apache Hudi: optimize for changing records
-
-*Table formats · upserts and incremental processing*
-
-Hudi combines an open table format with ingestion and maintenance tools. A **record key**, such as `order_id`, identifies the order to update. Its focus on upserts and incremental work makes it useful for CDC-fed reporting tables.
-
-### Two ways to handle updates
-
-**Copy on Write** merges changes into new versions of columnar base files during a write. Queries read the resulting base files, which keeps reads straightforward but can require more rewriting.
-
-**Merge on Read** can first store updates in log files. Queries combine base data with those updates for the latest view; a later **compaction** merges them into base files. This moves some work from ingestion to reads and maintenance.
-
-### Work on the changed data
-
-Hudi's timeline records table actions. **Incremental queries** can retrieve records changed since an earlier point, allowing a downstream job to process a smaller update set instead of rescanning the entire table.
-
-This fits orders whose status changes frequently. Choose the write strategy according to how quickly changes must arrive and how much work reads can afford. Main data files commonly use Parquet.
-
-**Remember:** Hudi is especially relevant when record-level changes, ingestion latency, and incremental downstream processing drive the design.
-
-Sources: [Hudi overview](https://hudi.apache.org/docs/overview/), [Hudi table and query types](https://hudi.apache.org/docs/table_types/).
-
----
-
-## Delta, Iceberg, or Hudi: choose by workload
-
-*Choose a table · start with the project you actually have*
-
-All three help manage changing tables over files. Their capabilities overlap, so these are useful starting points rather than a feature ranking.
-
-| Option | A good reason to explore it | Our shop example |
-| --- | --- | --- |
-| Delta Lake | Your team or course already works with Delta in Spark or Databricks. | Maintain an orders table and review its history after refunds. |
-| Apache Iceberg | Several compatible data tools need to share analytical tables. | Prepare orders in one tool and query the same table in another. |
-| Apache Hudi | Frequent record updates and incremental processing are central to the pipeline. | Keep a reporting copy current as database changes arrive. |
-
-Compare the actual readers and writers you need, the frequency of updates, and whether downstream jobs need change-based processing. Then confirm that the platform supports the required table features. For a local, fixed dataset, a Parquet file may already meet the need.
-
-**Remember:** you usually choose one table format for a given table. You do not need to use all three in one project.
-
----
-
-## How the formats can work together
-
-*Put it together · one possible journey for our orders*
-
-A **data pipeline** is a series of steps that moves and prepares data. Different steps can use different formats because they do different jobs.
-
-1. **Receive orders as JSON.** The shop's API returns orders with customer details and purchased items.
-2. **Prepare the data.** Your program selects useful fields, checks amounts, and produces a consistent table of orders.
-3. **Save for reporting.** A simple project can save Parquet files. A project needing managed updates could use a Delta table, whose data files are Parquet.
-4. **Answer business questions.** A data tool calculates daily sales or refund totals.
-5. **Share a result as CSV.** A colleague opens the summary in a spreadsheet.
-
-In an event-based version of this pipeline, order messages might arrive as Avro. In another platform, the reporting table might use Iceberg or Hudi instead.
-
-**Remember:** you do not have to force the whole pipeline into one format. Choose a suitable representation at each step.
-
----
-
-## Evaluate the tradeoff
-
-*Scenarios · reveal the reasoning behind each choice*
-
-Each situation suggests a starting point. There can be other valid choices depending on the tools already in use.
-
-<details><summary>A colleague wants a small list of orders to open in Excel.</summary><p><strong>Start with CSV.</strong> The data is a simple table, and the recipient needs a widely supported export.</p></details>
-
-<details><summary>A shop API sends one order with a customer and a list of items.</summary><p><strong>Expect JSON.</strong> Its objects and arrays can keep those related details together.</p></details>
-
-<details><summary>You run the same sales summaries over a growing historical dataset.</summary><p><strong>Start with Parquet.</strong> Its column layout helps readers select the fields needed by reports, and it supports efficient compression.</p></details>
-
-<details><summary>A database sends frequent order corrections into a reporting lake.</summary><p><strong>Explore Hudi in a CDC pipeline.</strong> Its focus on record updates and incremental work fits this need. Delta and Iceberg can also handle updates; existing platform support still matters.</p></details>
-
-**Remember:** a useful answer includes both a format and a reason tied to the task.
-
----
-
-## A practical conversion: CSV to typed Parquet
+<a id="slide-15"></a>
+## 15. A practical conversion: CSV to typed Parquet
 
 *Hands-on · specify types, then verify the result*
 
@@ -609,52 +523,94 @@ FROM read_parquet('orders.parquet');
 
 Also compare field types and a few records. Changing the format should preserve your intended values and row count. This tiny example checks correctness; it is too small for a meaningful speed comparison.
 
+> **On the job:** Converting landed CSV to typed Parquet (or a Delta table) is one of the first transformations in nearly every pipeline. Checking row counts and a control total after the conversion is the habit that catches type and parsing mistakes.
+
 **Remember:** converting to Parquet gives typed analytical storage. Creating a managed Delta, Iceberg, or Hudi table is an additional step.
 
 Sources: [DuckDB CSV reader](https://duckdb.org/docs/current/data/csv/overview), [DuckDB Parquet export](https://duckdb.org/docs/current/data/parquet/overview).
 
 ---
 
-## Working vocabulary
+<a id="slide-16"></a>
+## 16. Scenarios: evaluate the tradeoff
+
+*Scenarios · reveal the reasoning behind each choice*
+
+Each situation suggests a starting point. There can be other valid choices depending on the tools already in use.
+
+<details><summary>A colleague wants a small list of orders to open in Excel.</summary>
+
+**Start with CSV.** The data is a simple table, and the recipient needs a widely supported export.
+
+</details>
+
+<details><summary>A shop API sends one order with a customer and a list of items.</summary>
+
+**Expect JSON.** Its objects and arrays can keep those related details together.
+
+</details>
+
+<details><summary>You run the same sales summaries over a growing historical dataset.</summary>
+
+**Start with Parquet.** Its column layout helps readers select the fields needed by reports, and it supports efficient compression.
+
+</details>
+
+<details><summary>An event pipeline sends millions of small, typed order messages, and producers and consumers are deployed separately.</summary>
+
+**Consider Avro with a schema registry.** Records are compact, and compatible schema changes can be checked before a producer breaks a consumer.
+
+</details>
+
+**Remember:** a useful answer includes both a format and a reason tied to the task.
+
+Sources: [CSV specification](https://www.rfc-editor.org/rfc/rfc4180), [Parquet overview](https://parquet.apache.org/docs/overview/).
+
+---
+
+<a id="slide-17"></a>
+## 17. Glossary: working vocabulary
 
 *Quick reference · connect the terms to their purpose*
 
 | Term | What it means in practice |
-| --- | --- |
+|---|---|
 | Schema / schema evolution | The expected fields and types / supported changes to that structure over time. |
 | Grain / record key | What one row represents / the value that identifies a record for matching updates. |
 | Projection / filter pushdown | Pass column selections / conditions to the reader so it can reduce work. |
 | Row group / stripe | A batch of records stored in columnar form inside Parquet / ORC. |
 | Partitioning | Group data by a useful dimension, such as date, so queries can avoid unrelated groups. |
-| Metadata / catalog | Information describing the data / a service that helps locate and manage named tables. |
-| Transaction / snapshot | A change committed as a unit / a particular version of a table. |
-| CDC / upsert | Capture database inserts, updates, and deletes / update a match or insert a new record. |
-| Incremental / compaction | Process what changed / reorganize files or merge logged changes to improve reads. |
 | Schema registry | Shared schema storage used by message producers and consumers. |
 
 ---
 
-## Connect storage choices to pipeline design
+<a id="slide-18"></a>
+## 18. Recap: connect storage choices to pipeline design
 
 *Recap · connect each name to a practical job*
 
-### Five ways to represent data
+1. A file format is a **representation**: text or binary, rows or columns, schema embedded or supplied.
+2. **CSV** is for sharing flat tables; declare types on import so IDs, dates and money survive.
+3. **JSON** keeps nested application data; choose the reporting grain before flattening it.
+4. **Avro** carries compact typed records with a schema that both sides agree on and evolve compatibly.
+5. **Parquet** and **ORC** store values by column, so analytical queries read fewer bytes; select only the columns you need.
+
+#### Five ways to represent data
 
 **CSV** makes a simple table easy to share. **JSON** represents named values, groups, and lists from applications. **Avro** carries compact records with an agreed schema.
 
 **Parquet** and **ORC** group values by column to support analysis. Parquet has broad analytical tool support; ORC is a strong fit in compatible Hive-based environments.
 
-### Three ways to manage changing tables
+#### What comes next
 
-**Delta Lake, Apache Iceberg, and Apache Hudi** keep track of a table's data files and changes. They let compatible tools offer features such as updates and consistent table versions.
+Files hold data; they do not manage a changing table. Updates, consistent versions and history are the job of a **table format** (Delta Lake, Apache Iceberg, Apache Hudi), covered in the *Table formats* deck.
 
-For example, a Delta table stores order data in Parquet files and records which files make up each version. That is the practical difference between a file format and a table format.
-
-**Remember:** explain the job first, then choose the format. “I want to share orders” and “I want to keep a reporting table current” are different needs.
+**Remember:** explain the job first, then choose the format: share a table, receive application data, move events, or store for analysis.
 
 ---
 
-## Further reading, when you need it
+<a id="slide-19"></a>
+## 19. References: further reading, when you need it
 
 *References · optional next steps*
 
@@ -664,41 +620,28 @@ The shop examples connect format design to practical workloads. These references
 - [Avro introduction](https://avro.apache.org/docs/1.12.0/getting-started-java/): schemas and records.
 - [Parquet overview](https://parquet.apache.org/docs/overview/) and [ORC background](https://orc.apache.org/docs/): formats designed for analysis.
 - [DuckDB: reading Parquet](https://duckdb.org/docs/current/data/parquet/overview): try a query on a local file.
-- [Delta Lake documentation](https://docs.delta.io/): tables, updates, and history.
-- [Apache Iceberg introduction](https://iceberg.apache.org/docs/latest/): shared analytical tables.
-- [Apache Hudi overview](https://hudi.apache.org/docs/overview/): tables and incremental pipelines.
-- [Debezium documentation](https://debezium.io/documentation/reference/stable/): capturing database changes.
 
-The [readable overview](https://medium.com/@aftab4092/a-comprehensive-guide-to-file-formats-in-data-engineering-60d5e6dac4d5) inspired the explanatory style. Technical explanations here use the project documentation linked above. Format choices are practical guidance, not universal performance rankings.
+A readable overview on Medium, “A comprehensive guide to file formats in data engineering”, inspired the explanatory style. Technical explanations here use the project documentation linked above. Format choices are practical guidance, not universal performance rankings.
 
 ---
 
-## Complete data formats cheatsheet
+<a id="slide-20"></a>
+## 20. Cheat sheet: file formats
 
-*Keep this slide · five file formats + three table formats*
+*Keep this slide · five file formats*
 
 **File formats** organize values inside files or messages. **Table formats** coordinate data files, schemas, and table versions. They work together: a Delta table, for example, stores its data in Parquet.
 
 **File formats — representation, structure, and fit**
 
 | Format | Layout & schema | Strong fit | Useful tradeoff |
-| --- | --- | --- | --- |
+|---|---|---|---|
 | **CSV** `.csv` | Flat text records; types supplied or inferred on import. | Portable exports, partner exchange, simple reference tables. | Easy to inspect; repeated parsing and no embedded column statistics. |
 | **JSON** `.json` | Text objects and arrays; basic value types, optional external schema. | APIs, application events, nested source data. | Flexible structure; validate types and choose a reporting grain. |
-| **Avro** `.avro` | Binary records; schema embedded in container files or shared for messages. | Event streams, complete-record exchange, compatible schema evolution. | Compact and compressible; readers need the writer's schema. |
+| **Avro** `.avro` | Binary records; schema embedded in container files or shared for messages. | Event streams, complete-record exchange, compatible schema evolution. | Compact and compressible; readers need the writer’s schema. |
 | **Parquet** `.parquet` | Binary columns within row groups; embedded types and metadata. | Repeated analytics, historical datasets, broad analytical tool use. | Compression and selective reads; managed row updates require another layer. |
 | **ORC** `.orc` | Binary columns within stripes; embedded types, statistics, and indexes. | Hive-based analytics and compatible SQL platforms. | Efficient compression and skipping; choose according to engine support. |
 
-**Table formats — management above the data files**
+**Decision shortcuts:** share a flat table → CSV · exchange nested application data → JSON · send typed events → Avro · store for analysis → Parquet / ORC · maintain a changing lake table → a table format (next deck).
 
-| Format | Data & bookkeeping | Strong fit | Key operating idea |
-| --- | --- | --- | --- |
-| **Delta Lake** | Parquet data + transaction log. | Spark/Databricks workflows, merges, batch and streaming tables. | Use a Delta reader; the log identifies the selected table version. |
-| **Apache Iceberg** | Parquet, ORC, or Avro data + snapshots and manifests; catalog locates metadata. | Shared tables across engines, schema and partition-layout evolution. | Hidden partitioning connects filters to layout; verify connector capabilities. |
-| **Apache Hudi** | Commonly Parquet base files + timeline; update logs for Merge on Read. | Frequent upserts, CDC ingestion, incremental processing. | Record keys match updates; Copy on Write favors simple reads, Merge on Read defers some write work. |
-
-**Shared table capabilities:** coordinated commits, evolving schemas, updates/deletes, and retained versions through compatible engines. Read and write support varies by engine and feature; history needs retained files and metadata.
-
-**Decision shortcuts:** share a flat table → CSV · exchange nested application data → JSON · send typed events → Avro · store for analysis → Parquet / ORC · maintain a changing lake table → Delta / Iceberg / Hudi.
-
-**Terms to retain:** CDC = capture database changes · upsert = update or insert · pushdown = let the reader use selected columns or filters early · partitioning = group data to narrow reads · compaction = reorganize files or merge updates for better reads.
+**Terms to retain:** pushdown = let the reader use selected columns or filters early · partitioning = group data to narrow reads · row group / stripe = the batch inside a columnar file.

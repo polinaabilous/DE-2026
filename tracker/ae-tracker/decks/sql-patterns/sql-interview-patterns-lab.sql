@@ -1,7 +1,7 @@
 -- Advanced SQL interview patterns: independent miniature datasets.
 -- Run in a fresh scratch connection (PostgreSQL-style; verified in DuckDB 1.5.6).
--- DuckDB: duckdb :memory: < docs/sql/sql-interview-patterns-lab.sql
--- PostgreSQL: psql YOUR_SCRATCH_DB -v ON_ERROR_STOP=1 -f docs/sql/sql-interview-patterns-lab.sql
+-- DuckDB: duckdb :memory: < tracker/ae-tracker/decks/sql-patterns/sql-interview-patterns-lab.sql
+-- PostgreSQL: psql YOUR_SCRATCH_DB -v ON_ERROR_STOP=1 -f tracker/ae-tracker/decks/sql-patterns/sql-interview-patterns-lab.sql
 -- All created tables are TEMPORARY. ROLLBACK removes this lab's transaction state.
 -- Timestamps are simple wall-clock examples; production time-zone rules must be explicit.
 BEGIN;
