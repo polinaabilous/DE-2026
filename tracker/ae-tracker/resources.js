@@ -56,7 +56,7 @@ globalThis.AEResources = Object.freeze({
 
     const TIME = { quick: ["⚡", "≤30 min"], hour: ["⏱", "~1 hour"], series: ["📺", "Pick a piece"], deep: ["📚", "Multi-session"], ref: ["🔎", "Reference"] };
     const KINDS = ["video", "podcast", "article", "newsletter", "course", "book", "practice", "docs", "tool"];
-    const ORPHAN = { pgex: ["sql", "perf"], cmu: ["perf", "arch"], pyStdlib: ["py"], fluentPy: ["py"], realPython: ["py"] };
+    const ORPHAN = { pgex: ["sql", "perf"], cmu: ["perf", "arch"], pyStdlib: ["py"], fluentPy: ["py"], realPython: ["py"], ghArchive: ["py", "sql"] };
     // every resource once: lessons and portfolio sources (areas = tracks of the topics that use it, in roadmap order) + extras to watch, read or listen to
     const LIB = (() => {
       const m = new Map();

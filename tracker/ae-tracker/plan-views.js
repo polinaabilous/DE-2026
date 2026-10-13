@@ -122,7 +122,7 @@ globalThis.AEPlanViews = Object.freeze({
       const built = P.stages.filter(s => isDone(s.id)).length, done = R.required.filter(isDone).length;
       let n = 0;
       let h = `<div class="page-head"><div><div class="eyebrow">Learning & portfolio</div><h2>Roadmap</h2><p class="muted">Learn on the left, build on the right. Each row lists the lessons that unlock the next project stage, career milestone or checkpoint.</p></div></div>
-        <section class="road-intro"><div class="grow"><strong>Portfolio · GitHub Activity Analytics</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)}</p></div>
+        <section class="road-intro"><div class="grow"><strong>Portfolio · Fuel Smart</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(P.deckBase + P.portfolio.brief)}" target="_blank" rel="noopener">Project brief</a></p></div>
           <div class="kpis small-kpis"><div><b>${done}/${R.required.length}</b><span>lessons complete</span></div><div><b>${built}/${P.stages.length}</b><span>stages built</span></div></div>
           ${cur ? `<button class="btn primary" data-act="jump">${icon("map")} Jump to where you are</button>` : ""}</section>
         <div class="road-headers"><div><h3>${icon("book")} Learning roadmap</h3><p>The lessons each step needs.</p></div><div></div><div><h3>${icon("box")} Portfolio roadmap</h3><p>Project stages, career milestones and checkpoints.</p></div></div>`;

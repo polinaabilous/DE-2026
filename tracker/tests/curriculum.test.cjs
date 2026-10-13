@@ -26,6 +26,14 @@ const legacy = () => { const ctx = vm.createContext({ window: {} }); vm.runInCon
 const plain = value => JSON.parse(JSON.stringify(value));
 const CODE = /\b(?:S[1-8]|P[1-5]|M[1-6]|D[1-5]|Py[1-6]|SB[1-5]|AF[1-4]|A[1-7]|Q[1-4]|BZ[1-5]|AI[1-7]|PL[1-7]|CM[1-4]|PF\d{1,2}|JOB[12]|IV[0-4]|SETUP|CERT)\b/;
 const text = html => html.replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/g, ' ');
+// The portfolio moved from GitHub activity to Fuel Smart (docs/study-planning/fuel-smart-project-brief.md).
+// Only these lines were rewritten for the new project data; list lengths stay the same so saved ticks still apply.
+const PROJECT_SWAP = new Set(['S2 practice 2', 'S7 practice 0', 'D3 practice 1', 'D3 practice 2', 'Py1 practice 0', 'Py1 practice 6',
+  'Py3 practice 0', 'Py3 practice 1', 'Py3 setup 1', 'AF2 practice 0', 'AF2 practice 2', 'BZ2 practice 1', 'BZ5 practice 0', 'AI5 practice 0',
+  'PL4 practice 0', 'PF1 description', 'PF1 practice 1', 'PF1 check 4', 'PF2 description', 'PF3 description', 'PF3 practice 0',
+  'PF3 practice 1', 'PF3 check 0', 'PF4 description', 'PF4 check 0', 'PF8 description', 'PF8 check 3']);
+const PROJECT_DATA = new Set(['ghArchive', 'foodcom', 'fdc', 'offData']);
+const OLD_PROJECT = /GH Archive|GitHub|\bGH\b|\bPR\b|repositor|contributor|24-hour UTC|hourly|per hour/i;
 
 test('no old topic, check, practice item, resource, setup step or prerequisite is lost', () => {
   const old = legacy(), { plan, roadmap } = fixture();
@@ -38,11 +46,14 @@ test('no old topic, check, practice item, resource, setup step or prerequisite i
     assert.equal(y.dod.length, x.dod.length, `${id} keeps every check line`);
     assert.equal(y.practice.length, x.practice.length, `${id} keeps every practice item`);
     // Text is unchanged except where a topic code or phase name was replaced by a readable title.
-    const same = (a, b, what) => assert.ok(a === b || (CODE.test(b) || /phase|step 1\.1|later stage/.test(b)) && !CODE.test(a), `${id} ${what} changed: ${b}`);
+    const same = (a, b, what) => assert.ok(a === b || (CODE.test(b) || /phase|step 1\.1|later stage/.test(b)) && !CODE.test(a)
+      || PROJECT_SWAP.has(`${id} ${what}`) && !OLD_PROJECT.test(a), `${id} ${what} changed: ${b}`);
     same(y.c, x.c, 'description');
     x.dod.forEach((t, i) => same(y.dod[i], t, 'check ' + i));
     x.practice.forEach((t, i) => same(y.practice[i], t, 'practice ' + i));
-    assert.deepEqual(plain(y.learn), plain(x.learn), `${id} keeps every resource`);
+    const general = keys => plain(keys).filter(k => !PROJECT_DATA.has(k));
+    assert.deepEqual(general(y.learn), general(x.learn), `${id} keeps every resource`);
+    if (x.learn.includes('ghArchive')) assert.ok(y.learn.some(k => PROJECT_DATA.has(k)), `${id} keeps a project dataset`);
     assert.equal((y.setup || []).length, (x.setup || []).length, `${id} keeps its setup steps`);
     (x.setup || []).forEach((t, i) => same(y.setup[i], t, 'setup ' + i));
     if (roadmap.isLesson(id)) {
@@ -72,7 +83,9 @@ test('no old topic, check, practice item, resource, setup step or prerequisite i
       }
     }
   }
-  assert.equal(plan.portfolio.question, old.portfolio.question);
+  assert.match(plan.portfolio.question, /recipes/);
+  assert.ok(!OLD_PROJECT.test(plan.portfolio.question + plan.portfolio.scope), 'portfolio no longer describes GitHub activity');
+  for (const s of plan.stages) assert.ok(!/GH Archive|GitHub|\bPR\b|repositories/.test([s.name, s.desc || '', ...s.scope, s.boundary, ...s.tasks.map(t => (t.t || '') + ' ' + (t.d || ''))].join(' ')), `stage ${s.id} uses Fuel Smart data`);
   assert.deepEqual(plain(plan.skip), plain(old.skip));
   for (const [k, v] of Object.entries(old.L)) assert.deepEqual(plain(plan.L[k]), plain(v), `resource ${k}`);
   for (const k of Object.keys(old.LX)) assert.ok(plan.LX[k], `library extra ${k}`);
