@@ -867,7 +867,7 @@
   window.addEventListener("focus", () => guard(Store.changedOnDisk().then(ch => ch && syncFolder("external"))));
   document.addEventListener("visibilitychange", () => { if (document.hidden) Store.flush(); });
 
-  window.AE = { build: "2026-10-13.1", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
+  window.AE = { build: "2026-10-13.2", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
   themeLabel();
   render();
   updatePill();

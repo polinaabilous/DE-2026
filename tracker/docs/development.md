@@ -5,13 +5,13 @@ The app is a small static website with no build step. Its script files use expli
 | File in `ae-tracker/` | Responsibility |
 | --- | --- |
 | `index.html`, `styles.css` | Page shell, navigation and visual styles |
-| `data.js` | Curriculum and resource definitions |
+| `data.js` | Curriculum: lessons, learning areas and chapters, roadmap rows, portfolio stages, checkpoints, deck coverage and resource tiers |
 | `utils.js` | Shared escaping, dates, IDs, filenames and downloads |
-| `state.js` | State defaults and legacy schema/curriculum migrations |
-| `progress.js` | Roadmap index, ratings and progress calculations |
-| `resources.js` | Resource catalog and completion rules |
+| `state.js` | State defaults and legacy schema/curriculum/check migrations |
+| `progress.js` | Lesson and stage index, check-based completion, prerequisite locking and stage readiness |
+| `resources.js` | Resource catalog, per-lesson tiers, area reading lists, deck links and completion rules |
 | `editor.js` | Safe Markdown rendering, formatting toolbar, Markdown links and keyboard/list editing |
-| `plan-views.js` | Roadmap, skills map and shared topic cards |
+| `plan-views.js` | Topics (learning areas), Roadmap (learn → build) and the lesson/stage side panel |
 | `practice-data.js` | Public SQL problem catalog and curated broad topics and original tag provenance |
 | `practice.js` | Tool registry, practice filters, three progress statuses and problem notes |
 | `store.js` | Optional local folder adapter and Markdown file format |
@@ -24,6 +24,17 @@ The app is a small static website with no build step. Its script files use expli
 
 Shared Markdown rendering and editing serve notes, daily logs and practice notes. Bare HTTP(S) URLs and `[label](url)` links are clickable; the Link button and Cmd/Ctrl+K insert editable Markdown. HTTP(S) and mailto destinations are allowed; script/data URLs are rendered as text. URLs inside code remain literal. Date/identity helpers are shared with folder exports. Account changes and data restores clear all editor drafts; incoming cloud updates preserve drafts for the current account.
 
+## Topics, roadmap and progress
+
+- **Lessons.** Every curriculum item in `data.js` is one lesson. The UI shows titles only; item IDs (`S1`, `PF3` …) are internal keys for saved progress and must stay stable.
+- **Topics** (`#topics`) groups lessons by learning area (`areas`) and chapter. Each area also has a reading list for broad books and courses.
+- **Roadmap** (`#roadmap`) renders `road`: releases → rows. A row lists lessons on the left and unlocks one portfolio stage, career milestone, standalone practice route or checkpoint on the right. `#skills` and other old routes alias to the new views.
+- **Lesson panel:** Learn first → 1 What to learn (deck slot, then at most 3 resources: one *Start here* plus up to two *Go deeper*) → 2 How to practise (lab slot, practice items, practice sites) → 3 Portfolio connection → 4 Check your understanding. Notes and the daily-log link follow.
+- **Stage panel:** Knowledge needed → What this stage covers → What to do → Deliverable & completion.
+- **Completion.** `ck[id]` stores check boxes for lessons and stages. `done[id]` and `built[stageId]` record completion. A lesson can be completed only when all its checks are ticked and its prerequisite lessons are complete. A stage needs its required lessons and earlier stages first.
+- **Migration.** `checksV` runs once per state, whether loaded from local storage, an imported export or the cloud. Old ratings of Solid or Confident tick the matching check; Not yet or Shaky leave it open. Topics that were already done stay complete even if a prerequisite is not. Old ratings remain in `r` as evidence. Checkpoint tick keys (`g["s1-0"]` …) are unchanged.
+- **Decks.** Link only files that exist under the repository's `docs/`. Deck coverage lives in `lessonDecks`, and planned decks in `plannedDecks` are shown by name without a link. Deck URLs are relative (`../../docs/…`), so serve the **repository root** locally. Firebase hosting publishes only `ae-tracker/`, so deck links don't resolve there until the decks are published with the app.
+- **Hours** are kept in the data only for history; the UI no longer shows estimates.
 ## Practice trackers
 
 The navigation hub is `#trackers`; each registered tool has a `#trackers/<id>` route and submenu entry. The controller creates routes and navigation from `AEPracticeCatalog.tools`, so another catalog can reuse the tracker without adding tool-specific view or event code. Problem slugs must be unique within their tool. Progress keys combine tool ID and slug to avoid collisions across tools.

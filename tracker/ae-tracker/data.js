@@ -1420,10 +1420,10 @@
   // ---------- checkpoints: keys stay stable so saved checkpoint ticks (g["s1-0"] …) still apply ----------
   const checkpoints = {
     s0: { title: "Checkpoint · Lab ready", items: ["All setup checks ticked"] },
-    s1: { title: "Checkpoint · Foundations", items: ["Medium window problems in under 15 min", "I can explain grain, the 3 fact types and SCDs", "I can write a precise metric definition", "Bounded ingester validates records, re-runs safely and passes tests in CI"] },
-    s2: { title: "Checkpoint · Depth", items: ["Hard SQL in 20–25 min", "≥3 performance experiments from the query-plan, indexing and columnar lessons written up", "Delta MERGE working", "Tests and contracts run in CI", "I can explain p-values, CIs and power simply"] },
+    s1: { title: "Checkpoint · Core SQL, modeling & ingester", items: ["Medium window problems in under 15 min", "I can explain grain, the 3 fact types and SCDs", "I can write a precise metric definition", "Bounded ingester validates records, re-runs safely and passes tests in CI"] },
+    s2: { title: "Checkpoint · SQL depth, performance & quality", items: ["Hard SQL in 20–25 min", "≥3 performance experiments from the query-plan, indexing and columnar lessons written up", "Delta MERGE working", "Tests and contracts run in CI", "I can explain p-values, CIs and power simply"] },
     apply: { title: "Ready to apply", apply: true, note: "Apply with portfolio v1, career assets and basic interview practice. Continue later extensions and advanced interviews alongside applications; work-data access is not required.",
-      items: ["Depth checkpoint passed", "Portfolio v1 shipped: bounded dataset, tested dbt marts and dashboard", "Resume and LinkedIn prepared", "Basic SQL, Python and modeling interview practice done"] },
+      items: ["SQL depth, performance & quality checkpoint passed", "Portfolio v1 shipped: bounded dataset, tested dbt marts and dashboard", "Resume and LinkedIn prepared", "Basic SQL, Python and modeling interview practice done"] },
     s3: { title: "Checkpoint · Extensions built", items: ["Lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built", "Architecture doc + ≥5 decision records + TESTING.md", "AI evaluation report published"] },
     s4: { title: "Checkpoint · Interview-ready", items: ["3 mock loops passed", "Resume and LinkedIn rewritten", "Applications going out via referrals"] }
   };
@@ -1450,7 +1450,7 @@
         { title: "Spark & Delta (local labs)", learn: ["SB1", "SB2", "SB3", "A1"],
           practice: { title: "Local labs", text: "Run these locally now; the lakehouse extension reuses them after you start applying.", sites: [] } },
         { title: "Statistics & optional experience", learn: ["BZ3", "JOB1"],
-          practice: { title: "Standalone practice", text: "Statistics is part of the depth checkpoint. The experience exercise is optional evidence from work, synthetic or personal data.", sites: [] } },
+          practice: { title: "Statistics & experience practice", text: "Statistics is part of the depth checkpoint. The experience exercise is optional evidence from work, synthetic or personal data.", sites: [] } },
         { checkpoint: "s2" },
         { title: "Career assets", learn: ["CM4"], milestone: "IV3" },
         { checkpoint: "apply" }] },
@@ -1461,7 +1461,7 @@
     { id: "quality", name: "Extension · Quality & observability", kind: "release", desc: "Freshness, reconciliation and an incident handled end to end.",
       rows: [{ title: "Observability & incidents", learn: ["Q3", "Q4"], stage: "x-quality" },
         { title: "Experimentation", learn: ["BZ4", "Py6"],
-          practice: { title: "Standalone practice", text: "Experiment analysis is an interview and analytics skill; no portfolio stage depends on it.", sites: [] } }] },
+          practice: { title: "Experiment analysis practice", text: "Experiment analysis is an interview and analytics skill; no portfolio stage depends on it.", sites: [] } }] },
     { id: "perf", name: "Extension · Performance & cost", kind: "release", desc: "Benchmarks and cost per model at larger volumes.",
       rows: [{ title: "Distributed execution & cost", learn: ["P4", "P5", "SB5"], stage: "x-perf" }] },
     { id: "semantic", name: "Extension · Semantic layer", kind: "release", desc: "Certified metrics feeding the dashboard.",
@@ -1483,7 +1483,9 @@
       rows: [{ title: "Interview Python", learn: ["Py5"], milestone: "IV1" },
         { title: "Design, metric & modeling cases", learn: ["A7", "BZ5", "IV2"],
           practice: { title: "Interview practice", text: "Out loud, one design, one metric and one modeling case per week.", sites: ["designBanks", "dataInterview"] } },
-        { title: "Optional certification", learn: ["CERT"], milestone: "IV4" },
+        { title: "Mock loops", learn: [], milestone: "IV4" },
+        { title: "Optional certification", learn: ["CERT"],
+          practice: { title: "Optional certification", text: "Only if a target role asks for it; the course and practice exam are the practice route. Not required for any stage or milestone.", sites: [] } },
         { checkpoint: "s4" }] }
   ];
 

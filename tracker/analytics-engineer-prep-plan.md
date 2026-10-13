@@ -41,7 +41,7 @@ Self-paced and built around stage gates. Move on when you meet a phase's exit cr
 ### Effort (rough)
 - **Analytics engineer, ready to apply:** ~280–350 h. About 7–9 months at 10 h/week.
 - **Analytics + data engineer:** ~380–480 h.
-- **You don't need to finish everything before applying.** See the "ready to apply" checkpoint in section 3. Prepare career assets and basic interview practice in Phase 1; start applying after the Phase 2 checkpoint with portfolio v1. Continue later extensions while interviewing.
+- **You don't need to finish everything before applying.** See the "ready to apply" checkpoint in section 3. Prepare career assets and basic interview practice alongside the first release; start applying after the SQL depth, performance & quality checkpoint with portfolio v1. Continue later extensions while interviewing.
 
 ---
 
@@ -55,7 +55,7 @@ Self-paced and built around stage gates. Move on when you meet a phase's exit cr
 | **D. On the job + community** | Data work in your current role; dbt Slack; meetups; writing | Opportunistic | ~5%+ |
 
 ### How the lanes connect
-1. **Theory becomes the build target** that same week (e.g. SCD2 → `dbt snapshot`; contracts → a breaking change caught in CI). Finish prerequisites before signing off a deliverable, including earlier topics within the same step; the tracker links them under **Finish these first**.
+1. **Theory becomes the build target** that same week (e.g. SCD2 → `dbt snapshot`; contracts → a breaking change caught in CI). Finish prerequisites before signing off a deliverable; the tracker lists them under **Learn first** in each lesson and **Knowledge needed** in each portfolio stage.
 2. **Modeling exercises include metrics.** Every weekly domain exercise produces a star schema, **plus 3 metric definitions written in MetricFlow YAML**, plus SQL answers. That covers modeling, the semantic layer and SQL in one session.
 3. **Solve each problem three ways:** SQL → pandas/Polars → PySpark.
 4. **AI rule:** do practice reps **without AI**, since interviews are usually AI-free. Then use Copilot to review your solution. In the build lane, **use AI freely, but review every line.** That's a 2026 job skill in itself.
@@ -71,32 +71,142 @@ Self-paced and built around stage gates. Move on when you meet a phase's exit cr
 
 ---
 
-## 3. Phase map (stage gates)
+## 3. Roadmap: learn → build
 
-| Phase | Practice | Theory / career | Build | Exit criteria |
-|---|---|---|---|---|
-| **0. Setup** | — | — | Section 18 (minimal, 1–2 h) | Repo on GitHub; Python 3.12 via `uv`; DuckDB queries a CSV |
-| **1. Foundations** | S1–S4 · IV0 (basic SQL, Python and modeling interview sessions) | M1–M3 · BZ1–BZ2 · CM1–CM2 · IV3 · CM4 | D1 · Py1–Py4, then PF1 (bounded, tested ingester) | Medium window problems in under 15 min. Explain grain, fact types and SCDs. Write a precise metric definition. Bounded ingester validates records, re-runs safely and passes tests in CI. |
-| **2. Depth + portfolio v1** | S5–S8 · ongoing basic interview practice | P1–P3 · M4 · Q1–Q2 · BZ3 · A1–A2 · CM3 | D2–D3 · SB1–SB3 as local labs · PF3 on DuckDB/dbt; optional JOB1 | Hard SQL in 20–25 min. ≥3 performance experiments from P1–P3. Local Delta MERGE working. Tests and contracts in CI. Explain p-values, CIs and power. Portfolio v1 answers one question with a bounded dataset, tested marts and a dashboard. |
-| **3. Later portfolio releases** | Mixed practice + metric/product cases | P4–P5 · M5–M6 · Q3–Q4 · BZ4 · A3–A5 · AI1–AI5, AI7 · PL1–PL4 | PF2 + SB4–SB5 · D4–D5 · AF1–AF4, then PF4 · Py6 · PF5–PF9 · PF11 architecture docs; optional JOB2 and breadth | Extensions PF2 and PF4–PF9 done. Architecture doc + ≥5 decision records + TESTING.md (PF11). AI evaluation report published. |
-| **4. Advanced interviews + polish** | Py5 · IV1–IV2 · BZ5 · IV4 mocks | A6–A7; update existing career assets | PF10 story/demo; optional CERT | 3 mock loops passed (SQL, modeling, metrics case, system design). Resume and LinkedIn updated. Applications going out via referrals. |
+The tracker's **Roadmap** page follows this order. Each row lists the lessons that unlock the next portfolio stage, career milestone or checkpoint. A lesson can be completed only after its "Learn first" lessons; a stage can be marked built only after its required lessons and earlier stages. Lessons that no stage needs are standalone practice (DataLemur, LeetCode, labs) and still appear on the roadmap.
 
-> **Ready to apply:** pass the Phase 2 checkpoint, publish **portfolio v1 (PF1 + PF3)**, prepare the **resume and LinkedIn (IV3)**, and complete **introductory interview practice (IV0)**. Start applying through referrals; continue extensions and advanced interviews alongside applications. Work-data access is not required.
+### First release · GitHub activity
 
-### Tracker order for the changed deliverables
+One question, a bounded sample, tested marts and one useful dashboard — your application evidence.
 
-| Deliverable | Finish first | Scheduled |
+| # | Learn | Unlocks |
 |---|---|---|
-| PF1: bounded ingester | Py3 (1.4), Py4 (1.5) | 1.6 |
-| PF3: first release | PF1; M1–M4, D1–D3, Q1–Q2, CM1–CM3 | 2.5 |
-| PF2: local bronze/silver extension | PF3, SB2–SB3 | 3.1; before SB4 in that step |
-| SB4: Databricks / Auto Loader | Local PF2 | 3.1; Auto Loader is added here |
-| PF4: orchestration signoff | AF1–AF2 (3.2), AF3–AF4 (3.3), SB4 | 3.4 |
-| PF11: architecture and decision records | A1–A5, CM2, PF2–PF5 | End of 3.4, before the Phase 3 checkpoint |
-| PF10: polished story and demo | Reuse PF11 docs; finish A6 | 4.3 |
+| 1 | **Your lab & the question:** Minimal lab, Requirements & stakeholders | Portfolio stage: **Frame the question & the sample** |
+| ✓ | **Checkpoint · Lab ready** | All setup checks ticked |
+| 2 | **Python for data & ingestion:** Python for data engineering, Ingestion engineering, Python quality & tooling | Portfolio stage: **Build the bounded ingester** |
+| 3 | **Analytical SQL on events:** Window functions, Classic SQL patterns, Joins and grain, Semi-structured data | Portfolio stage: **Explore & validate the sample** |
+| 4 | **More SQL & DataFrames:** Advanced aggregation, Time-based analysis, DataFrames: pandas & Polars | Standalone: Interview practice |
+| 5 | **Dimensional modeling & metrics:** Why dimensional modeling, Fact tables, Dimension tables, Business models & metrics, Metric design | Portfolio stage: **Design the analytical model** |
+| 6 | **Interview foundations:** — | Career milestone: **Interview foundations: explain and practice** |
+| ✓ | **Checkpoint · Core SQL, modeling & ingester** | Medium window problems in under 15 min; I can explain grain, the 3 fact types and SCDs; I can write a precise metric definition; Bounded ingester validates records, re-runs safely and passes tests in CI |
+| 7 | **dbt, tests & contracts:** Query structure and style, Modern modeling adaptations, dbt fundamentals, Jinja, macros, packages, Incremental, snapshots, unit tests, Test strategy, Data contracts | Portfolio stage: **Build tested dbt marts** |
+| 8 | **Writing & dashboards:** Writing, Storytelling & dashboards | Portfolio stage: **Ship dashboard v1 & README** |
+| 9 | **SQL depth & performance:** Warehouse writes, How a query runs, Row-store indexing, Columnar warehouses | Standalone: Depth labs |
+| 10 | **Spark & Delta (local labs):** Spark fundamentals, PySpark, Delta Lake + Iceberg basics, Pipeline patterns | Standalone: Local labs |
+| 11 | **Statistics & optional experience:** Statistics essentials, Experience: telemetry star schema (work or personal) (optional) | Standalone: Statistics & experience practice |
+| ✓ | **Checkpoint · SQL depth, performance & quality** | Hard SQL in 20–25 min; ≥3 performance experiments from the query-plan, indexing and columnar lessons written up; Delta MERGE working; Tests and contracts run in CI; I can explain p-values, CIs and power simply |
+| 12 | **Career assets:** Personal brand & network | Career milestone: **Resume, LinkedIn & STAR stories** |
+| ✓ | **Ready to apply** | SQL depth, performance & quality checkpoint passed; Portfolio v1 shipped: bounded dataset, tested dbt marts and dashboard; Resume and LinkedIn prepared; Basic SQL, Python and modeling interview practice done |
 
-**Career preparation:** CM1 starts at 1.4, IV3 at 1.5, IV0 and initial networking at 1.6, and dashboard storytelling at 2.3. JOB1 and JOB2 are optional evidence exercises with equivalent work, synthetic-data and personal-project routes.
+### Extension · Lakehouse
 
+The bounded v1 sample in local bronze and silver Delta tables.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Storage architecture:** Storage architecture | Portfolio stage: **Local bronze → silver lakehouse** |
+
+### Extension · Orchestration
+
+Databricks, Airflow and Cosmos run the pipeline on a schedule.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Databricks & Airflow:** Databricks platform, Airflow core concepts, Airflow authoring, Airflow integrations, Airflow ops & alternatives, Reliability | Portfolio stage: **Orchestrate with Airflow** |
+
+### Extension · Quality & observability
+
+Freshness, reconciliation and an incident handled end to end.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Observability & incidents:** Observability, Incidents & trust | Portfolio stage: **Quality & observability** |
+| 2 | **Experimentation:** Experimentation, Statistics in Python | Standalone: Experiment analysis practice |
+
+### Extension · Performance & cost
+
+Benchmarks and cost per model at larger volumes.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Distributed execution & cost:** Distributed execution, Materialization & cost (FinOps), Spark performance | Portfolio stage: **Performance & cost lab** |
+
+### Extension · Semantic layer
+
+Certified metrics feeding the dashboard.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Semantic modeling & AI context:** Semantic layer modeling, Requirements & bus matrix, dbt governance & scale, Semantic layer for AI, Documentation as context | Portfolio stage: **Semantic layer** |
+
+### Extension · AI agent + evaluation
+
+An evaluated agent over certified metrics.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Agents & evaluation:** Agents over data, Evaluating AI analytics, LLM functions in the warehouse, AI-assisted development | Portfolio stage: **AI agent + evaluation ⭐** |
+| 2 | **Optional AI breadth:** Unstructured data for AI (optional), Experience: metrics exposed to an agent (work or personal) (optional) | Standalone: Optional practice |
+
+### Extension · Portability & infrastructure
+
+Terraform, least privilege and gold on Snowflake.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Cloud, Terraform & warehouses:** Cloud fundamentals & IAM, Terraform, Snowflake, BigQuery, dbt deployment & CI | Portfolio stage: **Portability & infrastructure** |
+| 2 | **Optional platform breadth:** Ingestion tools & CDC (optional), BI breadth (optional), Streaming (awareness) (optional) | Standalone: Optional practice |
+
+### Extension · Architecture docs
+
+The architecture document and decision records for everything you shipped.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Platform modeling & governance:** Platform modeling & serving, Governance & security | Portfolio stage: **Architecture & decision records** |
+| ✓ | **Checkpoint · Extensions built** | Lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built; Architecture doc + ≥5 decision records + TESTING.md; AI evaluation report published |
+
+### Extension · Polished story & demo
+
+A short demo and public write-up of the shipped releases.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Trade-offs:** Trade-offs & organization | Portfolio stage: **Polished story & demo** |
+
+### Interview-ready
+
+Advanced timed practice, design and metric cases, then full mock loops.
+
+| # | Learn | Unlocks |
+|---|---|---|
+| 1 | **Interview Python:** Interview-style Python | Career milestone: **Interview: timed SQL & Python** |
+| 2 | **Design, metric & modeling cases:** System design interviews, Diagnosing metric changes, Interview: modeling, metrics & dbt cases | Standalone: Interview practice |
+| 3 | **Mock loops:** — | Career milestone: **Mock loops & take-home** |
+| 4 | **Optional certification:** Optional certification (optional) | Standalone: Optional certification |
+| ✓ | **Checkpoint · Interview-ready** | 3 mock loops passed; Resume and LinkedIn rewritten; Applications going out via referrals |
+
+> **Ready to apply:** pass the SQL depth, performance & quality checkpoint, ship the first release (bounded ingester, tested dbt marts and dashboard), prepare the resume and LinkedIn, and complete interview foundations. Start applying through referrals; continue extensions and advanced interviews alongside applications. Work-data access is not required.
+
+### Portfolio stages
+
+| Release | Stage | Needs lessons | After stages |
+|---|---|---|---|
+| First release · GitHub activity | Frame the question & the sample | Minimal lab, Requirements & stakeholders | — |
+| First release · GitHub activity | Build the bounded ingester | Python for data engineering, Ingestion engineering, Python quality & tooling | Frame the question & the sample |
+| First release · GitHub activity | Explore & validate the sample | Window functions, Classic SQL patterns, Joins and grain, Semi-structured data | Build the bounded ingester |
+| First release · GitHub activity | Design the analytical model | Why dimensional modeling, Fact tables, Dimension tables, Business models & metrics, Metric design | Explore & validate the sample |
+| First release · GitHub activity | Build tested dbt marts | Query structure and style, Modern modeling adaptations, dbt fundamentals, Jinja, macros, packages, Incremental, snapshots, unit tests, Test strategy, Data contracts | Design the analytical model |
+| First release · GitHub activity | Ship dashboard v1 & README | Writing, Storytelling & dashboards | Build tested dbt marts |
+| Extension · Lakehouse | Local bronze → silver lakehouse | PySpark, Delta Lake + Iceberg basics | Ship dashboard v1 & README |
+| Extension · Orchestration | Orchestrate with Airflow | Airflow core concepts, Airflow authoring, Airflow integrations, Airflow ops & alternatives, Databricks platform | Local bronze → silver lakehouse |
+| Extension · Quality & observability | Quality & observability | Test strategy, Data contracts, Observability, Incidents & trust, Airflow integrations | Ship dashboard v1 & README |
+| Extension · Performance & cost | Performance & cost lab | How a query runs, Row-store indexing, Columnar warehouses, Distributed execution, Materialization & cost (FinOps), Delta Lake + Iceberg basics, Spark performance | Ship dashboard v1 & README |
+| Extension · Semantic layer | Semantic layer | Semantic layer modeling, Metric design, Semantic layer for AI, Documentation as context | Ship dashboard v1 & README |
+| Extension · AI agent + evaluation | AI agent + evaluation ⭐ | Agents over data, Evaluating AI analytics, LLM functions in the warehouse | Semantic layer |
+| Extension · Portability & infrastructure | Portability & infrastructure | Cloud fundamentals & IAM, Terraform, Snowflake, dbt deployment & CI | Ship dashboard v1 & README |
+| Extension · Architecture docs | Architecture & decision records | Pipeline patterns, Storage architecture, Platform modeling & serving, Reliability, Governance & security, Writing | Ship dashboard v1 & README, Local bronze → silver lakehouse, Orchestrate with Airflow, Quality & observability |
+| Extension · Polished story & demo | Polished story & demo | Trade-offs & organization, Writing, Storytelling & dashboards | Architecture & decision records |
 ---
 
 ## 4. Lane A: Advanced SQL
