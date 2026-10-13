@@ -2,8 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 require('../ae-tracker/cloud-core.js');
 const { pack, unpack, Model } = globalThis.AECloudCore;
-const empty = () => ({v:6,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},lib:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
-const base = () => ({...empty(),r:{S1:[0,2]},pc:{S1:[true,false]},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later'},act:{'2026-10-06':2},
+const empty = () => ({v:7,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},ck:{},done:{},built:{},lib:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
+const base = () => ({...empty(),checksV:1,r:{S1:[0,2]},pc:{S1:[true,false]},ck:{S1:[true,false],'v1-frame':[true]},done:{SETUP:'migrated'},built:{'v1-frame':'2026-10-13'},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later'},act:{'2026-10-06':2},
   notes:[{id:'note-a',text:'SQL\n**FILTER**\n- One\n```sql\nSELECT 1;\n```',track:'sql',c:'2026-10-06'}],
   log:[{id:'log-a',d:'2026-10-06',text:'Practiced joins',h:1.5,role:'P',note:'legacy',custom:{retained:true}}],
   todo:[{id:'todo-a',text:'Try dbt\nand tests',done:false,track:'dbt'}],curriculumHistory:[{r:{S1:[3,2]}}],custom:{nested:'kept'}});

@@ -15,7 +15,7 @@
   const action = (act, kind, id) => $(`[data-act="${act}"][data-kind="${kind}"][data-id="${id}"]`).click();
   try {
     await tick();
-    check(state().v === 6, 'Current state version');
+    check(state().v === 7, 'Current state version');
     check(state().log.length === 2 && state().todo.length === 0, 'Old sessions preserved and empty checklist initialized');
     check(state().log[0].h === 1.5 && state().log[0].note === 'Practiced joins', 'Original session fields preserved');
     check(state().log[0].text.includes('Practiced joins') && state().log[0].text.includes('1.5h'), 'Old sessions have readable journal text');
@@ -221,6 +221,37 @@
     const practiceCsv=AE.Practice.csv('datalemur');check(practiceCsv.includes('topics,status,notes') && !practiceCsv.includes('last_attempt') && practiceCsv.includes('**Group** twice') && practiceCsv.split('\r\n').length === 3, 'Filtered CSV includes status, compact topics and notes');
     $('[data-practice-action="clear"]').click();await go('todo');
 
+    // Topics, roadmap and the lesson / stage side panel.
+    const CODE = /\b(?:S[1-8]|P[1-5]|M[1-6]|D[1-5]|Py[1-6]|SB[1-5]|AF[1-4]|A[1-7]|Q[1-4]|BZ[1-5]|AI[1-7]|PL[1-7]|CM[1-4]|PF\d{1,2}|JOB[12]|IV[0-4])\b/;
+    check(state().ck.S1[0] === true && !state().done.S1 && state().r.S1[0] === 3, 'Old rating became a ticked check and the rating is kept');
+    await go('skills');
+    check(location.hash === '#topics' && $('main').dataset.route === 'topics', 'Old skills map link opens Topics');
+    check(document.querySelectorAll('.area-card').length === 14 && document.querySelectorAll('.chapter-block').length > 30 && !CODE.test($('main').textContent), 'Topics shows learning areas with chapters and no codes');
+    const lessonOpener = $('.area-lesson[data-open="S2"]'); lessonOpener.focus(); lessonOpener.click(); await tick();
+    check($('#drawer').open && document.activeElement.id === 'panelTitle' && $('#panelTitle').textContent === 'Classic SQL patterns', 'Lesson opens in a focused side panel');
+    check(!CODE.test($('#drawer').textContent) && $('#drawer').textContent.includes('Learn first') && !!$('#drawer a[href*="sql-windows-recursion-clean.html#slide-14"]'), 'Panel shows prerequisites and the matching deck slides without codes');
+    const tickAll = id => { let box; while ((box = $(`#drawer [data-ck^="${id}|"]:not(:checked)`))) box.click(); };
+    tickAll('S2');
+    check(state().ck.S2.length === 5 && state().ck.S2.every(Boolean) && $('#drawer [data-act="complete"]').disabled, 'Complete lesson stays locked until prerequisites are complete');
+    $('#drawer .panel-prereq [data-open="S1"]').click(); await tick();
+    check($('#panelTitle').textContent === 'Window functions' && $('.panel-context').textContent.includes('Classic SQL patterns'), 'Related lesson trail');
+    tickAll('S1');
+    $('#drawer [data-act="complete"]').click(); await tick();
+    check(!!state().done.S1, 'Lesson completes after every check is ticked');
+    $('.panel-context').click(); await tick();
+    check($('#panelTitle').textContent === 'Classic SQL patterns' && !$('#drawer [data-act="complete"]').disabled, 'Back to the related lesson, now unlocked');
+    $('#drawer [data-act="complete"]').click(); await tick();
+    check(!!state().done.S2 && $('#drawer [data-ck^="S2|"]').disabled, 'Completed lesson locks its checks');
+    $('#drawer [data-act="close"]').click(); await tick();
+    check(!$('#drawer').open && document.activeElement?.dataset.open === 'S2', 'Closing the panel returns focus to the lesson');
+    await go('roadmap');
+    check(document.querySelectorAll('.road-row').length > 25 && !!$('.checkpoint-card.apply') && !CODE.test($('main').textContent), 'Roadmap shows rows, checkpoints and Ready to apply without codes');
+    $('.project-card [data-open="v1-frame"]').click(); await tick();
+    check($('#drawer').open && $('#drawer [data-act="build"]').disabled && $('#drawer').textContent.includes('Knowledge needed'), 'Stage opens and stays locked until its lessons are complete');
+    AE.closePanel(); await tick();
+    $('[data-gate="s0-0"]').click();
+    check(state().g['s0-0'] === true, 'Checkpoint ticks save under their existing keys');
+
     // Exercise the real folder writer/reader with an isolated in-memory directory.
     const files = new Map();
     function directory(prefix = '') {
@@ -251,7 +282,7 @@
     check(JSON.stringify(reloaded.log) === JSON.stringify(state().log) && JSON.stringify(reloaded.todo) === JSON.stringify(state().todo), 'Page reload preserves journal and checklist; migration is idempotent');
     check(reloaded.practice[problemKey].status === 'completed', 'Status survives a fresh page load');
     frame.remove();
-    for (const route of ['roadmap', 'skills', 'resources', 'notes', 'log', 'todo', 'trackers', 'trackers/datalemur', 'dashboard']) {
+    for (const route of ['topics', 'roadmap', 'resources', 'notes', 'log', 'todo', 'trackers', 'trackers/datalemur', 'dashboard']) {
       await go(route);
       check(!!$('main h2') && !$('main').innerHTML.includes('NaN') && !$('main').innerHTML.includes('undefined'), `${route} renders with migrated data`);
     }

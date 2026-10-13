@@ -14,19 +14,27 @@ function fixture() {
   let state = model.blank();
   const roadmap = ctx.AEProgress.create(plan, () => state);
   const resources = ctx.AEResources.create(plan, roadmap, () => state);
-  const views = ctx.AEPlanViews.create({ plan, roadmap, getState: () => state });
+  const views = ctx.AEPlanViews.create({ plan, roadmap, resources, getState: () => state });
   return { ctx, plan, model, roadmap, resources, views, state: () => state, replace: next => state = next };
 }
 const plain = value => JSON.parse(JSON.stringify(value));
 
-test('every roadmap topic and prerequisite is ordered; all resources resolve', () => {
+test('every lesson is on the roadmap once, after its prerequisites; all resources resolve', () => {
   const { plan, roadmap, resources } = fixture();
-  assert.equal(roadmap.order.length, Object.keys(plan.items).length);
+  const lessons = Object.keys(plan.items).filter(roadmap.isLesson);
+  assert.equal(roadmap.order.length, lessons.length);
   assert.equal(new Set(roadmap.order).size, roadmap.order.length);
+  // Position of a lesson or stage in roadmap order (stages sit at the end of their row).
+  const pos = id => roadmap.isStage(id) ? roadmap.rows.indexOf(roadmap.rowOf[id]) + 0.9 : roadmap.rows.indexOf(roadmap.rowOf[id]) + roadmap.order.indexOf(id) / 1000;
   for (const id of roadmap.order) {
     for (const pre of plan.items[id].prerequisites || []) {
-      assert.ok(roadmap.order.indexOf(pre) >= 0 && roadmap.order.indexOf(pre) < roadmap.order.indexOf(id), `${id} requires ${pre} earlier`);
+      assert.ok(roadmap.rowOf[pre] && pos(pre) < pos(id), `${id} requires ${pre} earlier`);
     }
+  }
+  for (const s of plan.stages) {
+    for (const pre of [...s.req, ...s.after]) assert.ok(pos(pre) < pos(s.id), `${s.id} requires ${pre} earlier`);
+  }
+  for (const id of Object.keys(plan.items)) {
     for (const entry of plan.items[id].learn) {
       const resolved = resources.resolve(entry);
       assert.ok(resolved.title && resolved.kind, `${id}: ${entry}`);
@@ -80,17 +88,15 @@ test('legacy multiline to dos retain fields and duplicate identities are repaire
 
 test('progress and views read the latest state after an import or account switch', () => {
   const { model, roadmap, views, replace, plan } = fixture();
-  assert.equal(roadmap.score('S1'), 0);
   assert.equal(roadmap.isDone('S1'), false);
-  const next = model.blank(); next.r.S1 = plan.items.S1.dod.map(() => 2);
+  const next = model.migrate({ r: { S1: plan.items.S1.dod.map(() => 2) } });
   replace(next);
-  assert.equal(roadmap.score('S1'), 1);
   assert.equal(roadmap.isDone('S1'), true);
-  assert.match(views.card('S1'), /class="card done"/);
+  assert.match(views.lessonButton('S1'), /road-lesson done/);
   replace(model.blank());
-  assert.equal(roadmap.score('S1'), 0);
-  assert.match(views.card('S1'), /class="card todo"/);
-  assert.equal(roadmap.progress(roadmap.required).h, 490);
+  assert.equal(roadmap.isDone('S1'), false);
+  assert.match(views.lessonButton('S1'), /class="road-lesson "/);
+  assert.equal(roadmap.required.length, roadmap.lessons.filter(id => !plan.items[id].opt).length);
 });
 
 test('library completion stays consistent with topic resource checks', () => {

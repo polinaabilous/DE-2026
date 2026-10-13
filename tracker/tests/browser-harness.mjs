@@ -2,7 +2,7 @@
 import { createServer } from 'node:http';
 import { mkdtemp, cp, readFile, writeFile, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
-import { resolve, dirname, join } from 'node:path';
+import { resolve, dirname, join, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn } from 'node:child_process';
 
@@ -26,7 +26,7 @@ export async function fixture({ config = null, before = '', after = '' } = {}) {
     try {
       const name = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
       const path = resolve(publicDir, '.' + (name === '/' ? '/index.html' : name));
-      if (!path.startsWith(publicDir + '/')) { res.writeHead(403).end(); return; }
+      if (!path.startsWith(publicDir + sep)) { res.writeHead(403).end(); return; }
       const contents = await readFile(path);
       res.writeHead(200, { 'Content-Type': types[path.slice(path.lastIndexOf('.'))] || 'application/octet-stream', 'Cache-Control': 'no-store' });
       res.end(contents);
