@@ -21,7 +21,7 @@
   const roadmap = globalThis.AEProgress.create(P, () => S);
   const { order, it, isDone, status, required, lessonChecks, currentRow } = roadmap;
   const resources = globalThis.AEResources.create(P, roadmap, () => S);
-  const { resolve, LIB, TIME, KINDS, libDone, libLater, setLibDone } = resources;
+  const { resolve, LIB, TIME, FORMATS, FORMAT_ORDER, libDone, libLater, setLibDone } = resources;
   const planViews = globalThis.AEPlanViews.create({ plan: P, roadmap, resources, getState: () => S });
   const bar = v => `<div class="bar"><i style="width:${pct(v)}"></i></div>`;
   // Old portfolio topic IDs (notes, library tags) open the first project stage that carries their content.
@@ -97,115 +97,232 @@
   }
 
   // ---------- resources ----------
+  const { fmtBadge, timeBadge, bookBadge } = planViews;
   function vResources() {
     const lib = S.ui.res === "lib";
-    const tabs = `<div class="tabs"><button class="${lib ? "" : "on"}" data-rtab="topic">By lesson</button><button class="${lib ? "on" : ""}" data-rtab="lib">📚 Library <span class="small">${LIB.length}</span></button></div>`;
+    const tabs = `<div class="tabs" role="tablist"><button role="tab" aria-selected="${!lib}" class="${lib ? "" : "on"}" data-rtab="topic">By lesson</button><button role="tab" aria-selected="${lib}" class="${lib ? "on" : ""}" data-rtab="lib">📚 Library <span class="small">${LIB.length}</span></button></div>`;
     return lib ? vLibrary(tabs) : vByTopic(tabs);
   }
+
+  // By lesson: deck(s), labs, Start here / Go deeper, problem sites, data & tools, book chapters, then everything else
+  // tagged to the lesson in a quiet "Also tagged" group. Each area ends with its reading list.
   function vByTopic(tabs) {
-    const kinds = [...new Set(Object.values(P.L).map(r => r[2]))].sort();
-    let h = `<div class="panel">${tabs}<h2>Resources by lesson</h2><p class="muted">Every learning area and lesson with its deck and everything tagged to it — including resources the lesson panel leaves to the Library. Tick resources as you finish them; the same ticks appear in the lesson panel and the Library.</p>
-      <div class="filters"><input id="rsearch" type="search" placeholder="Search lessons, resources…"> <select id="rkind"><option value="">All kinds</option><option value="deck">deck</option>${kinds.map(k => `<option>${k}</option>`).join("")}</select></div></div>`;
-    const item = (id, r, role, area) => `<li class="ritem" data-kind="${esc(r.kind)}" data-text="${esc((topicTitle(id) + " " + r.title + " " + r.kind + " " + role + " " + area).toLowerCase())}">${resRow(id, r, role)}</li>`;
+    let h = `<div class="panel">${tabs}<h2>Resources by lesson</h2><p class="muted">Every learning area and lesson with its decks, labs and picks, then everything else tagged to it. Ticks are shared with the lesson panel and the Library.</p>
+      <div class="filters"><input id="rsearch" type="search" placeholder="Search lessons, resources…" aria-label="Search lessons and resources"> <select id="rkind" aria-label="Format"><option value="">All formats</option><option value="lab">Lab</option>${FORMAT_ORDER.map(f => `<option value="${f}">${esc(FORMATS[f][0])}</option>`).join("")}</select></div></div>`;
+    const item = (id, r, role, area, cls = "") => `<li class="ritem ${cls}" data-kind="${esc(r.format)}" data-text="${esc((topicTitle(id) + " " + r.title + " " + r.format + " " + role + " " + area + " " + (r.note || "")).toLowerCase())}">${resRow(id, r, role)}</li>`;
     P.areas.forEach(a => {
       h += `<section class="panel rgroup"><h3>${esc(a.name)}${a.star ? " ⭐" : ""}</h3>`;
       roadmap.areaLessons(a).forEach(id => {
-        const x = it(id), picks = resources.lessonRes(id), d = resources.deckFor(id);
-        const role = r => picks.start?.key === r.key ? "Start here" : picks.deeper.some(z => z.key === r.key) ? "Go deeper" : r.kind === "practice" ? "Problems" : picks.reading.some(z => z.key === r.key) ? "Area reading list" : "Library";
-        const shown = new Set(x.learn.map(e => e.split("|")[0]));
-        const extra = [picks.start, ...picks.deeper, ...picks.sites].filter(r => r && !shown.has(r.key));
+        const x = it(id), p = resources.lessonRes(id), d = resources.deckFor(id), name = x.name.toLowerCase();
         h += `<div class="rtopic"><button class="link-btn" data-open="${id}"><b>${esc(x.name)}</b>${x.opt ? ' <span class="muted small">optional</span>' : ""}</button><ul class="rlist">`;
-        [...d.decks, ...d.labs].forEach(k => { h += `<li class="ritem" data-kind="deck" data-text="${esc((x.name + " " + k.title + " deck " + a.name).toLowerCase())}"><span class="res"><span class="kind">deck</span><a href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.title)}${k.slide ? ` · slide ${k.slide}` : ""}</a> <span class="muted small">— ${esc(k.note)}</span></span></li>`; });
-        if (!d.decks.length) h += `<li class="ritem" data-kind="deck" data-text="${esc((x.name + " no deck yet " + d.planned.join(" ")).toLowerCase())}"><span class="res muted"><span class="kind">deck</span>No deck yet${d.planned.length ? ` — planned: ${esc(d.planned.join(" · "))}` : ""}</span></li>`;
-        x.learn.map(resolve).forEach(r => { h += item(id, r, role(r), a.name); });
-        extra.forEach(r => { h += item(id, r, role(r), a.name); });
+        d.decks.forEach(k => { h += `<li class="ritem" data-kind="deck" data-text="${esc((name + " " + k.title + " deck " + k.coverage + " " + a.name).toLowerCase())}"><span class="res">${fmtBadge("deck")}<span class="grow"><a href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.title)}</a>${k.partial ? ' <span class="badge amber">Partial</span>' : ""}${k.mdUrl ? ` · <a href="${esc(k.mdUrl)}" target="_blank" rel="noopener">Markdown ↗</a>` : ""} <span class="muted small">— ${esc(k.coverage)}</span></span></span></li>`; });
+        if (!d.decks.length) h += `<li class="ritem" data-kind="deck" data-text="${esc((name + " no deck yet " + d.planned.join(" ")).toLowerCase())}"><span class="res muted">${fmtBadge("deck")}No deck yet${d.planned.length ? ` · planned: ${esc(d.planned.join(" · "))}` : ""}</span></li>`;
+        d.labs.forEach(l => { h += `<li class="ritem" data-kind="lab" data-text="${esc((name + " lab " + l.title + " " + a.name).toLowerCase())}"><span class="res"><span class="fmt f-lab">${icon("box")}Lab</span><span class="grow"><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a>${l.slideUrl ? ` · <a href="${esc(l.slideUrl)}" target="_blank" rel="noopener">walkthrough slide</a>` : ""}</span></span></li>`; });
+        if (p.start) h += item(id, p.start, "Start here", a.name);
+        p.deeper.forEach(r => { h += item(id, r, "Go deeper", a.name); });
+        p.sites.forEach(r => { h += item(id, r, "Problems", a.name); });
+        p.tools.forEach(r => { h += item(id, r, "Data & tools", a.name); });
+        p.reading.forEach(r => { h += item(id, r, "Book chapters", a.name); });
+        if (p.more.length) h += `<li class="also"><details class="also-tagged"><summary>Also tagged <span class="muted">(${p.more.length})</span></summary><ul class="rlist">${p.more.map(r => item(id, r, "", a.name, "quiet")).join("")}</ul></details></li>`;
         h += `</ul></div>`;
       });
       const reading = resources.areaReading(a);
-      if (reading.length) h += `<div class="rtopic"><b>Area reading list</b><ul class="rlist">${reading.map(r => `<li class="ritem" data-kind="${esc(r.kind)}" data-text="${esc((a.name + " reading list " + r.title + " " + r.kind).toLowerCase())}"><label class="res"><input type="checkbox" data-lib="${esc(r.key)}" ${libDone(r.key) ? "checked" : ""}><span class="kind k-${esc(r.kind)}">${esc(r.kind)}</span>${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a>` : `<span>${esc(r.title)}</span>`}</label></li>`).join("")}</ul></div>`;
+      if (reading.length) h += `<div class="rtopic"><b>Area reading list</b><ul class="rlist">${reading.map(r => `<li class="ritem" data-kind="${esc(r.format)}" data-text="${esc((a.name + " reading list " + r.title + " " + r.format + " " + r.lessons.map(l => l.note).join(" ")).toLowerCase())}"><label class="res"><input type="checkbox" data-lib="${esc(r.key)}" ${libDone(r.key) ? "checked" : ""} aria-label="Mark ${esc(r.title)} done">${fmtBadge(r.format)}<span class="grow">${r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a>` : `<span>${esc(r.title)}</span>`}${bookBadge(r)}${r.lessons.length ? `<small class="muted reading-for">${r.lessons.map(l => `${esc(it(l.id).name)}${l.note ? ` — ${esc(l.note)}` : ""}`).join("<br>")}</small>` : ""}</span></label></li>`).join("")}</ul></div>`;
       h += `</section>`;
     });
     h += `<section class="panel rgroup"><h3>Portfolio stages</h3>`;
     P.stages.forEach(st => {
-      const refs = st.from.flatMap(id => it(id).learn.map(e => [id, resolve(e)]));
+      const refs = resources.stageRefs(st);
       if (!refs.length) return;
       h += `<div class="rtopic"><button class="link-btn" data-open="${st.id}"><b>${esc(st.name)}</b></button><ul class="rlist">${refs.map(([id, r]) => item(id, r, "Reference", "Portfolio")).join("")}</ul></div>`;
     });
     return h + `</section>`;
   }
   function resRow(id, r, role) {
-    const ck = (S.rc[id] || {})[r.key] || S.lib[r.key] === "done";
+    const ck = (S.rc[id] || {})[r.key] || libDone(r.key);
     const title = r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a>` : `<span>${esc(r.title)}</span>`;
-    return `<label class="res"><input type="checkbox" data-rc="${id}|${esc(r.key)}" ${ck ? "checked" : ""}><span class="kind k-${esc(r.kind)}">${esc(r.kind)}</span>${title}${r.note ? ` <span class="muted small">— ${esc(r.note)}</span>` : ""}${role ? ` <span class="res-role">${esc(role)}</span>` : ""}</label>`;
+    return `<label class="res"><input type="checkbox" data-rc="${id}|${esc(r.key)}" ${ck ? "checked" : ""} aria-label="Mark ${esc(r.title)} done">${fmtBadge(r.format)}<span class="grow">${title}${r.note ? ` <span class="res-note">— ${esc(r.note)}</span>` : ""}${bookBadge(r)}${role ? ` <span class="res-role">${esc(role)}</span>` : ""}</span></label>`;
   }
   function filterResources() {
     const q = ($("#rsearch")?.value || "").toLowerCase().trim(), k = $("#rkind")?.value || "";
     document.querySelectorAll(".ritem").forEach(li => { li.hidden = !((!q || li.dataset.text.includes(q)) && (!k || li.dataset.kind === k)); });
+    document.querySelectorAll(".also-tagged").forEach(d => { const any = d.querySelector(".ritem:not([hidden])"); d.closest(".also").hidden = !any; if (q || k) d.open = !!any; });
     document.querySelectorAll(".rtopic").forEach(tp => { tp.hidden = !tp.querySelector(".ritem:not([hidden])"); });
     document.querySelectorAll(".rgroup").forEach(g => { g.hidden = !g.querySelector(".rtopic:not([hidden])"); });
   }
 
-  // library: pick something to watch / read / listen to
-  const libF = { q: "", area: "", kind: "", time: "", status: "todo", ref: false, pick: null };
-  const libMatch = (x, skipArea) => (skipArea || !libF.area || x.areas.includes(libF.area))
-    && (!libF.kind || x.kind === libF.kind)
-    && (libF.time ? x.time === libF.time : libF.ref || x.time !== "ref")
+  // ---------- Library: Now bar + shelves ----------
+  // Now: what you are reading (long reads with status Reading) and short picks for the roadmap's current lesson.
+  // Below: format chips, time chips, area and status filters; shelves for quick learning, long reads and things to follow.
+  const libF = { q: "", area: "", formats: new Set(), time: "", status: "todo", pick: null, open: new Set(), lesson: null };
+  const STATUS = [["todo", "To do"], ["later", "Saved ★"], ["done", "Done"], ["all", "All"]];
+  const SHELVES = { quick: ["⚡", "Quick learning", "Decks, articles, videos, docs and practice — one sitting each. Start with the deck, then one article or video."],
+    long: ["📚", "Long reads", "Books and courses. Keep one in progress; the rest wait on Later until you finish or pause it."],
+    loop: ["📬", "Stay in the loop", "Newsletters, podcasts and communities to follow — not lessons to finish."] };
+  const GROUP_SIZE = 6;
+  const longOrder = ["reading", "paused", "later", "", "done"];
+  const libMatch = (x, skip = "") => (skip === "area" || !libF.area || x.areas.includes(libF.area))
+    && (skip === "format" || !libF.formats.size || libF.formats.has(x.format))
+    && (skip === "time" || !libF.time || x.time === libF.time)
     && (libF.status === "all" || (libF.status === "done" ? libDone(x.key) : libF.status === "later" ? libLater(x.key) : !libDone(x.key)))
     && (!libF.q.trim() || x.text.includes(libF.q.toLowerCase().trim()));
-  const libKpis = () => `<div><b>${LIB.length}</b><span>items</span></div><div><b>${LIB.filter(x => libLater(x.key)).length}</b><span>saved ★</span></div><div><b>${LIB.filter(x => libDone(x.key)).length}</b><span>done</span></div>`;
+  const libKpis = () => [[LIB.length, "items"], [resources.readingNow().length, "reading now"], [LIB.filter(x => libLater(x.key)).length, "saved ★"], [LIB.filter(x => libDone(x.key)).length, "done"]].map(([n, l]) => `<span><b>${n}</b> ${l}</span>`).join("");
+  // Decks show their size in slides; everything else shows the time it takes.
+  const sizeBadge = x => x.format === "deck" && x.slides ? `<span class="tb">📑 ${x.slides} slides</span>` : timeBadge(x.time);
   function vLibrary(tabs) {
-    return `<div class="panel">${tabs}<div class="rm-head"><div class="grow"><h2>Library</h2>
-      <p class="muted">Everything worth watching, reading or listening to — every lesson's resources plus talks, channels, podcasts and newsletters, tagged by area and lesson. Got a free half hour? Pick a time, then <b>🎲 Pick something</b>. ☆ saves for later; ticking done here also ticks it in its lessons.</p></div>
-      <div class="kpis small-kpis" id="libKpis">${libKpis()}</div></div>
-      <div class="filters"><input id="lq" type="search" placeholder="Search titles, tools, topics…" value="${esc(libF.q)}">
-        <select id="lkind" title="Format"><option value="">All formats</option>${KINDS.map(k => `<option value="${k}" ${libF.kind === k ? "selected" : ""}>${k}</option>`).join("")}</select>
-        <select id="lstatus" title="Status">${[["todo", "Not done yet"], ["later", "Saved ★"], ["done", "Done"], ["all", "Everything"]].map(([v, l]) => `<option value="${v}" ${libF.status === v ? "selected" : ""}>${l}</option>`).join("")}</select>
-        <label class="small chk"><input type="checkbox" id="lref" ${libF.ref ? "checked" : ""}> Include reference docs & tools</label>
-        <button class="btn primary" data-act="libpick">🎲 Pick something for me</button></div>
-      <div id="libChips">${libChips()}</div></div>
-      <div id="libList">${libList()}</div>`;
+    return `<div class="panel lib-intro">${tabs}<div class="rm-head"><div class="grow"><h2>Library</h2>
+      <p class="muted">Short things for the topic you're on now, your book in progress, and everything else on shelves. Colours show the format; the badge shows how long it takes. ☆ saves for later; ticking done here also ticks it in its lessons.</p></div>
+      <p class="lib-stats" id="libKpis">${libKpis()}</p></div></div></div>
+      <section class="now-bar" id="libNow" aria-label="Now">${libNow()}</section>
+      <div class="panel lib-filters"><div class="filters"><input id="lq" type="search" placeholder="Search titles, topics, lessons…" value="${esc(libF.q)}" aria-label="Search the Library">
+        <select id="larea" aria-label="Learning area"><option value="">All areas</option>${P.tracks.map(t => `<option value="${t.id}" ${libF.area === t.id ? "selected" : ""}>${esc(t.name)}</option>`).join("")}</select>
+        <div class="seg lib-status" role="group" aria-label="Status">${STATUS.map(([v, l]) => `<button type="button" data-lstatus="${v}" aria-pressed="${libF.status === v}" class="${libF.status === v ? "on" : ""}">${l}</button>`).join("")}</div>
+        <button class="btn primary" data-act="libpick">🎲 Pick something</button></div>
+        <div id="libChips">${libChips()}</div></div>
+      <div id="libShelves">${libShelves()}</div>`;
   }
+  // ----- Now bar -----
+  function currentLessons() {
+    const cur = currentRow(), lessons = roadmap.lessons;
+    let ids = cur ? [...(cur.learn || []), cur.milestone].filter(id => id && lessons.includes(id) && !isDone(id)) : [];
+    if (!ids.length) { const next = lessons.find(id => !isDone(id) && !it(id).opt); if (next) ids = [next]; }
+    return { ids, row: cur };
+  }
+  function chaptersFor(key) {
+    return roadmap.lessons.flatMap(id => resources.lessonRes(id).reading.concat(resources.lessonRes(id).deeper).filter(r => r.key === key && r.note).map(r => ({ id, note: r.note })));
+  }
+  function readingCard(k) {
+    const x = resources.libItem[k], r = (S.reading || {})[k] || {}, ch = chaptersFor(k);
+    const pct = Number.isFinite(r.pct) ? r.pct : null;
+    return `<article class="now-read f-${esc(x.format)}"><div class="row spread">${fmtBadge(x.format)}<span class="small muted">${r.updated && /^\d{4}/.test(r.updated) ? "Updated " + esc(r.updated) : ""}</span></div>
+      <h3>${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>` : esc(x.title)}</h3>
+      <div class="now-progress"><label class="grow"><span class="sr-only">Where you are in ${esc(x.title)}</span><input type="text" data-rnote="${esc(k)}" value="${esc(r.note || "")}" placeholder="Where are you? e.g. Ch. 7 · Accounting" maxlength="120"></label>
+        <label class="pct"><input type="number" min="0" max="100" step="5" data-rpct="${esc(k)}" value="${pct ?? ""}" placeholder="%" aria-label="Percent read of ${esc(x.title)}"><span aria-hidden="true">%</span></label></div>
+      ${pct !== null ? `<div class="bar thick" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100" aria-label="${esc(x.title)} progress"><i style="width:${pct}%"></i></div>` : ""}
+      ${ch.length ? `<details class="now-chapters"><summary>Chapters your lessons use <span class="muted">(${ch.length})</span></summary><ul>${ch.map(c => `<li><button class="link-btn" data-open="${c.id}">${esc(it(c.id).name)}</button> — ${esc(c.note)}</li>`).join("")}</ul></details>` : ""}
+      <div class="row now-actions"><button class="btn sm" data-act="readset" data-key="${esc(k)}" data-status="done">${icon("check")} Done</button><button class="btn sm" data-act="readset" data-key="${esc(k)}" data-status="paused">${icon("pause")} Pause</button></div></article>`;
+  }
+  function libNow() {
+    const now = resources.readingNow(), paused = LIB.filter(x => resources.longStatus(x.key) === "paused");
+    const suggest = (P.currentBooks || []).filter(k => resources.libItem[k] && !now.includes(k) && resources.longStatus(k) !== "done");
+    const readingCol = `<div class="now-col"><p class="eyebrow">${icon("book")} Currently reading</p>
+      ${now.length ? now.map(readingCard).join("") : `<div class="now-empty"><p>Nothing marked as reading. Pick one book or course on the <b>Long reads</b> shelf and press <b>Reading</b>.</p>
+        ${suggest.map(k => `<div class="now-suggest">${fmtBadge(resources.libItem[k].format)}<span class="grow"><strong>${esc(resources.libItem[k].title)}</strong><small>You mentioned you're reading this — mark it to track chapters and progress here.</small></span><button class="btn sm primary" data-act="readstart" data-key="${esc(k)}">Mark as reading</button></div>`).join("")}</div>`}
+      ${paused.length ? `<p class="small muted now-paused">Paused: ${paused.map(x => `<span>${esc(x.title)} <button class="link-btn" data-act="readstart" data-key="${esc(x.key)}">Resume</button></span>`).join(" · ")}</p>` : ""}</div>`;
+    const { ids } = currentLessons(), id = ids.includes(libF.lesson) ? libF.lesson : ids[0];
+    let picksCol;
+    if (!id) picksCol = `<div class="now-col"><p class="eyebrow">⚡ Quick picks</p><p class="muted">Every lesson is complete 🎉</p></div>`;
+    else {
+      const picks = resources.quickPicks(id);
+      picksCol = `<div class="now-col"><p class="eyebrow">⚡ Quick picks for your current lesson</p>
+        <h3><button class="link-btn" data-open="${id}">${esc(it(id).name)} ${icon("arrow")}</button></h3>
+        <div class="pick-list">${picks.length ? picks.map(pickRow).join("") : `<p class="small muted">No short deck, article or video for this lesson — open it for its resources and reading list.</p>`}</div>
+        ${ids.length > 1 ? `<div class="now-also"><span class="small muted">Also in this step:</span>${ids.filter(x => x !== id).map(x => `<button class="fchip" data-libles="${x}">${esc(it(x).name)}</button>`).join("")}</div>` : ""}</div>`;
+    }
+    return readingCol + picksCol;
+  }
+  function pickRow(x) {
+    const d = libDone(x.key);
+    return `<div class="pick f-${esc(x.format)} ${d ? "done" : ""}"><input type="checkbox" data-lib="${esc(x.key)}" ${d ? "checked" : ""} aria-label="Mark ${esc(x.title)} done">
+      <span class="grow"><span class="pick-meta">${fmtBadge(x.format)}${sizeBadge(x)}</span><a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>${x.why ? `<small class="muted">${esc(x.why)}</small>` : ""}</span></div>`;
+  }
+  // ----- filters -----
   function libChips() {
-    const base = LIB.filter(x => libMatch(x, true));
-    const areas = [["", "All areas", base.length], ...P.tracks.map(t => [t.id, t.name, base.filter(x => x.areas.includes(t.id)).length])];
-    return `<div class="fchips"><span class="muted small">Time</span>${Object.entries(TIME).map(([k, [ic, lab]]) => `<button class="fchip ${libF.time === k ? "on" : ""}" data-time="${k}">${ic} ${lab}</button>`).join("")}</div>
-      <div class="fchips"><span class="muted small">Area</span>${areas.map(([id, n, c]) => `<button class="fchip ${libF.area === id ? "on" : ""}" data-area="${id}" ${c || libF.area === id ? "" : "disabled"}>${esc(n)} <b>${c}</b></button>`).join("")}</div>`;
+    const base = LIB.filter(x => libMatch(x, "format"));
+    const fchips = FORMAT_ORDER.map(f => { const c = base.filter(x => x.format === f).length, on = libF.formats.has(f);
+      return `<button type="button" class="fchip fmt-chip f-${f} ${on ? "on" : ""}" data-fmt="${f}" aria-pressed="${on}" ${c || on ? "" : "disabled"}>${icon(FORMATS[f][1])}${esc(FORMATS[f][0])} <b>${c}</b></button>`; }).join("");
+    const tbase = LIB.filter(x => libMatch(x, "time"));
+    const tchips = Object.entries(TIME).map(([k, [ic, lab]]) => { const on = libF.time === k; return `<button type="button" class="fchip ${on ? "on" : ""}" data-time="${k}" aria-pressed="${on}">${ic} ${lab} <b>${tbase.filter(x => x.time === k).length}</b></button>`; }).join("");
+    const any = libF.formats.size || libF.time || libF.area || libF.q || libF.status !== "todo";
+    return `<div class="fchips" role="group" aria-label="Format"><span class="muted small">Format</span>${fchips}</div>
+      <div class="fchips" role="group" aria-label="Time"><span class="muted small">Time</span>${tchips}${any ? `<button type="button" class="text-btn small" data-act="libclear">Clear filters</button>` : ""}</div>`;
   }
-  function libRow(x) {
-    const d = libDone(x.key), l = libLater(x.key), [ic, lab] = TIME[x.time];
+  // ----- shelves -----
+  function libCard(x) {
+    const d = libDone(x.key), l = libLater(x.key);
     const title = x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>` : `<span>${esc(x.title)}</span>`;
-    return `<div class="lrow ${d ? "done" : ""} ${libF.pick === x.key ? "pick" : ""}" data-key="${esc(x.key)}">
-      <input type="checkbox" data-lib="${esc(x.key)}" ${d ? "checked" : ""} title="${d ? "Done — untick to undo" : "Mark as done"}">
-      <button class="icon sm ${l ? "on" : ""}" data-act="libsave" data-key="${esc(x.key)}" title="${l ? "Saved for later — click to unsave" : "Save for later"}" ${d ? "disabled" : ""}>${l ? "★" : "☆"}</button>
-      <div class="lmain"><div class="ltop"><span class="kind k-${esc(x.kind)}">${esc(x.kind)}</span><span class="tb t-${x.time}">${ic} ${lab}</span>${title}</div>
-        ${x.why ? `<div class="small muted">${esc(x.why)}</div>` : ""}
-        <div class="ltags">${x.areas.map(a => `<button class="atag ${libF.area === a ? "on" : ""}" data-area="${a}" title="Show everything for ${esc(trackName[a])}">${esc(trackName[a])}</button>`).join("")}
-          ${x.topics.slice(0, 6).map(id => `<button class="tchip" data-open="${id}" title="Open ${esc(topicTitle(id))}">${esc(topicTitle(id))}</button>`).join("")}${x.topics.length > 6 ? `<span class="muted small">+${x.topics.length - 6}</span>` : ""}</div></div></div>`;
+    return `<article class="lcard f-${esc(x.format)} ${d ? "done" : ""} ${libF.pick === x.key ? "pick" : ""}" data-key="${esc(x.key)}">
+      <div class="lcard-top">${fmtBadge(x.format)}${sizeBadge(x)}<span class="grow"></span>
+        <button class="icon sm ${l ? "on" : ""}" data-act="libsave" data-key="${esc(x.key)}" aria-pressed="${l}" aria-label="${l ? "Saved for later — unsave" : "Save for later"}: ${esc(x.title)}" title="${l ? "Saved for later" : "Save for later"}" ${d ? "disabled" : ""}>${l ? "★" : "☆"}</button>
+        <input type="checkbox" data-lib="${esc(x.key)}" ${d ? "checked" : ""} aria-label="Mark ${esc(x.title)} done" title="${d ? "Done — untick to undo" : "Mark as done"}"></div>
+      <div class="lcard-title">${title}${x.mdUrl ? ` <a class="small" href="${esc(x.mdUrl)}" target="_blank" rel="noopener">Markdown ↗</a>` : ""}</div>
+      ${x.why ? `<p class="lcard-why">${esc(x.why)}</p>` : ""}${tags(x)}</article>`;
   }
-  function libList() {
-    const items = LIB.filter(x => libMatch(x));
-    if (!items.length) return `<div class="panel muted">Nothing matches — clear a filter${libF.status !== "all" ? " or set status to <b>Everything</b>" : ""}.</div>`;
-    const T = Object.keys(TIME), sort = (a, b) => T.indexOf(a.time) - T.indexOf(b.time) || KINDS.indexOf(a.kind) - KINDS.indexOf(b.kind);
-    if (libF.area) return `<section class="panel lgroup"><h3>${esc(trackName[libF.area])} <span class="muted small">${items.length}</span></h3>${items.sort(sort).map(libRow).join("")}</section>`;
-    return P.tracks.map(t => {
-      const g = items.filter(x => x.areas[0] === t.id).sort(sort);
-      return g.length ? `<section class="panel lgroup"><h3>${esc(t.name)}${t.star ? " ⭐" : ""} <span class="muted small">${g.length}</span></h3>${g.map(libRow).join("")}</section>` : "";
+  const tags = x => `<div class="ltags">${x.areas.map(a => `<button type="button" class="atag ${libF.area === a ? "on" : ""}" data-larea="${a}" title="Show everything for ${esc(trackName[a])}">${esc(trackName[a])}</button>`).join("")}
+      ${x.topics.slice(0, 2).map(id => `<button type="button" class="tchip" data-open="${id}" title="Open ${esc(topicTitle(id))}">${esc(topicTitle(id))}</button>`).join("")}${x.topics.length > 2 ? `<span class="muted small">+${x.topics.length - 2}</span>` : ""}</div>`;
+  function longRow(x) {
+    const st = resources.longStatus(x.key);
+    const seg = [["reading", st === "paused" ? "Resume" : "Reading"], ["later", "Later"], ["done", "Done"]].map(([v, l]) => {
+      const on = st === v;
+      return `<button type="button" data-act="readset" data-key="${esc(x.key)}" data-status="${v}" aria-pressed="${on}" class="${on ? "on" : ""}">${l}</button>`;
     }).join("");
+    const title = x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>` : `<span>${esc(x.title)}</span>`;
+    return `<div class="long-row f-${esc(x.format)} st-${st || "none"} ${libF.pick === x.key ? "pick" : ""}" data-key="${esc(x.key)}">${fmtBadge(x.format)}
+      <div class="grow"><div class="long-title">${title}${st === "paused" ? ' <span class="badge neutral">Paused</span>' : st === "reading" ? ' <span class="badge">Reading</span>' : ""}${bookBadge(x)}</div>
+        ${x.why ? `<p class="lcard-why">${esc(x.why)}</p>` : ""}${tags(x)}</div>
+      <div class="seg long-seg" role="group" aria-label="Status of ${esc(x.title)}">${seg}</div></div>`;
+  }
+  function groupBlock(id, title, items, render, size = GROUP_SIZE, extraCls = "") {
+    if (!items.length) return "";
+    const open = libF.open.has(id) || !!libF.area || items.length <= size + 1 || items.some(x => x.key === libF.pick);
+    const shown = open ? items : items.slice(0, size);
+    return `<div class="shelf-group ${extraCls}"><h4>${esc(title)} <span class="muted small">${items.length}</span></h4><div class="${extraCls === "long" ? "long-list" : "card-grid"}">${shown.map(render).join("")}</div>
+      ${items.length > shown.length ? `<button type="button" class="text-btn" data-act="libmore" data-group="${esc(id)}" aria-expanded="false">Show all ${items.length}</button>` : libF.open.has(id) ? `<button type="button" class="text-btn" data-act="libmore" data-group="${esc(id)}" aria-expanded="true">Show fewer</button>` : ""}</div>`;
+  }
+  function libShelves() {
+    const items = LIB.filter(x => libMatch(x));
+    if (!items.length) return `<div class="panel muted">Nothing matches — <button class="link-btn" data-act="libclear">clear the filters</button>${libF.status !== "all" ? " or choose status <b>All</b>" : ""}.</div>`;
+    const T = Object.keys(TIME), sort = (a, b) => (a.format === "deck" ? 0 : 1) - (b.format === "deck" ? 0 : 1) || T.indexOf(a.time) - T.indexOf(b.time) || FORMAT_ORDER.indexOf(a.format) - FORMAT_ORDER.indexOf(b.format);
+    const shelf = (id, body, n) => { const [ic, t, d] = SHELVES[id]; return `<section class="panel shelf shelf-${id}" aria-labelledby="shelf-${id}"><div class="shelf-head"><h3 id="shelf-${id}">${ic} ${t} <span class="muted small">${n}</span></h3><p class="small muted">${d}</p></div>${body}</section>`; };
+    const quick = items.filter(x => x.shelf === "quick"), long = items.filter(x => x.shelf === "long"), loop = items.filter(x => x.shelf === "loop");
+    let h = "";
+    if (quick.length) {
+      const body = libF.area ? groupBlock("q:" + libF.area, trackName[libF.area], quick.sort(sort), libCard, 99)
+        : P.tracks.map(t => groupBlock("q:" + t.id, t.name, quick.filter(x => x.areas[0] === t.id).sort(sort), libCard)).join("");
+      h += shelf("quick", body, quick.length);
+    }
+    if (long.length) {
+      const st = x => longOrder.indexOf(resources.longStatus(x.key));
+      const by = s => long.filter(x => resources.longStatus(x.key) === s);
+      const body = groupBlock("l:now", "In progress", [...by("reading"), ...by("paused")], longRow, 99, "long")
+        + groupBlock("l:later", "Later", by("later"), longRow, 8, "long")
+        + groupBlock("l:none", "Not started", long.filter(x => !resources.longStatus(x.key)).sort((a, b) => P.tracks.findIndex(t => t.id === a.areas[0]) - P.tracks.findIndex(t => t.id === b.areas[0]) || st(a) - st(b)), longRow, 8, "long")
+        + groupBlock("l:done", "Finished", by("done"), longRow, 4, "long");
+      h += shelf("long", body, long.length);
+    }
+    if (loop.length) h += shelf("loop", `<div class="loop-list">${loop.sort((a, b) => FORMAT_ORDER.indexOf(a.format) - FORMAT_ORDER.indexOf(b.format)).map(x => `<div class="loop-item f-${esc(x.format)} ${libDone(x.key) ? "done" : ""}">${fmtBadge(x.format)}<span class="grow">${x.url ? `<a href="${esc(x.url)}" target="_blank" rel="noopener">${esc(x.title)}</a>` : esc(x.title)}${x.why ? `<small class="muted">${esc(x.why)}</small>` : ""}</span><input type="checkbox" data-lib="${esc(x.key)}" ${libDone(x.key) ? "checked" : ""} aria-label="Mark ${esc(x.title)} done"></div>`).join("")}</div>`, loop.length);
+    return h;
   }
   function updLib() {
-    const l = $("#libList"), c = $("#libChips"), k = $("#libKpis");
-    if (l) l.innerHTML = libList();
-    if (c) c.innerHTML = libChips();
-    if (k) k.innerHTML = libKpis();
+    const set = (sel, html) => { const el = $(sel); if (el) el.innerHTML = html; };
+    set("#libShelves", libShelves()); set("#libChips", libChips()); set("#libKpis", libKpis()); set("#libNow", libNow());
+    document.querySelectorAll("[data-lstatus]").forEach(b => { const on = b.dataset.lstatus === libF.status; b.classList.toggle("on", on); b.setAttribute("aria-pressed", String(on)); });
+    const area = $("#larea"); if (area) area.value = libF.area;
   }
+  // 🎲: respects every filter; skips long reads while one is in progress unless you filtered for books or courses.
   function libPick() {
-    let pool = LIB.filter(x => libMatch(x) && !libDone(x.key));
+    const longAsked = libF.formats.has("book") || libF.formats.has("course");
+    let pool = LIB.filter(x => libMatch(x) && !libDone(x.key) && (longAsked || x.shelf !== "long" || !resources.readingNow().length));
     if (pool.length > 1) pool = pool.filter(x => x.key !== libF.pick);
     if (!pool.length) return toast("Nothing left to pick with these filters");
     libF.pick = pool[Math.floor(Math.random() * pool.length)].key;
     updLib();
-    const el = document.querySelector(`.lrow[data-key="${CSS.escape(libF.pick)}"]`);
-    if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    const el = document.querySelector(`#libShelves [data-key="${CSS.escape(libF.pick)}"]`);
+    if (el) { el.scrollIntoView({ behavior: "smooth", block: "center" }); el.querySelector("a")?.focus({ preventScroll: true }); }
+  }
+  function setReading(k, status) {
+    const x = resources.libItem[k]; if (!x) return;
+    const cur = resources.longStatus(k);
+    if (status === "reading" && cur === "reading") resources.setLongStatus(k, "");
+    else if (status === "reading") {
+      const res = resources.startReading(k);
+      if (res.confirm) {
+        const names = res.confirm.map(o => resources.libItem[o]?.title || o).join(" and ");
+        if (!confirm(`You're reading ${names}. Pause it and start ${x.title}?`)) return;
+        resources.startReading(k, true);
+      }
+    } else resources.setLongStatus(k, cur === status ? "" : status);
+    touch(); save(); updLib();
   }
 
   // ---------- daily journal / to do ----------
@@ -525,7 +642,8 @@
       N("py", 6, "Generators keep memory flat\n`for line in open(path)` + `yield` streams a 10 GB JSONL file in constant memory; a list comprehension loads all of it.", "Py1"),
       N(GEN, 3, "Kimball techniques cheat sheet\nhttps://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/\nSCD types, fact table types, bridge tables."),
     ];
-    s.lib = { ytKahanStar: "done", ytCafferkyDim: "later", podAE: "later", arWhatIsAE: "done" };
+    s.lib = { ytKahanStar: "done", ytCafferkyDim: "later", podAE: "later", arWhatIsAE: "done", corr: "later" };
+    s.reading = { dwt: { status: "reading", note: "Ch. 6 · Order Management", pct: 35, updated: Store.today() } };
     s.savedAt = Date.now();
     s.todo = [{ id: Store.uid(), text: "Try FILTER for conditional SQL counts", done: false, c: Store.today(), u: Store.today() }];
     return migrate(s);
@@ -654,7 +772,7 @@
 
   // ---------- events ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-road],[data-act],[data-nb],[data-rtab],[data-area],[data-time],[data-note-format],[data-list]");
+    const t = e.target.closest("[data-open],[data-road],[data-act],[data-nb],[data-rtab],[data-larea],[data-time],[data-fmt],[data-lstatus],[data-libles],[data-note-format],[data-list]");
     if (!t || t.disabled) return;
     if (t.dataset.list) return formatList($("textarea", t.closest(".editor-shell")), t.dataset.list === "number");
     if (t.dataset.noteFormat === "link") return formatLink($("textarea", t.closest(".editor-shell")));
@@ -663,12 +781,15 @@
     if (t.dataset.road !== undefined) { e.preventDefault(); return showRoadRow(t.dataset.road); }
     if (t.dataset.nb !== undefined) { e.preventDefault(); NF.track = t.dataset.nb; if (route() !== "notes") location.hash = "#notes"; else render(); return; }
     if (t.dataset.rtab) { S.ui.res = t.dataset.rtab; save(); return render(); }
-    if (t.dataset.area !== undefined && !t.closest(".area-card")) {
-      libF.area = libF.area === t.dataset.area ? "" : t.dataset.area; libF.pick = null; updLib();
-      if (t.classList.contains("atag")) $("#libChips").scrollIntoView({ behavior: "smooth", block: "nearest" });
+    if (t.dataset.larea !== undefined) {
+      libF.area = libF.area === t.dataset.larea ? "" : t.dataset.larea; libF.pick = null; updLib();
+      $("#libChips")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
       return;
     }
     if (t.dataset.time !== undefined) { libF.time = libF.time === t.dataset.time ? "" : t.dataset.time; libF.pick = null; return updLib(); }
+    if (t.dataset.fmt) { const f = t.dataset.fmt; if (libF.formats.has(f)) libF.formats.delete(f); else libF.formats.add(f); libF.pick = null; return updLib(); }
+    if (t.dataset.lstatus) { libF.status = t.dataset.lstatus; libF.pick = null; return updLib(); }
+    if (t.dataset.libles) { libF.lesson = t.dataset.libles; return updLib(); }
     switch (t.dataset.act) {
       case "close": return closePanel();
       case "closepanel": return closePanel();
@@ -722,6 +843,10 @@
       // library
       case "libsave": { const k = t.dataset.key; if (libLater(k)) delete S.lib[k]; else S.lib[k] = "later"; save(); return updLib(); }
       case "libpick": return libPick();
+      case "libclear": Object.assign(libF, { q: "", area: "", time: "", status: "todo", pick: null }); libF.formats.clear(); if ($("#lq")) $("#lq").value = ""; return updLib();
+      case "libmore": { const g = t.dataset.group; if (libF.open.has(g)) libF.open.delete(g); else libF.open.add(g); updLib(); return document.querySelector(`[data-act="libmore"][data-group="${CSS.escape(g)}"]`)?.focus(); }
+      case "readstart": return setReading(t.dataset.key, "reading");
+      case "readset": return setReading(t.dataset.key, t.dataset.status);
       // data
       case "cloudsignin": return guard(Cloud.signIn());
       case "cloudsignout": return guard(Cloud.signOut());
@@ -736,7 +861,7 @@
       case "export": return download();
       case "import": return $("#importFile").click();
       case "sample": if (confirm("Replace your progress with sample data? (Export first if you want to keep it.)" + folderNote())) { S = sample(); clearDrafts(); save(); rerender(); updatePill(); } return;
-      case "reset": if (confirm("Clear all progress, checks, log, notes, to dos, library ticks and practice progress?" + folderNote())) { S = blank(); clearDrafts(); save(); closePanel(); noteEdit = null; rerender(); updatePill(); } return;
+      case "reset": if (confirm("Clear all progress, checks, log, notes, to dos, library ticks, reading status and practice progress?" + folderNote())) { S = blank(); clearDrafts(); save(); closePanel(); noteEdit = null; rerender(); updatePill(); } return;
     }
   });
   function cancelEdit() {
@@ -767,11 +892,11 @@
       if (!t.checked && S.lib[k] === "done") delete S.lib[k];
       touch(); save(); return rerender();
     }
-    if (t.dataset.lib) { setLibDone(t.dataset.lib, t.checked); touch(); save(); if ($("#libList")) return updLib(); return rerender(); }
+    if (t.dataset.lib) { setLibDone(t.dataset.lib, t.checked); touch(); save(); if ($("#libShelves")) return updLib(); return rerender(); }
     if (t.id === "rkind") return filterResources();
-    if (t.id === "lkind") { libF.kind = t.value; libF.pick = null; return updLib(); }
-    if (t.id === "lstatus") { libF.status = t.value; libF.pick = null; return updLib(); }
-    if (t.id === "lref") { libF.ref = t.checked; return updLib(); }
+    if (t.id === "larea") { libF.area = t.value; libF.pick = null; return updLib(); }
+    if (t.dataset.rnote !== undefined) { resources.setProgress(t.dataset.rnote, { note: t.value }); save(); return updLib(); }
+    if (t.dataset.rpct !== undefined) { resources.setProgress(t.dataset.rpct, { pct: t.value }); save(); return updLib(); }
     if (t.id === "importFile" && t.files[0]) {
       t.files[0].text().then(txt => {
         try {
@@ -867,7 +992,7 @@
   window.addEventListener("focus", () => guard(Store.changedOnDisk().then(ch => ch && syncFolder("external"))));
   document.addEventListener("visibilitychange", () => { if (document.hidden) Store.flush(); });
 
-  window.AE = { build: "2026-10-13.3", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
+  window.AE = { build: "2026-10-13.4", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
   themeLabel();
   render();
   updatePill();

@@ -1,6 +1,6 @@
 // Each saved entry/check is independent: a phone edit cannot replace a laptop's whole tracker.
 (() => {
-  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built"]);
+  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"]);
   const LISTS = new Set(["notes", "log", "todo", "attempts"]);
   const LOCAL = new Set(["ui", "savedAt"]);
   const safe = k => typeof k === "string" && !["__proto__", "constructor", "prototype"].includes(k);

@@ -6,11 +6,13 @@ globalThis.AEState = Object.freeze({
     const stageIds = new Set(P.stages.map(st => st.id));
     const sources = new Set(P.stages.flatMap(st => st.from));
     // notes: [{ id, track, text, topic?, c, u }] (first line of text = title) · lib: { resourceKey: "done"|"later" } · act: { "YYYY-MM-DD": actions }
+    // reading: { resourceKey: { status: "reading"|"paused"|"later"|"done", note?, pct?, updated } } for long reads (books and courses)
     // ck: { lessonOrSourceId: [checked…] } · done: { lessonId: date } · built: { stageId: date } · r: legacy 4-level ratings, kept as evidence
-    const MAPS = ["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built"];
-    // checksV is set by migrate(), never by defaults: cloud records are unpacked over blank(), and an
+    const MAPS = ["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"];
+    // checksV and readingV are set by migrate(), never by defaults: cloud records are unpacked over blank(), and an
     // old account without the marker must still be migrated.
-    const blank = () => ({ v: 7, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, ck: {}, done: {}, built: {}, notes: [], lib: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
+    const blank = () => ({ v: 7, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, ck: {}, done: {}, built: {}, notes: [], lib: {}, reading: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
+    const longRead = k => ["book", "course"].includes(P.LM[k]?.f || (P.L[k] || P.LX[k] || [])[2]);
     const trackOf = topic => P.items[topic] ? P.items[topic].track : stageIds.has(topic) ? "pf" : GEN;
     const trackLabel = t => t === GEN ? "General" : trackName[t] || t;
     // older typed knowledge-base entries (v3) become plain notes
@@ -31,6 +33,7 @@ globalThis.AEState = Object.freeze({
       const oldSetup = !!s && s.setupV !== 2;
       const oldCurriculum = s?.curriculumV ?? 3;
       const oldChecks = s?.checksV ?? 0;
+      const oldReading = s?.readingV ?? 0;
       s = Object.assign(blank(), s || {});
       s.ui = Object.assign(blank().ui, s.ui || {}); delete s.ui.iv;
       MAPS.forEach(k => { if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = {}; });
@@ -121,6 +124,14 @@ globalThis.AEState = Object.freeze({
         });
       }
       s.checksV = Math.max(oldChecks, P.checksV);
+      // Reading v1: books and courses saved for later or done in the Library get the same long-read status.
+      // The lib entries stay as they are; nothing else is inferred (no book is marked as being read).
+      if (oldReading < 1) {
+        Object.entries(s.lib).forEach(([k, v]) => {
+          if ((v === "later" || v === "done") && longRead(k) && !s.reading[k]) s.reading[k] = { status: v, updated: Store.today() };
+        });
+      }
+      s.readingV = Math.max(oldReading, 1);
       s.v = 7;
       return s;
     }

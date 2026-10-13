@@ -229,7 +229,7 @@
     check(document.querySelectorAll('.area-card').length === 14 && document.querySelectorAll('.chapter-block').length > 30 && !CODE.test($('main').textContent), 'Topics shows learning areas with chapters and no codes');
     const lessonOpener = $('.area-lesson[data-open="S2"]'); lessonOpener.focus(); lessonOpener.click(); await tick();
     check($('#drawer').open && document.activeElement.id === 'panelTitle' && $('#panelTitle').textContent === 'Classic SQL patterns', 'Lesson opens in a focused side panel');
-    check(!CODE.test($('#drawer').textContent) && $('#drawer').textContent.includes('Learn first') && !!$('#drawer a[href*="sql-windows-recursion-clean.html#slide-14"]'), 'Panel shows prerequisites and the matching deck slides without codes');
+    check(!CODE.test($('#drawer').textContent) && $('#drawer').textContent.includes('Learn first') && !!$('#drawer .deck-card a[href="decks/sql-patterns/sql-patterns.html"]') && !!$('#drawer .lab a[href*="sql-patterns.html#slide-10"]'), 'Panel shows prerequisites, the lesson deck and its lab without codes');
     const tickAll = id => { let box; while ((box = $(`#drawer [data-ck^="${id}|"]:not(:checked)`))) box.click(); };
     tickAll('S2');
     check(state().ck.S2.length === 5 && state().ck.S2.every(Boolean) && $('#drawer [data-act="complete"]').disabled, 'Complete lesson stays locked until prerequisites are complete');
@@ -287,15 +287,39 @@
       check(!!$('main h2') && !$('main').innerHTML.includes('NaN') && !$('main').innerHTML.includes('undefined'), `${route} renders with migrated data`);
     }
     await go('resources');
+    // Product names such as Amazon S3 are not topic codes.
+    const noCode = t => !CODE.test(t.replace(/Amazon S3/g, ''));
+    check(!!$('.rtopic .fmt.f-deck') && !!$('.also-tagged') && noCode($('main').textContent), 'By lesson lists decks, labs, picks and Also tagged without codes');
+    $('#rsearch').value = 'locally optimistic'; $('#rsearch').dispatchEvent(new Event('input', { bubbles: true }));
+    check([...document.querySelectorAll('.ritem:not([hidden])')].some(li => li.closest('.also-tagged')?.open), 'Search opens Also tagged when a broad resource matches');
     $('[data-rtab="lib"]').click();
-    check(document.querySelectorAll('.lrow').length > 0, 'Resource library renders its shared catalog');
-    $('#lstatus').value = 'all'; $('#lstatus').dispatchEvent(new Event('change', { bubbles: true }));
-    const resource = $('.lrow input[data-lib]:not(:checked)');
-    const resourceKey = resource.dataset.lib;
-    resource.click();
+    const lib = $('main');
+    check(!!$('#libNow .now-col') && document.querySelectorAll('.fmt-chip').length === 11 && !!$('.shelf-quick .lcard') && !!$('.shelf-long .long-row') && !!$('.shelf-loop .loop-item'), 'Library renders the Now bar, format chips and the three shelves');
+    check(noCode(lib.textContent) && !lib.innerHTML.includes('undefined') && !lib.innerHTML.includes('NaN'), 'Library shows no topic codes');
+    check(!!$('#libNow [data-act="readstart"][data-key="dwt"]') && !Object.keys(state().reading).some(k => state().reading[k].status === 'reading'), 'Current book is suggested, not silently marked as reading');
+    check(!!$('#libNow .pick .fmt.f-deck'), 'Quick picks start with the current lesson deck');
+    const deckChip = $('.fmt-chip[data-fmt="deck"]'); deckChip.click();
+    check($('.fmt-chip[data-fmt="deck"]').getAttribute('aria-pressed') === 'true' && [...document.querySelectorAll('#libShelves .lcard')].every(c => c.classList.contains('f-deck')) && !$('.shelf-long'), 'Format chip filters to decks');
+    $('.fmt-chip[data-fmt="deck"]').click();
+    $('[data-lstatus="all"]').click();
+    const card = $('.lcard input[data-lib]:not(:checked)');
+    const resourceKey = card.dataset.lib;
+    card.click();
     check(state().lib[resourceKey] === 'done', 'Library completion updates shared resource state');
-    document.querySelector(`[data-lib="${resourceKey}"]`).click();
+    document.querySelector(`#libShelves [data-lib="${resourceKey}"]`).click();
     check(!state().lib[resourceKey], 'Library completion can be cleared');
+    $('#libNow [data-act="readstart"][data-key="dwt"]').click();
+    check(state().reading.dwt.status === 'reading' && !!$('#libNow .now-read input[data-rnote="dwt"]'), 'Marking the current book as reading shows it on the Now bar');
+    const note = $('#libNow input[data-rnote="dwt"]'); note.value = 'Ch. 7 · Accounting'; note.dispatchEvent(new Event('change', { bubbles: true }));
+    check(state().reading.dwt.note === 'Ch. 7 · Accounting' && $('#libNow input[data-rnote="dwt"]').value === 'Ch. 7 · Accounting', 'Progress note saves');
+    const prompts = []; const confirmBefore = window.confirm; window.confirm = msg => { prompts.push(msg); return true; };
+    $('.long-row[data-key="ddia"] [data-status="reading"]').click();
+    window.confirm = confirmBefore;
+    check(/You're reading The Data Warehouse Toolkit.*Pause it and start Designing Data-Intensive/.test(prompts[0] || '') && state().reading.dwt.status === 'paused' && state().reading.ddia.status === 'reading', 'Starting a second book asks to pause the first');
+    check(!!$('#libNow .now-paused [data-key="dwt"]'), 'Paused book can be resumed from the Now bar');
+    $('[data-act="libpick"]').click();
+    const picked = $('#libShelves .pick');
+    check(!!picked && !picked.classList.contains('long-row'), '🎲 skips long reads while one is in progress');
     await go('todo');
   } catch (e) { failures.push(e.stack || String(e)); }
   const result = document.createElement('pre'); result.id = 'browser-test-result';
