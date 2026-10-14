@@ -1,0 +1,22 @@
+unit_tests:
+  - name: stg_reviews_latest_edit_wins
+    description: An edit beats the original, even when the original is re-delivered later;
+      an identical re-delivery keeps the latest file.
+    model: stg_reviews
+    given:
+      - input: source('shop_raw', 'reviews')
+        rows:
+          - {review_id: r1, rating: "4", submitted_at: "2026-03-02T12:00:00Z", edited_at: null,
+             _loaded_at: "2026-03-02 23:00:00", _source_file: a.jsonl}
+          - {review_id: r1, rating: "2", submitted_at: "2026-03-02T12:00:00Z", edited_at: "2026-03-03T08:00:00Z",
+             _loaded_at: "2026-03-03 23:00:00", _source_file: b.jsonl}
+          - {review_id: r1, rating: "4", submitted_at: "2026-03-02T12:00:00Z", edited_at: null,
+             _loaded_at: "2026-03-05 23:00:00", _source_file: c.jsonl}      # old version, re-sent late
+          - {review_id: r6, rating: "5", submitted_at: "2026-03-04T10:00:00Z", edited_at: null,
+             _loaded_at: "2026-03-04 23:00:00", _source_file: d.jsonl}
+          - {review_id: r6, rating: "5", submitted_at: "2026-03-04T10:00:00Z", edited_at: null,
+             _loaded_at: "2026-03-05 23:00:00", _source_file: e.jsonl}      # identical re-delivery
+    expect:
+      rows:
+        - {review_id: r1, rating: 2, updated_at_utc: "2026-03-03 08:00:00", _source_file: b.jsonl}
+        - {review_id: r6, rating: 5, updated_at_utc: "2026-03-04 10:00:00", _source_file: e.jsonl}

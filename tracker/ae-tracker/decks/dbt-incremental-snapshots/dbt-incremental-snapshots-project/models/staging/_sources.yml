@@ -1,0 +1,29 @@
+version: 2
+
+sources:
+  - name: shop_raw                 # the name you use in source('shop_raw', ...)
+    description: Raw website events landed by scripts/load_raw.py (bronze). Every column is text.
+    schema: raw                    # where the tables really are
+    tables:
+      - name: events
+        description: One row per delivered event, including redeliveries of the same event_id.
+        columns:
+          - name: event_id
+            description: Event identifier from the website. Not unique here because of redeliveries.
+            data_tests:
+              - not_null
+          - name: _source_file
+            description: The daily file the row came from. Later files win when deduplicating.
+      - name: reviews
+        description: Product reviews as delivered by the app, one row per delivery (redeliveries and edits included). Every column is text.
+        loaded_at_field: _loaded_at
+      - name: supplier_products
+        description: Full catalogue extract from the supplier; the supplier overwrites it every day (no history).
+        data_tests:
+          - dbt_expectations.expect_table_row_count_to_be_between:   # a truncated extract
+              arguments: {min_value: 3}                                # would "delete" products
+        columns:
+          - name: barcode
+            data_tests:
+              - dbt_expectations.expect_column_values_to_match_regex:
+                  arguments: {regex: "^B[0-9]{3}$"}

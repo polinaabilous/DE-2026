@@ -1,0 +1,104 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: Conformed customer dimension. One row per customer plus an unknown member (customer_id = '-1').
+    columns:
+      - name: customer_key
+        description: Surrogate key, md5(customer_id).
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: Natural key from the CRM.
+        data_tests: [unique, not_null]
+
+  - name: dim_product
+    description: Product dimension. One row per product plus an unknown member (product_id = '-1').
+    columns:
+      - name: product_key
+        data_tests: [unique, not_null]
+      - name: product_id
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    description: Calendar dimension, one row per day between the dim_date_start and dim_date_end variables.
+    columns:
+      - name: date_key
+        description: Date as an integer yyyymmdd.
+        data_tests: [unique, not_null]
+
+  - name: fct_orders
+    description: '{{ doc("fct_orders") }}'
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments:
+            expression: "amount > 0"
+      - row_count_between:
+          arguments:
+            min_rows: 1
+    columns:
+      - name: order_id
+        description: Degenerate dimension; the purchase event_id.
+        data_tests: [unique, not_null]
+      - name: customer_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+      - name: product_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: date_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: amount
+        description: Order amount in USD.
+        data_tests: [not_null]
+
+  - name: fct_daily_funnel
+    description: Periodic snapshot of event counts per UTC day.
+    columns:
+      - name: purchases_per_page_view
+        description: purchase_events / page_view_events, NULL on days without page views (safe_divide).
+      - name: date_key
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+
+  - name: fct_daily_product_sales
+    description: Revenue and order count per UTC order date and product. Grain (date_key, product_key).
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments:
+            combination_of_columns: [date_key, product_key]
+    columns:
+      - name: daily_product_sales_key
+        description: Surrogate key, generate_surrogate_key(date_key, product_key).
+        data_tests: [unique, not_null]
+      - name: date_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: product_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: revenue
+        description: Sum of order amounts in USD.

@@ -1,0 +1,24 @@
+unit_tests:
+  - name: fct_reviews_lookback_window
+    description: In incremental mode, re-read everything from (max updated_at in the table - 3 days).
+    model: fct_reviews
+    overrides:
+      macros:
+        is_incremental: true            # pretend the table exists and this is not a full refresh
+      vars:
+        review_lookback_days: 3
+    given:
+      - input: this                     # the existing table: newest row 5 March 09:00
+        rows:
+          - {review_id: r8, updated_at_utc: "2026-03-05 09:00:00"}
+      - input: ref('stg_reviews')
+        rows:
+          - {review_id: too_old, updated_at_utc: "2026-03-02 08:59:59"}
+          - {review_id: on_edge, updated_at_utc: "2026-03-02 09:00:00"}   # exactly 3 days before
+          - {review_id: late,    updated_at_utc: "2026-03-03 20:00:00"}
+          - {review_id: new,     updated_at_utc: "2026-03-06 10:00:00"}
+    expect:                             # the rows the model SELECTs (the batch), not the merged table
+      rows:
+        - {review_id: on_edge}
+        - {review_id: late}
+        - {review_id: new}

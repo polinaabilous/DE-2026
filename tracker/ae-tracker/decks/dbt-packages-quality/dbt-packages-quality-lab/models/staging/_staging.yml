@@ -1,0 +1,16 @@
+version: 2
+
+models:
+  - name: stg_customers
+    description: One row per customer from the CRM seed, with a normalised customer_id.
+    columns:
+      - name: customer_id
+        description: Primary key.
+        data_tests: [unique, not_null]
+
+  - name: stg_products
+    description: One row per product from the catalogue seed.
+    columns:
+      - name: product_id
+        description: Primary key.
+        data_tests: [unique, not_null]

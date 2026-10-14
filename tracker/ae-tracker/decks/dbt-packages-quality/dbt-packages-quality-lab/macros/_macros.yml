@@ -1,0 +1,24 @@
+version: 2
+
+macros:
+  - name: safe_divide
+    description: Division that returns on_zero (default NULL) instead of inf or an error when the denominator is 0 or NULL.
+    arguments:
+      - name: numerator
+        type: string
+        description: SQL expression for the numerator.
+      - name: denominator
+        type: string
+        description: SQL expression for the denominator.
+      - name: decimals
+        type: integer
+        description: Digits to round to (default 2).
+      - name: on_zero
+        type: string
+        description: SQL returned when the denominator is 0 or NULL (default null).
+  - name: to_utc
+    description: Converts a timestamp-with-offset text column to a UTC timestamp.
+    arguments:
+      - name: column_name
+        type: string
+        description: Column holding ISO 8601 text with an offset.

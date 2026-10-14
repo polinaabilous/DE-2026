@@ -1,0 +1,7 @@
+packages:
+  - package: dbt-labs/dbt_utils
+    version: [">=1.4.0", "<1.5.0"]    # any 1.4.x patch, never 1.5
+  - package: dbt-labs/codegen
+    version: [">=0.14.0", "<0.15.0"]
+  - package: dbt-labs/dbt_project_evaluator
+    version: [">=1.4.0", "<1.5.0"]

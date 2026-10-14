@@ -1,0 +1,40 @@
+name: leafy
+version: "1.0.0"
+profile: leafy                       # which entry in profiles.yml to use
+require-dbt-version: [">=1.10.0", "<2.0.0"]
+
+model-paths: ["models"]
+seed-paths: ["seeds"]
+test-paths: ["tests"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+clean-targets: ["target"]            # folders that `dbt clean` deletes
+
+flags:
+  send_anonymous_usage_stats: false  # no telemetry from this project
+
+vars:                                # project variables, read with var()
+  dim_date_start: "2026-03-01"
+  dim_date_end: "2026-03-07"
+  funnel_event_types: ["page_view", "add_to_cart", "purchase", "refund"]
+  review_lookback_days: 3            # look-back window of fct_reviews (lesson 9)
+
+models:
+  leafy:                             # this project
+    staging:                         # = models/staging/
+      +materialized: view
+      +schema: staging
+    intermediate:
+      +materialized: ephemeral
+    marts:
+      +materialized: table
+      +schema: marts
+      +tags: ["mart"]
+
+snapshots:
+  leafy:
+    +schema: snapshots               # main_snapshots: history you cannot rebuild
+
+seeds:
+  leafy:
+    +schema: seeds

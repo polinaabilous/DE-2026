@@ -1,0 +1,5 @@
+customer_ref,email,loyalty_tier,_loaded_at
+" c-001",ana@example.com,gold,2026-04-01 06:00:00
+"C-002 ",ben@example.com,silver,2026-04-01 06:00:00
+c-004,dev@example.com,bronze,2026-04-01 06:00:00
+C-006,fay@example.com,silver,2026-04-01 06:00:00

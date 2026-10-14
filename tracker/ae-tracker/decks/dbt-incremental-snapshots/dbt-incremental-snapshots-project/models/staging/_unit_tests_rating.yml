@@ -1,0 +1,29 @@
+unit_tests:
+  - name: stg_reviews_rating_scale
+    description: Ratings out of 10 become 1-5, rounding half away from zero; anything invalid is NULL.
+    model: stg_reviews
+    given:
+      - input: source('shop_raw', 'reviews')
+        format: csv
+        rows: |
+          review_id,rating,rating_scale
+          a,7,10
+          b,5,10
+          c,1,10
+          d,10,10
+          e,3,
+          f,6,5
+          g,0,5
+          h,abc,5
+    expect:
+      format: csv
+      rows: |
+        review_id,rating
+        a,4
+        b,3
+        c,1
+        d,5
+        e,3
+        f,
+        g,
+        h,

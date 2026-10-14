@@ -39,6 +39,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **Fact tables** · 13 slides | Fact tables | [Deck](../tracker/ae-tracker/decks/dim-fact-tables/dim-fact-tables.html) |
 | **Dimension tables** · 20 slides | Dimension tables | [Deck](../tracker/ae-tracker/decks/dim-dimension-tables/dim-dimension-tables.html) |
 | **Model a business end to end** · 17 slides | Requirements & bus matrix (part) · Interview: modeling, metrics & dbt cases (part) | [Deck](../tracker/ae-tracker/decks/dim-modeling-project/dim-modeling-project.html) |
+| **Modeling approaches: star, One Big Table, Data Vault, Activity Schema and Inmon** · 31 slides | Modern modeling adaptations · Platform modeling & serving (modeling part) | [Deck](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches.html) · [Markdown](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches.md) · [Lab folder](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches-lab/README.md) |
 
 ## dbt
 
@@ -46,6 +47,8 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | --- | --- | --- |
 | **dbt fundamentals: source data to trusted marts** · 43 slides | dbt fundamentals · Modern modeling adaptations (part) · Test strategy (part) | [Deck](../tracker/ae-tracker/decks/dbt-fundamentals/dbt-fundamentals.html) · [Markdown](../tracker/ae-tracker/decks/dbt-fundamentals/dbt-fundamentals.md) · [Lab project](../tracker/ae-tracker/decks/dbt-fundamentals/dbt-fundamentals-project/README.md) |
 | **dbt Jinja and macros: templates, loops, reusable SQL** · 15 slides | Jinja, macros, packages (part) · Incremental, snapshots, unit tests (part) | [Deck](../tracker/ae-tracker/decks/dbt-jinja-macros/dbt-jinja-macros.html) · [Markdown](../tracker/ae-tracker/decks/dbt-jinja-macros/dbt-jinja-macros.md) · [Lab project](../tracker/ae-tracker/decks/dbt-jinja-macros/dbt-jinja-macros-project/README.md) |
+| **dbt packages and project quality: dbt_utils, codegen, project evaluator and SQLFluff** · 30 slides | Jinja, macros, packages · Query structure and style (SQLFluff part) | [Deck](../tracker/ae-tracker/decks/dbt-packages-quality/dbt-packages-quality.html) · [Markdown](../tracker/ae-tracker/decks/dbt-packages-quality/dbt-packages-quality.md) · [Lab project](../tracker/ae-tracker/decks/dbt-packages-quality/dbt-packages-quality-lab/README.md) |
+| **dbt incremental models, snapshots and unit tests** · 35 slides | Incremental, snapshots, unit tests | [Deck](../tracker/ae-tracker/decks/dbt-incremental-snapshots/dbt-incremental-snapshots.html) · [Markdown](../tracker/ae-tracker/decks/dbt-incremental-snapshots/dbt-incremental-snapshots.md) · [Lab project](../tracker/ae-tracker/decks/dbt-incremental-snapshots/dbt-incremental-snapshots-project/README.md) |
 
 ## Metrics & statistics
 
