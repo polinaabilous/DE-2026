@@ -1,0 +1,2 @@
+{"event_id": "e38", "user_id": "u1", "event_type": "page_view", "ts": "2026-03-08T09:00:00Z", "amount": null, "product_id": "P3"}
+{"event_id": "e39", "user_id": "u1", "event_type": "purchase", "ts": "2026-03-08T09:02:00Z", "amount": "18.00", "product_id": "P3"}

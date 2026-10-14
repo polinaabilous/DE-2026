@@ -1,0 +1,4 @@
+change_seq,op,order_id,customer_id,order_date,status,amount,updated_at
+16,I,108,7,2026-03-01,placed,15.00,2026-03-04 09:00:00
+17,U,107,2,2026-03-03,refunded,27.00,2026-03-04 10:00:00
+18,U,104,1,2026-03-02,shipped,60.00,2026-03-04 11:00:00

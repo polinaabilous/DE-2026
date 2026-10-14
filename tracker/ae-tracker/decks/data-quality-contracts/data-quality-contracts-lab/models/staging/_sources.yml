@@ -1,0 +1,40 @@
+version: 2
+
+sources:
+  - name: shop_raw                 # the name you use in source('shop_raw', ...)
+    description: Raw website events landed by scripts/load_raw.py (bronze). Every column is text.
+    schema: raw                    # where the tables really are
+    config:
+      loaded_at_field: _loaded_at          # when the row landed (written by the loader)
+      freshness:                           # files land nightly around 23:00 UTC
+        warn_after: {count: 26, period: hour}
+        error_after: {count: 48, period: hour}
+    tables:
+      - name: events
+        data_tests:
+          - volume_vs_trailing:
+              arguments: {batch_column: _batch_date, lookback: 3}
+              config:
+                fail_calc: "coalesce(max(pct_of_trailing), 100)"
+                warn_if: "not between 50 and 200"    # unusual day: look
+                error_if: "not between 30 and 400"   # broken delivery: stop
+        description: One row per delivered event, including redeliveries of the same event_id.
+        columns:
+          - name: event_id
+            description: Event identifier from the website. Not unique here because of redeliveries.
+            data_tests:
+              - not_null
+          - name: _source_file
+            description: The daily file the row came from. Later files win when deduplicating.
+
+  - name: payments_raw
+    description: Daily settlement files from the payment provider, landed by scripts/load_raw.py. Every column is text.
+    schema: raw
+    config:
+      loaded_at_field: _loaded_at
+      freshness:                           # settlement files arrive once a day, around 06:00 UTC
+        warn_after: {count: 36, period: hour}
+        error_after: {count: 60, period: hour}
+    tables:
+      - name: payments
+        description: One row per settled payment (charges and refunds). Refund amounts are negative.

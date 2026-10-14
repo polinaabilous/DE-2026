@@ -20,6 +20,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **SQL aggregation** · 26 slides | Advanced aggregation · Query structure and style (part) | [Deck](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.html) · [Markdown](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.md) |
 | **SQL semi-structured data: JSON, arrays, UNNEST across engines** · 32 slides | Semi-structured data | [Deck](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.html) · [Markdown](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.md) · [Lab folder](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured-lab/README.md) |
 | **SQL time analysis: date spines, time zones, cohorts and funnels** · 27 slides | Time-based analysis | [Deck](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis.html) · [Markdown](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis.md) · [Lab folder](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis-lab/README.md) |
+| **SQL warehouse writes: MERGE, idempotent loads and incremental patterns** · 36 slides | Warehouse writes | [Deck](../tracker/ae-tracker/decks/sql-warehouse-writes/sql-warehouse-writes.html) · [Markdown](../tracker/ae-tracker/decks/sql-warehouse-writes/sql-warehouse-writes.md) · [Lab folder](../tracker/ae-tracker/decks/sql-warehouse-writes/sql-warehouse-writes-lab/README.md) |
 
 ## Python for data
 
@@ -77,6 +78,13 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | --- | --- | --- |
 | **From vague ask to written spec: requirements interviews, intake, design docs and READMEs** · 32 slides | Requirements & stakeholders · Writing · Requirements & bus matrix (BEAM part) | [Deck](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.html) · [Markdown](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.md) · [Lab folder](../tracker/ae-tracker/decks/requirements-writing/requirements-writing-lab/README.md) · [Templates](../tracker/ae-tracker/decks/requirements-writing/templates/) |
 | **Interview foundations: think aloud on SQL, Python and a case** · 26 slides | Interview foundations: explain and practice | [Deck](../tracker/ae-tracker/decks/interview-foundations/interview-foundations.html) · [Markdown](../tracker/ae-tracker/decks/interview-foundations/interview-foundations.md) · [Practice folder](../tracker/ae-tracker/decks/interview-foundations/interview-foundations-lab/README.md) |
+| **Dashboard storytelling: chart choice, decluttering and headline-first dashboards** · 30 slides | Storytelling & dashboards | [Deck](../tracker/ae-tracker/decks/dashboard-storytelling/dashboard-storytelling.html) · [Markdown](../tracker/ae-tracker/decks/dashboard-storytelling/dashboard-storytelling.md) · [Lab folder](../tracker/ae-tracker/decks/dashboard-storytelling/dashboard-storytelling-lab/README.md) |
+
+## Data quality
+
+| Deck | Lessons | Files |
+| --- | --- | --- |
+| **Data quality and contracts: test strategy, freshness, model contracts and versions** · 39 slides | Test strategy · Data contracts | [Deck](../tracker/ae-tracker/decks/data-quality-contracts/data-quality-contracts.html) · [Markdown](../tracker/ae-tracker/decks/data-quality-contracts/data-quality-contracts.md) · [Lab project](../tracker/ae-tracker/decks/data-quality-contracts/data-quality-contracts-lab/README.md) |
 
 Lessons without a deck show “No deck yet” in the tracker; planned decks and reusable prompts are in [the study deck roadmap](study-planning/study-deck-roadmap.md).
 

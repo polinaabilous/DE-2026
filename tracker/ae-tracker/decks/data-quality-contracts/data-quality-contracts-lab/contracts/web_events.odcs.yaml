@@ -1,0 +1,72 @@
+apiVersion: v3.2.0
+kind: DataContract
+id: leafy-web-events
+name: Leafy web events
+version: 1.0.0
+status: active
+team:
+  name: web-platform                   # the producer owns this file and its changes
+  members:
+    - username: web-oncall
+      role: owner
+description:
+  purpose: Website events (page views, carts, purchases, refunds) for analytics and finance.
+  usage: Landed nightly into raw.events by the data team; purchases become orders in fct_orders.
+  limitations: A file can be re-sent; the latest delivery wins. Times are ISO 8601 with an offset.
+schema:
+  - name: events
+    physicalType: file
+    description: One JSON object per line, one file per day (events_YYYY-MM-DD.jsonl).
+    properties:
+      - name: event_id
+        logicalType: string
+        required: true
+      - name: user_id
+        logicalType: string
+        description: Logged-in customer id; null for guests.
+      - name: event_type
+        logicalType: string
+        required: true
+        quality:
+          - metric: invalidValues
+            arguments:
+              validValues: [page_view, add_to_cart, purchase, refund]
+            mustBe: 0
+      - name: ts
+        logicalType: string
+        required: true
+        description: Event time, ISO 8601 with a UTC offset.
+      - name: amount
+        logicalType: string
+        description: Order amount in USD, a decimal string with two places (purchases and refunds).
+      - name: product_id
+        logicalType: string
+    quality:
+      - type: sql
+        description: Every purchase carries an amount.
+        query: select count(*) from events where event_type = 'purchase' and amount is null
+        mustBe: 0
+      - type: sql
+        description: Amounts are decimal numbers.
+        query: select count(*) from events where amount is not null and try_cast(amount as decimal(10, 2)) is null
+        mustBe: 0
+slaProperties:
+  - property: latency                  # the freshness SLA, as agreed with the data team
+    value: 26
+    unit: h
+  - property: frequency
+    value: 1
+    unit: d
+servers:
+  - server: landing                    # what the data team has received so far
+    type: local
+    path: ./data/raw/events_*.jsonl
+    format: json
+  - server: release-v1                 # sample output of the current app, in the producer's CI
+    type: local
+    path: ./data/incidents/redelivered/events_*.jsonl
+    format: json
+  - server: release-v2                 # sample output of the app 2.0 release candidate
+    type: local
+    path: ./data/incidents/appv2/events_*.jsonl
+    format: json

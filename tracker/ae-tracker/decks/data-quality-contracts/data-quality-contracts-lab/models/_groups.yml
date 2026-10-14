@@ -1,0 +1,5 @@
+groups:
+  - name: commerce
+    owner: {name: Commerce analytics, email: commerce-analytics@leafy.example}
+  - name: marketing
+    owner: {name: Marketing analytics, email: marketing-analytics@leafy.example}

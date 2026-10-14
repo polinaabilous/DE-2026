@@ -1,0 +1,107 @@
+version: 2
+
+models:
+  - name: dim_customer
+    description: Conformed customer dimension. One row per customer plus an unknown member (customer_id = '-1').
+    columns:
+      - name: customer_key
+        description: Surrogate key, md5(customer_id).
+        data_tests: [unique, not_null]
+      - name: customer_id
+        description: Natural key from the CRM.
+        data_tests: [unique, not_null]
+
+  - name: dim_product
+    description: Product dimension. One row per product plus an unknown member (product_id = '-1').
+    columns:
+      - name: product_key
+        data_tests: [unique, not_null]
+      - name: product_id
+        data_tests: [unique, not_null]
+
+  - name: dim_date
+    description: Calendar dimension, one row per day between the dim_date_start and dim_date_end variables.
+    columns:
+      - name: date_key
+        description: Date as an integer yyyymmdd.
+        data_tests: [unique, not_null]
+
+  - name: fct_orders
+    description: '{{ doc("fct_orders") }}'
+    config:
+      contract: {enforced: true}         # the shape below is a promise to consumers
+      access: public                     # any group (and, in dbt Mesh, other projects) may ref it
+    latest_version: 2                    # bumped: plain refs now get v2
+    versions:
+      - v: 1
+        deprecation_date: "2026-12-31T00:00:00+00:00"   # announced to consumers on 2026-10-01
+        config:
+          alias: fct_orders              # v1 keeps the table name consumers already query
+      - v: 2                             # latest: amount renamed, currency added
+        columns:
+          - include: all
+            exclude: [amount]
+          - name: amount_usd
+            data_type: decimal(10,2)
+            constraints:
+              - type: not_null
+              - type: check
+                expression: "amount_usd > 0"
+          - name: currency_code
+            data_type: varchar
+            data_tests:
+              - accepted_values:
+                  arguments: {values: ["USD"]}
+    columns:
+      - name: order_id
+        data_type: varchar
+        description: Degenerate dimension; the purchase event_id.
+        constraints:
+          - type: not_null
+          - type: primary_key
+        data_tests: [unique]                # primary keys are not enforced on Snowflake or BigQuery
+      - name: date_key
+        data_type: integer
+        constraints: [{type: not_null}]
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
+      - name: customer_key
+        data_type: varchar
+        constraints: [{type: not_null}]     # replaces a not_null test that could never fail
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
+      - name: product_key
+        data_type: varchar
+        constraints: [{type: not_null}]
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_product')
+                field: product_key
+      - name: ordered_at_utc
+        data_type: timestamp
+      - name: amount
+        data_type: decimal(10,2)
+        description: Order amount in USD.
+        constraints:
+          - type: not_null
+          - type: check
+            expression: "amount > 0"
+
+  - name: fct_daily_funnel
+    description: Periodic snapshot of event counts per UTC day.
+    columns:
+      - name: date_key
+        data_tests:
+          - unique
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_date')
+                field: date_key
