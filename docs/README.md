@@ -19,6 +19,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **SQL correctness: joins, grain, and NULLs** · 35 slides | Joins and grain · Interview foundations: explain and practice (part) | [Deck](../tracker/ae-tracker/decks/sql-joins-grain/sql-joins-grain.html) · [Markdown](../tracker/ae-tracker/decks/sql-joins-grain/sql-joins-grain.md) |
 | **SQL aggregation** · 26 slides | Advanced aggregation · Query structure and style (part) | [Deck](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.html) · [Markdown](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.md) |
 | **SQL semi-structured data: JSON, arrays, UNNEST across engines** · 32 slides | Semi-structured data | [Deck](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.html) · [Markdown](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.md) · [Lab folder](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured-lab/README.md) |
+| **SQL time analysis: date spines, time zones, cohorts and funnels** · 27 slides | Time-based analysis | [Deck](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis.html) · [Markdown](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis.md) · [Lab folder](../tracker/ae-tracker/decks/sql-time-analysis/sql-time-analysis-lab/README.md) |
 
 ## Python for data
 
@@ -53,6 +54,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **Business models and metrics: commerce, SaaS, marketplace, product, operations** · 24 slides | Business models & metrics (part) | [Deck](../tracker/ae-tracker/decks/business-metrics-models/business-metrics-models.html) · [Markdown](../tracker/ae-tracker/decks/business-metrics-models/business-metrics-models.md) |
 | **Metric design: define the number before writing SQL** · 36 slides | Requirements & bus matrix (part) · Metric design · Experimentation (part) · Semantic layer modeling (part) · Requirements & stakeholders (part) · Writing (part) · Incidents & trust (part) | [Deck](../tracker/ae-tracker/decks/metric-design/metric-design.html) · [Markdown](../tracker/ae-tracker/decks/metric-design/metric-design.md) |
 | **Diagnosing metric changes: trees, mix shift, and the weekly business review** · 21 slides | Diagnosing metric changes · Statistics essentials (part) · Storytelling & dashboards (part) | [Deck](../tracker/ae-tracker/decks/metric-diagnosis/metric-diagnosis.html) · [Markdown](../tracker/ae-tracker/decks/metric-diagnosis/metric-diagnosis.md) |
+| **Unit economics and operations metrics: LTV, CAC, payback, MTTR and SLAs** · 20 slides | Business models & metrics (LTV/CAC and operations part) | [Deck](../tracker/ae-tracker/decks/unit-economics-ops/unit-economics-ops.html) · [Markdown](../tracker/ae-tracker/decks/unit-economics-ops/unit-economics-ops.md) · [Lab folder](../tracker/ae-tracker/decks/unit-economics-ops/unit-economics-ops-lab/README.md) |
 
 ## Performance & cost
 
@@ -71,6 +73,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | Deck | Lessons | Files |
 | --- | --- | --- |
 | **From vague ask to written spec: requirements interviews, intake, design docs and READMEs** · 32 slides | Requirements & stakeholders · Writing · Requirements & bus matrix (BEAM part) | [Deck](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.html) · [Markdown](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.md) · [Lab folder](../tracker/ae-tracker/decks/requirements-writing/requirements-writing-lab/README.md) · [Templates](../tracker/ae-tracker/decks/requirements-writing/templates/) |
+| **Interview foundations: think aloud on SQL, Python and a case** · 26 slides | Interview foundations: explain and practice | [Deck](../tracker/ae-tracker/decks/interview-foundations/interview-foundations.html) · [Markdown](../tracker/ae-tracker/decks/interview-foundations/interview-foundations.md) · [Practice folder](../tracker/ae-tracker/decks/interview-foundations/interview-foundations-lab/README.md) |
 
 Lessons without a deck show “No deck yet” in the tracker; planned decks and reusable prompts are in [the study deck roadmap](study-planning/study-deck-roadmap.md).
 

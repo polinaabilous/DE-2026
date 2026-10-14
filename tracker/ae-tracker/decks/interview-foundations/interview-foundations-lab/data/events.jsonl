@@ -1,0 +1,20 @@
+{"event_id": "E01", "user_id": "C03", "event_type": "view", "event_ts": "2026-03-07T10:00:00-06:00", "ingested_at": "2026-03-07T16:00:05Z"}
+{"event_id": "E02", "user_id": "C03", "event_type": "add_to_cart", "event_ts": "2026-03-07T10:05:00-06:00", "ingested_at": "2026-03-07T16:05:04Z"}
+{"event_id": "E03", "user_id": "C03", "event_type": "purchase", "event_ts": "2026-03-07T10:09:00-06:00", "ingested_at": "2026-03-07T16:09:02Z"}
+{"event_id": "E04", "user_id": "C04", "event_type": "view", "event_ts": "2026-03-08T05:30:00Z", "ingested_at": "2026-03-08T05:30:09Z"}
+{"event_id": "E05", "user_id": "C04", "event_type": "add_to_cart", "event_ts": "2026-03-08T05:40:00Z", "ingested_at": "2026-03-08T05:40:03Z"}
+{"event_id": "E06", "user_id": "C05", "event_type": "view", "event_ts": "2026-03-08T01:30:00-06:00", "ingested_at": "2026-03-08T07:30:04Z"}
+{"event_id": "E07", "user_id": "C05", "event_type": "view", "event_ts": "2026-03-08T03:15:00-05:00", "ingested_at": "2026-03-08T08:15:06Z"}
+{"event_id": "E08", "user_id": "C07", "event_type": "purchase", "event_ts": "2026-03-08T12:00:00-05:00", "ingested_at": "2026-03-08T17:00:01Z"}
+{"event_id": "E09", "user_id": null, "event_type": "view", "event_ts": "2026-03-08T14:00:00-05:00", "ingested_at": "2026-03-08T19:00:02Z"}
+{"event_id": "E08", "user_id": "C07", "event_type": "add_to_cart", "event_ts": "2026-03-08T12:00:00-05:00", "ingested_at": "2026-03-08T18:30:00Z"}
+{"event_id": "E10", "user_id": "C08", "event_type": "view", "event_ts": "2026-03-09T04:30:00Z", "ingested_at": "2026-03-09T04:30:07Z"}
+{"event_id": "E11", "user_id": "C08", "event_type": "add_to_cart", "event_ts": "2026-03-09T09:00:00-05:00", "ingested_at": "2026-03-09T14:00:03Z"}
+{"event_id": "E12", "user_id": "C09", "event_type": "view", "event_ts": "2026-03-09T10:00:00-05:00"
+{"event_id": "E13", "user_id": "C10", "event_type": "view", "ingested_at": "2026-03-09T15:59:00Z"}
+{"event_id": "E14", "user_id": "C10", "event_type": "view", "event_ts": "2026-03-09T11:00:00-05:00", "ingested_at": "2026-03-09T16:00:04Z"}
+{"event_id": "E15", "user_id": "C10", "event_type": "add_to_cart", "event_ts": "2026-03-09T11:02:00-05:00", "ingested_at": "2026-03-09T16:02:05Z"}
+
+{"event_id": "E16", "user_id": "C11", "event_type": "view", "event_ts": "2026-03-09T23:59:59-05:00", "ingested_at": "2026-03-10T05:00:03Z"}
+{"event_id": "E17", "user_id": "C11", "event_type": "view", "event_ts": "2026-03-10T05:00:00Z", "ingested_at": "2026-03-10T05:00:08Z"}
+{"event_id": "E05", "user_id": "C04", "event_type": "add_to_cart", "event_ts": "2026-03-08T05:40:00Z", "ingested_at": "2026-03-08T05:40:03Z"}
