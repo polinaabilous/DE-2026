@@ -1,0 +1,10 @@
+{"event_id": "B-001", "order_id": "O-2001", "event_type": "order_placed", "amount": "10.00", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z", "items": [{"sku": "PLT-101", "qty": 1, "unit_price": "10.00"}]}
+{"event_id": "B-002", "order_id": "O-2002", "customer_id": "C-01", "event_type": "order_refunded", "amount": "-6.00", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z"}
+{"event_id": "B-003", "order_id": "O-2003", "customer_id": "C-01", "event_type": "order_paid", "amount": "6.00", "currency": "USD", "occurred_at": "2026-03-08 12:00:00"}
+{"event_id": "B-004", "order_id": "O-2004", "amount": 
+{"event_id": "B-005", "order_id": "O-2005", "customer_id": "C-01", "event_type": "order_placed", "amount": "30.00", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z", "items": [{"sku": "PLT-101", "qty": 2, "unit_price": "12.50"}]}
+{"event_id": "B-006", "order_id": "O-2006", "customer_id": "C-01", "event_type": "order_shipped", "amount": "0.00", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z"}
+{"event_id": "B-007", "order_id": "O-2007", "customer_id": "C-01", "event_type": "order_paid", "amount": "6.005", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z"}
+{"event_id": "B-008", "order_id": "O-2008", "customer_id": "C-01", "event_type": "order_placed", "amount": "6.00", "currency": "USD", "occurred_at": "2026-03-08T12:00:00Z", "items": [{"sku": "plant-1", "qty": 1, "unit_price": "6.00"}]}
+["B-009", "order_paid"]
+{"event_id": "B-010", "order_id": "O-2010", "customer_id": "C-01", "event_type": "order_paid", "amount": "6.00", "currency": "EUR", "occurred_at": "2026-03-08T12:00:00Z"}

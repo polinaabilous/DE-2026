@@ -1,0 +1,16 @@
+{"event_id": "E-001", "order_id": "O-1001", "customer_id": "C-01", "event_type": "order_placed", "amount": "25.00", "currency": "USD", "occurred_at": "2026-03-08T05:30:00Z", "items": [{"sku": "PLT-101", "qty": 1, "unit_price": "25.00"}]}
+{"event_id": "E-002", "order_id": "O-1001", "customer_id": "C-01", "event_type": "order_paid", "amount": "25.00", "currency": "USD", "occurred_at": "2026-03-08T05:31:10Z"}
+{"event_id": "E-002", "order_id": "O-1001", "customer_id": "C-01", "event_type": "order_paid", "amount": "25.00", "currency": "USD", "occurred_at": "2026-03-08T05:31:10Z"}
+{"event_id": "E-003", "order_id": "O-1002", "customer_id": "C-02", "event_type": "order_placed", "amount": "0.00", "currency": "usd", "occurred_at": "2026-03-08T07:59:00Z", "items": [{"sku": "PLT-900", "qty": 1, "unit_price": "0.00"}]}
+{"event_id": "E-004", "order_id": "O-1002", "customer_id": "C-02", "event_type": "order_paid", "amount": "0.00", "currency": "USD", "occurred_at": "2026-03-08T08:00:30Z"}
+{"event_id": "E-005", "order_id": "O-1003", "customer_id": "C-03", "event_type": "order_placed", "amount": "31.50", "currency": "USD", "occurred_at": "2026-03-08T08:30:00Z", "items": [{"sku": "PLT-102", "qty": 2, "unit_price": "12.00"}, {"sku": "PLT-205", "qty": 1, "unit_price": "7.50"}], "coupon": "SPRING"}
+{"event_id": "E-006", "order_id": "O-1003", "customer_id": "C-03", "event_type": "order_paid", "amount": "31.50", "currency": "USD", "occurred_at": "2026-03-08T14:00:00+01:00"}
+{"event_id": "E-007", "order_id": "O-1004", "event_type": "order_placed", "amount": "18.00", "currency": "USD", "occurred_at": "2026-03-08T16:45:00Z", "items": [{"sku": "PLT-301", "qty": 1, "unit_price": "18.00"}]}
+
+{"event_id": "E-008", "order_id": "O-1005", "customer_id": "C-01", "event_type": "order_placed", "amount": "42.00", "currency": "USD", "occurred_at": "2026-03-08T21:10:00Z", "items": [{"sku": "PLT-102", "qty": 3, "unit_price": "12.00"}, {"sku": "PLT-110", "qty": 1, "unit_price": "6.00"}]}
+{"event_id": "E-009", "order_id": "O-1005", "customer_id": "C-01", "event_type": "order_paid", "amount": "42.00", "currency": "USD", "occurred_at": "2026-03-08T21:12:00Z"}
+{"event_id": "E-010", "order_id": "O-1006", "customer_id": "C-04", "event_type": "order_cancelled", "amount": "0.00", "currency": "USD", "occurred_at": "2026-03-08T22:05:00Z"}
+{"event_id": "E-011", "order_id": "O-1001", "customer_id": "C-01", "event_type": "order_refunded", "amount": "25.00", "currency": "USD", "occurred_at": "2026-03-08T23:40:00Z"}
+{"event_id": "E-012", "order_id": "O-1007", "customer_id": "C-05", "event_type": "order_paid", "amount": "19.00", "currency": "USD", "occurred_at": "2026-03-08T09:15:00"}
+{"event_id": "E-013", "order_id": "O-1008", "customer_id": "C-05", "event_type": "order_placed", "amount": "12.00", "currency": "USD", "occurred_at": "2026-03-09T04:59:59Z", "items": [{"sku": "PLT-101", "qty": 1, "unit_price": "12.00"}]}
+{"event_id": "E-014", "order_id": "O-1008", "customer_id": "C-05", "event_type": "order_paid", "amount": "12.00", "currency": "USD", "occurred_at": "2026-03-09T05:00:01Z"}

@@ -1,0 +1,20 @@
+order_id,customer_id,placed_at_utc,status,channel,is_staff
+O01,C01,2026-01-05 16:00:00,completed,web,false
+O02,C01,2026-01-15 18:00:00,completed,web,false
+O03,C02,2026-01-08 15:00:00,completed,app,false
+O04,C02,2026-02-07 15:00:00,completed,app,false
+O05,C03,2026-01-12 20:00:00,completed,web,false
+O06,C04,2026-01-20 14:00:00,completed,app,false
+O07,C04,2026-01-28 14:00:00,cancelled,app,false
+O08,C05,2026-01-22 17:00:00,completed,web,false
+O09,C05,2026-01-27 17:00:00,completed,web,false
+O10,C05,2026-02-03 17:00:00,completed,web,false
+O11,C06,2026-01-10 15:00:00,completed,web,true
+O12,C06,2026-01-11 15:00:00,completed,web,true
+O13,C07,2026-02-01 03:30:00,completed,web,false
+O14,C07,2026-02-14 19:00:00,completed,web,false
+O15,C08,2026-01-25 16:00:00,cancelled,app,false
+O16,C08,2026-02-05 16:00:00,completed,app,false
+O17,C08,2026-02-20 16:00:00,completed,app,false
+O18,C09,2026-02-10 18:00:00,completed,web,false
+O19,,2026-01-18 17:00:00,completed,web,false

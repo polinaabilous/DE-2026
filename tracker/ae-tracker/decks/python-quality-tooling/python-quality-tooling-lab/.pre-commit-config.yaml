@@ -1,0 +1,24 @@
+# .pre-commit-config.yaml: run `pre-commit install` once per clone
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0                   # pinned; update with `pre-commit autoupdate`
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files   # stops a 200 MB sample file being committed
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10                 # same Ruff version as requirements-dev.txt
+    hooks:
+      - id: ruff-check
+        args: [--fix]
+      - id: ruff-format
+  - repo: local                   # mypy needs the project's own dependencies to resolve imports
+    hooks:
+      - id: mypy
+        name: mypy
+        entry: mypy
+        language: system
+        types_or: [python, pyi]
+        pass_filenames: false     # check what [tool.mypy] files says, not just staged files

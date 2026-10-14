@@ -1,0 +1,5 @@
+{"event_id": "e1", "session_id": "s1", "event": "page_view", "props": {"page": "/p/MON-01", "utm_source": "instagram"}}
+{"event_id": "e2", "session_id": "s1", "event": "add_to_cart", "props": {"sku": "MON-01", "qty": 1}}
+{"event_id": "e3", "session_id": "s2", "event": "search", "props": {"query": "pet safe", "results": 12}}
+{"event_id": "e4", "session_id": "s2", "event": "page_view", "props": {"page": "/", "utm_source": "newsletter", "utm_campaign": "spring"}}
+{"event_id": "e5", "session_id": "s3", "event": "page_view", "props": {}}

@@ -18,6 +18,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **Query structure: recursion and clean SQL** · 18 slides | Time-based analysis (part) · Query structure and style · How a query runs (part) | [Deck](../tracker/ae-tracker/decks/sql-query-structure/sql-query-structure.html) |
 | **SQL correctness: joins, grain, and NULLs** · 35 slides | Joins and grain · Interview foundations: explain and practice (part) | [Deck](../tracker/ae-tracker/decks/sql-joins-grain/sql-joins-grain.html) · [Markdown](../tracker/ae-tracker/decks/sql-joins-grain/sql-joins-grain.md) |
 | **SQL aggregation** · 26 slides | Advanced aggregation · Query structure and style (part) | [Deck](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.html) · [Markdown](../tracker/ae-tracker/decks/sql-aggregation/sql-aggregation.md) |
+| **SQL semi-structured data: JSON, arrays, UNNEST across engines** · 32 slides | Semi-structured data | [Deck](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.html) · [Markdown](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured.md) · [Lab folder](../tracker/ae-tracker/decks/sql-semi-structured/sql-semi-structured-lab/README.md) |
 
 ## Python for data
 
@@ -27,6 +28,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | **Python files, generators, and practical data scripts** · 51 slides | Python for data engineering | [Deck](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.html) · [Markdown](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.md) |
 | **pandas for data engineering, with a Polars bridge** · 55 slides | DataFrames: pandas & Polars | [Deck](../tracker/ae-tracker/decks/pandas-polars/pandas-polars.html) · [Markdown](../tracker/ae-tracker/decks/pandas-polars/pandas-polars.md) |
 | **Reliable Python ingestion: APIs and files to Parquet** · 52 slides | Ingestion engineering | [Deck](../tracker/ae-tracker/decks/python-ingestion/python-ingestion.html) · [Markdown](../tracker/ae-tracker/decks/python-ingestion/python-ingestion.md) |
+| **Python quality and tooling: tests, validation, types, pre-commit and CI** · 38 slides | Python quality & tooling | [Deck](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling.html) · [Markdown](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling.md) · [Lab folder](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling-lab/README.md) |
 
 ## Data modeling
 
@@ -63,6 +65,12 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | Deck | Lessons | Files |
 | --- | --- | --- |
 | **Table formats in practice** · 16 slides | Delta Lake + Iceberg basics (part) · Storage architecture (part) · Ingestion tools & CDC (part) | [Deck](../tracker/ae-tracker/decks/data-table-formats/data-table-formats.html) · [Markdown](../tracker/ae-tracker/decks/data-table-formats/data-table-formats.md) · [Data formats one-page reference](../tracker/ae-tracker/decks/data-file-formats/de-data-formats-one-page.html) |
+
+## Communication & interviews
+
+| Deck | Lessons | Files |
+| --- | --- | --- |
+| **From vague ask to written spec: requirements interviews, intake, design docs and READMEs** · 32 slides | Requirements & stakeholders · Writing · Requirements & bus matrix (BEAM part) | [Deck](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.html) · [Markdown](../tracker/ae-tracker/decks/requirements-writing/requirements-writing.md) · [Lab folder](../tracker/ae-tracker/decks/requirements-writing/requirements-writing-lab/README.md) · [Templates](../tracker/ae-tracker/decks/requirements-writing/templates/) |
 
 Lessons without a deck show “No deck yet” in the tracker; planned decks and reusable prompts are in [the study deck roadmap](study-planning/study-deck-roadmap.md).
 

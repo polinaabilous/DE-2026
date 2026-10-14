@@ -2244,11 +2244,15 @@
     "business-metrics-models": { title: "Business models and metrics: commerce, SaaS, marketplace, product, operations", sub: "Net sales and AOV, MRR bridge, churn, GRR and NRR, GMV and take rate, liquidity, DAU/WAU/MAU, funnels, retention cohorts, on-time delivery and percentiles, ticket backlog: a spec card and executed DuckDB SQL for each", file: "business-metrics-models/business-metrics-models.html", md: "business-metrics-models/business-metrics-models.md", slides: 24 },
     "metric-design": { title: "Metric design: define the number before writing SQL", sub: "The metric spec card field by field (population, grain, numerator/denominator, time zone, attribution, exclusions, late data, zero denominators, maturity), ratio of sums, north star and guardrails, leading/lagging, metric trees, Goodhart, semantic layers, governance", file: "metric-design/metric-design.html", md: "metric-design/metric-design.md", slides: 36 },
     "metric-diagnosis": { title: "Diagnosing metric changes: trees, mix shift, and the weekly business review", sub: "Metric trees and driver shares, Simpson's paradox and rate vs mix effects, the 'metric dropped X %' root-cause workflow, and a weekly-business-review lab ending in a five-line write-up", file: "metric-diagnosis/metric-diagnosis.html", md: "metric-diagnosis/metric-diagnosis.md", slides: 21 },
+    "requirements-writing": { title: "From vague ask to written spec: requirements interviews, intake, design docs and READMEs", sub: "Request-intake template, runnable acceptance criteria, first-version scope and status updates, BEAM / 7Ws requirements interviews to bus-matrix rows, precise definitions, one-page design docs, ADRs, PR descriptions, 10-minute READMEs, peer review", file: "requirements-writing/requirements-writing.html", md: "requirements-writing/requirements-writing.md", slides: 32 },
+    "python-quality-tooling": { title: "Python quality and tooling: tests, validation, types, pre-commit and CI", sub: "pytest fixtures (conftest, scopes, factories, fixture files), parametrize, monkeypatch and clocks, Pydantic and Pandera validation with quarantine, mypy, pre-commit, GitHub Actions CI, the coverage gate and what coverage does not prove", file: "python-quality-tooling/python-quality-tooling.html", md: "python-quality-tooling/python-quality-tooling.md", slides: 38 },
+    "sql-semi-structured": { title: "SQL semi-structured data: JSON, arrays, UNNEST across engines", sub: "DuckDB ->/->> and JSON paths, explicit casts, read_json with nested columns, STRUCT/LIST/MAP, UNNEST and its fan-out, empty vs NULL arrays, variable keys, schema drift and safe typed staging, PostgreSQL JSONB, Spark SQL / Snowflake / BigQuery syntax", file: "sql-semi-structured/sql-semi-structured.html", md: "sql-semi-structured/sql-semi-structured.md", slides: 32 },
     "uv-guide": { title: "uv quick guide", sub: "Install Python; create, run and update a project with uv", file: "tools/uv-quick-guide.md", md: null, slides: null, guide: true },
     "duckdb-guide": { title: "DuckDB quick guide", sub: "Query files, inspect data and run saved SQL with the DuckDB CLI", file: "tools/duckdb-quick-guide.md", md: null, slides: null, guide: true }
   };
   // lesson -> decks [slug, what it covers, partial?]. A lesson can have two decks; lessons not listed show “No deck yet”.
   const lessonDecks = {
+    Py4: [["python-quality-tooling", "Gap deck, the rest of the lesson: fixtures and parametrize (slides 4–11), Pydantic / Pandera validation with quarantine (12–17), mypy, pre-commit and GitHub Actions (18–23), coverage ≥80 % and its limits (24–25); lab (26–27)"], ["python-files-streams", "Slides 32–33: uv + pyproject, Ruff and pytest basics (parametrize, tmp_path)", true], ["python-ingestion", "Slide 19: testing HTTP code offline with MockTransport and RESPX", true]],
     SETUP: [["uv-guide", "Install Python and create, run and update a project with uv"], ["duckdb-guide", "Query a CSV directly, inspect data and run saved SQL with DuckDB"]],
     S1: [["sql-window-functions", "Window basics, frames and the default-frame gotcha, ROW_NUMBER/RANK/DENSE_RANK, NTILE, LAG/LEAD, FIRST/LAST_VALUE, window aggregates, running totals and moving averages, period-over-period"]],
     S2: [["sql-patterns", "Signal words, four-question method, top-N per group, dedupe latest row, gaps and islands, sessionization, Nth highest / above group average, interview routine"]],
@@ -2256,7 +2260,7 @@
     S4: [["sql-joins-grain", "Join cardinality, fan-out, pre-aggregation, outer-join filters, semi/anti joins, NOT IN and NULLs, three-valued logic, self/range/as-of joins, reconciliation toolkit, reconciliation lab"]],
     S5: [["sql-window-functions", "Running totals, moving averages and period-over-period with LAG (slides 14–15); cohorts, retention, funnels and time zones are not covered", true], ["sql-query-structure", "Generate a calendar (date spine) to fill missing days (slide 4)", true]],
     S6: [["sql-query-structure", "Recursive CTEs (hierarchies, calendars, cycles), CTEs as named steps, formatting and naming, correctness traps, performance habits; SQLFluff is referenced only"], ["sql-aggregation", "Set operations: UNION vs UNION ALL, INTERSECT, EXCEPT and EXCEPT ALL (slides 10–11)", true]],
-    S7: [["data-file-formats", "JSON and how nested data relates to table grain (slides 5–6); engine-specific UNNEST / LATERAL / EXPLODE syntax is not covered", true]],
+    S7: [["data-file-formats", "JSON and how nested data relates to table grain (slides 5–6); engine-specific UNNEST / LATERAL / EXPLODE syntax is not covered", true], ["sql-semi-structured", "Gap deck, the rest of the lesson: typed extraction (slides 4–7), UNNEST and fan-out (8–13), missing vs null and drifting schemas (14–16), five-engine syntax lookup incl. PostgreSQL JSONB and Spark SQL (17–19); lab: products per ingredient from Open Food Facts–shaped JSONL (21–24)"]],
     P1: [["sql-window-functions", "Logical query processing order (slide 5); EXPLAIN plans are not covered", true], ["sql-query-structure", "Performance-minded habits and sargable predicates (slide 13)", true]],
     P3: [["data-file-formats", "Row vs column storage, Parquet layout, how a Parquet query reads less (projection, row-group skipping), ORC (slides 10–13); warehouse clustering is not covered", true]],
     Py3: [["data-file-formats", "Parquet layout and a CSV to typed Parquet conversion with checks (slide 15); HTTP retries and dlt are not covered", true], ["python-ingestion", "Whole lesson: httpx, pagination, retries with backoff, Retry-After and rate limits, streaming gzip JSON Lines, PyArrow/Parquet, idempotent partitioned publication, secrets, and when dlt is the better choice"]],
@@ -2266,7 +2270,7 @@
     M1: [["dim-why-dimensional", "OLTP vs analytics, facts vs dimensions, star schema, grain and its rules, the four-step design process"]],
     M2: [["dim-fact-tables", "Additive, semi-additive and non-additive measures; transaction, periodic snapshot, accumulating snapshot and factless fact tables"]],
     M3: [["dim-dimension-tables", "Surrogate keys, SCD types 0–6 (focus on 1 and 2), date, role-playing, degenerate, junk dimensions, unknown members, bridge tables, conformed dimensions"]],
-    M6: [["dim-modeling-project", "Plan with a bus matrix (slide 3) and apply it in the FitHub project; BEAM / 7Ws interviews are not covered", true], ["dim-why-dimensional", "Grain statements and the four-step design process (slides 13–16)", true], ["metric-design", "Slides 4-8: turning a vague request into a grain + metric spec, pushing back with concrete readings. No bus matrix or BEAM", true]],
+    M6: [["dim-modeling-project", "Plan with a bus matrix (slide 3) and apply it in the FitHub project; BEAM / 7Ws interviews are not covered", true], ["dim-why-dimensional", "Grain statements and the four-step design process (slides 13–16)", true], ["metric-design", "Slides 4-8: turning a vague request into a grain + metric spec, pushing back with concrete readings. No bus matrix or BEAM", true], ["requirements-writing", "Gap deck: BEAM / 7Ws requirements interview, notes → event table, grain statement and bus-matrix rows, an agent-telemetry rehearsal with a metric push-back (slides 10–14)"]],
     IV0: [["sql-patterns", "Four-question method (slide 4) and how to work a SQL interview question (slide 11)", true], ["sql-joins-grain", "A grain-first routine for SQL interviews (slide 22)", true]],
     IV1: [["sql-patterns", "SQL pattern recognition for timed sets; Python is not covered", true]],
     IV2: [["dim-modeling-project", "Common modeling mistakes, interview cheat-sheet, quick checks and the FitHub design case (slides 6–14); metric and dbt cases are not covered", true]],
@@ -2283,14 +2287,18 @@
     BZ3: [["metric-diagnosis", "Slide 6 only: Simpson's paradox with a rate/mix decomposition. No distributions, CIs, p-values or power", true]],
     BZ4: [["metric-design", "Slide 22 only: A/B primary, guardrail and trust metrics, sample ratio mismatch check. No sample size, peeking or CUPED", true]],
     M5: [["metric-design", "Slide 23 only: metrics as code, a dbt Semantic Layer ratio metric (YAML, not executed) and a DAX measure", true]],
-    CM1: [["metric-design", "Slides 4-6: one request with six answers, the spec card, a clarifying routine for vague asks", true]],
-    CM2: [["metric-design", "Slide 5: the metric spec card as precise written definitions", true]],
+    CM1: [["metric-design", "Slides 4-6: one request with six answers, the spec card, a clarifying routine for vague asks", true], ["requirements-writing", "Gap deck: request-intake template, acceptance criteria you can run, scoping a first version, trade-offs and timeline updates, the Fuel Smart question through the intake (slides 4–9); lab: the Fuel Smart spec pack (22)"]],
+    CM2: [["metric-design", "Slide 5: the metric spec card as precise written definitions", true], ["requirements-writing", "Gap deck: precise definitions (15), one-page design doc (16), decision records (17), PR descriptions (18), 10-minute READMEs (19), peer review (20); document templates ship with the deck"]],
     CM3: [["metric-diagnosis", "Lab steps 4-5 (slides 12-13): a headline-first WBR table and a five-line write-up. No chart choice or decluttering", true]],
     Q4: [["metric-design", "Slide 24: reconciling revenue with Finance through a step-by-step bridge; governance and certified metrics", true]]
   };
   // lesson -> labs from the existing decks: { title, file, slide? }. In an HTML file the slide is its anchor; a lab folder
   // (dbt project README) also names the deck whose slide walks through it. Lessons without labs show the placeholder.
   const lessonLabs = {
+    S7: [{ title: "Lab: products per ingredient from Open Food Facts–shaped JSONL (slides 21–24)", file: "sql-semi-structured/sql-semi-structured.html", slide: 21 }, { title: "Lab folder: fixture, SQL models, run_lab.py, pytest checks and a Spark SQL port", file: "sql-semi-structured/sql-semi-structured-lab/README.md", slide: 21, deck: "sql-semi-structured" }],
+    Py4: [{ title: "Lab: a test suite and CI for the Leafy ingester (slides 26–27)", file: "python-quality-tooling/python-quality-tooling.html", slide: 26 }, { title: "Ingester lab package: smoke test → reference suite at 100 % coverage, pre-commit config, GitHub Actions workflow", file: "python-quality-tooling/python-quality-tooling-lab/README.md", slide: 26, deck: "python-quality-tooling" }],
+    CM2: [{ title: "Lab: the Fuel Smart spec pack (intake, acceptance checks, design doc, ADR, README)", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
+    CM1: [{ title: "Lab: the Fuel Smart spec pack (intake, acceptance checks, design doc, ADR, README)", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
     S1: [{ title: "Practice: name the pattern", file: "sql-window-functions/sql-window-functions.html", slide: 16 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): top_distinct, aggregate_rank, latest_order, running_share, rolling_frames, adjacent_change", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
     S2: [{ title: "Practice: name the pattern", file: "sql-patterns/sql-patterns.html", slide: 10 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): latest_order, top_distinct, streaks, sessions, repeat_payments", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
     S3: [{ title: "Exercises 1–3: aggregation", file: "sql-aggregation/sql-aggregation.html", slide: 21 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): conditional_rate, count_histogram, fixed_pivot, weighted_median, frequent_pairs", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
@@ -2304,7 +2312,7 @@
     M1: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
     M2: [{ title: "Quick checks: decide, then reveal", file: "dim-modeling-project/dim-modeling-project.html", slide: 8 }, { title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
     M3: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
-    M6: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
+    M6: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }, { title: "From interview notes to bus-matrix rows (bus_matrix.py in the spec-pack lab folder)", file: "requirements-writing/requirements-writing-lab/README.md", slide: 13, deck: "requirements-writing" }],
     IV2: [{ title: "Quick checks: decide, then reveal", file: "dim-modeling-project/dim-modeling-project.html", slide: 8 }, { title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
     Py1: [{ title: "Mini-project: an in-memory event cleaner (brief, starter code and tests, reference solution; slides 42–44)", file: "python-foundations/python-foundations.html", slide: 42 }, { title: "Project: a streaming JSONL → DuckDB loader (slides 40–44)", file: "python-files-streams/python-files-streams.html", slide: 40 }],
     Py2: [{ title: "Ten SQL problems in SQL, pandas and Polars (slides 37–42)", file: "pandas-polars/pandas-polars.html", slide: 37 }, { title: "Lab: messy events to daily metrics in pandas, Polars and DuckDB (slides 43–46)", file: "pandas-polars/pandas-polars.html", slide: 43 }],
@@ -2318,7 +2326,6 @@
   // Planned (not yet created) decks from docs/study-planning/study-deck-roadmap.md — shown by name only, never linked.
   // Decks that now exist were removed; lessons with a full deck show no planned deck.
   const plannedDecks = {
-    pyTest: "Testing Python data pipelines",
     sqlTime: "SQL time analysis: cohorts, retention, and funnels",
     sqlWrites: "SQL nested data and safe warehouse writes",
     dbtDepth: "dbt depth: reusable SQL, incremental models, and snapshots",
@@ -2347,14 +2354,14 @@
     comm: "Technical communication and portfolio defense (optional)"
   };
   const lessonPlanned = {
-    M4: ["arch"], CM1: ["comm"], Py4: ["pyTest"], S5: ["sqlTime"], S7: ["sqlWrites"], S8: ["sqlWrites"], D2: ["dbtDepth"], D3: ["dbtDepth"],
+    M4: ["arch"], S5: ["sqlTime"], S8: ["sqlWrites"], D2: ["dbtDepth"], D3: ["dbtDepth"],
     Q1: ["dq"], Q2: ["dq"], P1: ["perf"], P2: ["perf"], P3: ["perf"], SB1: ["pyspark"], SB2: ["pyspark"], SB3: ["lakehouse"],
     A1: ["arch"], A2: ["arch"], A3: ["arch"], BZ3: ["stats"], SB4: ["dbx"], SB5: ["dbx"], P4: ["dbx"], D4: ["dbtGov"],
     D5: ["dbtGov"], AF1: ["airflow"], AF2: ["airflow"], AF3: ["airflow"], AF4: ["airflow"], A4: ["airflow", "obs"], Q3: ["obs"], Q4: ["obs"],
-    BZ4: ["expPy"], Py6: ["expPy"], M5: ["semantic"], M6: ["semantic"], AI1: ["semantic"], AI2: ["semantic"], AI3: ["aiEval"], AI4: ["aiEval"],
+    BZ4: ["expPy"], Py6: ["expPy"], M5: ["semantic"], AI1: ["semantic"], AI2: ["semantic"], AI3: ["aiEval"], AI4: ["aiEval"],
     AI5: ["aiEval"], AI7: ["aiEval"], A5: ["cloud"], PL1: ["cloud"], PL2: ["cloud"], PL3: ["whPort"], PL4: ["whPort"], P5: ["cost"],
     A6: ["cost", "design"], A7: ["design"], Py5: ["pyIv"], IV0: ["pyIv"], IV1: ["pyIv", "design"], IV2: ["ivCases", "design"], IV4: ["ivCases", "design"], IV3: ["comm", "design"],
-    PL5: ["cdc"], PL7: ["cdc"], AI6: ["rag"], CM3: ["story"], PL6: ["story"], CM2: ["comm"], CM4: ["comm"]
+    PL5: ["cdc"], PL7: ["cdc"], AI6: ["rag"], CM3: ["story"], PL6: ["story"], CM4: ["comm"]
   };
 
   // Per-lesson resource picks (resource plan 2026-10-13). The lesson panel shows the deck(s), then at most 3 resources:

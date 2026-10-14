@@ -1,0 +1,35 @@
+process,fact_table,grain,w,item
+Orders,fct_order_line,one row per order line,who,Customer
+Orders,fct_order_line,one row per order line,what,Product
+Orders,fct_order_line,one row per order line,when,Date
+Orders,fct_order_line,one row per order line,where,Channel
+Orders,fct_order_line,one row per order line,why,Promotion
+Orders,fct_order_line,one row per order line,how,Payment method
+Orders,fct_order_line,one row per order line,how many,quantity
+Orders,fct_order_line,one row per order line,how many,line_amount
+Returns,fct_return_line,one row per order line per return,who,Customer
+Returns,fct_return_line,one row per order line per return,what,Product
+Returns,fct_return_line,one row per order line per return,when,Date
+Returns,fct_return_line,one row per order line per return,why,Return reason
+Returns,fct_return_line,one row per order line per return,how many,refund_amount
+Returns,fct_return_line,one row per order line per return,how many,quantity
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,who,Customer
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,what,Product
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,when,Date
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,where,Channel
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,why,Intent
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,how,Agent version
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,how many,turn_count
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,how many,resolved_flag
+Plant Doctor conversations,fct_agent_conversation,one row per conversation,how many,handoff_flag
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,who,Customer
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,what,Tool
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,when,Date
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,how,Agent version
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,how many,latency_ms
+Plant Doctor tool calls,fct_agent_tool_call,one row per tool call,how many,error_flag
+Plant Doctor feedback,fct_agent_feedback,one row per rating,who,Customer
+Plant Doctor feedback,fct_agent_feedback,one row per rating,when,Date
+Plant Doctor feedback,fct_agent_feedback,one row per rating,where,Channel
+Plant Doctor feedback,fct_agent_feedback,one row per rating,how,Agent version
+Plant Doctor feedback,fct_agent_feedback,one row per rating,how many,rating

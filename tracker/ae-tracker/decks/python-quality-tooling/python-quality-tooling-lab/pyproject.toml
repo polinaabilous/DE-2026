@@ -1,0 +1,45 @@
+[project]
+name = "leafy-ingest"
+version = "0.1.0"
+description = "Validate raw Leafy order events and publish a clean batch."
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.11", "pandas>=2.2", "pandera>=0.24"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]                   # import leafy_ingest without installing it
+addopts = [
+    "--import-mode=importlib",         # no sys.path tricks; duplicate test file names are fine
+    "--strict-markers",                # a typo in a marker name is an error, not a new marker
+    "--strict-config",
+    "-ra",                             # summary line for every skip/xfail/failure
+    "--cov",                           # measure what [tool.coverage.run] says
+    "--cov-report=term-missing:skip-covered",
+]
+markers = ["integration: touches files or runs the CLI end to end (deselect with -m 'not integration')"]
+
+[tool.coverage.run]
+source = ["leafy_ingest"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+exclude_also = ["if TYPE_CHECKING:", "raise NotImplementedError"]
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+files = ["src", "tests"]
+mypy_path = "src"
+explicit_package_bases = true
+plugins = ["pydantic.mypy"]                  # understands BaseModel __init__ and validators
+warn_unreachable = true
+enable_error_code = ["ignore-without-code", "redundant-expr", "truthy-bool"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "PT", "RUF"]
