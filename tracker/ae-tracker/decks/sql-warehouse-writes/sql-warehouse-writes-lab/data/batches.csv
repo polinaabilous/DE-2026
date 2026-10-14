@@ -1,0 +1,5 @@
+batch_id,file_name,extracted_at
+1,batch_1.csv,2026-03-02 12:00:00
+2,batch_2.csv,2026-03-03 12:00:00
+3,batch_3.csv,2026-03-04 12:00:00
+4,batch_4.csv,2026-03-05 12:00:00

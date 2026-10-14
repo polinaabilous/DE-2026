@@ -3,9 +3,17 @@ globalThis.AEState = Object.freeze({
   create(plan, store) {
     const P = plan, Store = store, GEN = Store.GENERAL;
     const trackName = Object.fromEntries(P.tracks.map(t => [t.id, t.name]));
+    const stageIds = new Set(P.stages.map(st => st.id));
+    const sources = new Set(P.stages.flatMap(st => st.from));
     // notes: [{ id, track, text, topic?, c, u }] (first line of text = title) · lib: { resourceKey: "done"|"later" } · act: { "YYYY-MM-DD": actions }
-    const blank = () => ({ v: 6, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, notes: [], lib: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
-    const trackOf = topic => P.items[topic] ? P.items[topic].track : GEN;
+    // reading: { resourceKey: { status: "reading"|"paused"|"later"|"done", note?, pct?, updated } } for long reads (books and courses)
+    // ck: { lessonOrSourceId: [checked…] } · done: { lessonId: date } · built: { stageId: date } · r: legacy 4-level ratings, kept as evidence
+    const MAPS = ["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"];
+    // checksV and readingV are set by migrate(), never by defaults: cloud records are unpacked over blank(), and an
+    // old account without the marker must still be migrated.
+    const blank = () => ({ v: 7, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, ck: {}, done: {}, built: {}, notes: [], lib: {}, reading: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
+    const longRead = k => ["book", "course"].includes(P.LM[k]?.f || (P.L[k] || P.LX[k] || [])[2]);
+    const trackOf = topic => P.items[topic] ? P.items[topic].track : stageIds.has(topic) ? "pf" : GEN;
     const trackLabel = t => t === GEN ? "General" : trackName[t] || t;
     // older typed knowledge-base entries (v3) become plain notes
     function kbText(e) {
@@ -18,15 +26,17 @@ globalThis.AEState = Object.freeze({
     }
     function legacyLogText(e) {
       const details = [e.h != null && `${e.h}h`, P.roles[e.role]?.name,
-        e.item && (P.items[e.item] ? `${e.item} · ${P.items[e.item].name}` : e.item)].filter(Boolean).join(" · ");
+        e.item && (P.items[e.item] ? P.items[e.item].name : e.item)].filter(Boolean).join(" · ");
       return [e.note, details].filter(Boolean).join("\n\n") || "Progress logged.";
     }
     function migrate(s) {
       const oldSetup = !!s && s.setupV !== 2;
       const oldCurriculum = s?.curriculumV ?? 3;
+      const oldChecks = s?.checksV ?? 0;
+      const oldReading = s?.readingV ?? 0;
       s = Object.assign(blank(), s || {});
       s.ui = Object.assign(blank().ui, s.ui || {}); delete s.ui.iv;
-      ["r", "pc", "rc", "g", "lib", "act", "practice"].forEach(k => { if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = {}; });
+      MAPS.forEach(k => { if (!s[k] || typeof s[k] !== "object" || Array.isArray(s[k])) s[k] = {}; });
       const attemptIds = new Set();
       s.attempts = (Array.isArray(s.attempts) ? s.attempts : []).filter(e => e && typeof e.problem === "string" && typeof e.tool === "string").map((e, i) => {
         let id = e.id || `${Store.uid()}-attempt-${i}`;
@@ -60,7 +70,7 @@ globalThis.AEState = Object.freeze({
       s.notes = list.map(n => {
         const x = { id: n.id && !ids.has(n.id) ? n.id : Store.uid(), track: n.track === GEN || trackName[n.track] ? n.track : GEN, text: n.text.replace(/\s+$/, ""), c: n.c || now };
         x.u = n.u || x.c;
-        if (n.topic && P.items[n.topic]) x.topic = n.topic;
+        if (n.topic && (P.items[n.topic] || stageIds.has(n.topic))) x.topic = n.topic;
         ids.add(x.id); return x;
       });
       delete s.kb; delete s.srs;
@@ -95,10 +105,37 @@ globalThis.AEState = Object.freeze({
         }
       }
       s.curriculumV = Math.max(oldCurriculum, P.curriculumV);
-      s.v = 6;
+      // Checks v1: 4-level ratings become check boxes once. Solid/Confident ticks a check; Not yet/Shaky leaves it open.
+      // Topics that were Done under the old rule stay complete, even if a newer prerequisite is not. Ratings are kept.
+      if (oldChecks < P.checksV) {
+        const wasDone = id => Array.isArray(s.r[id]) && P.items[id].dod.every((_, i) => (s.r[id][i] || 0) >= 2);
+        Object.keys(P.items).forEach(id => {
+          const old = s.r[id];
+          if (!Array.isArray(old)) return;
+          const row = Array.isArray(s.ck[id]) ? s.ck[id] : (s.ck[id] = []);
+          P.items[id].dod.forEach((_, i) => { row[i] = row[i] === true || (old[i] || 0) >= 2; });
+          if (!sources.has(id) && wasDone(id) && !s.done[id]) s.done[id] = "migrated";
+        });
+        P.stages.forEach(st => {
+          if (!st.from.length || !st.from.every(wasDone) || s.built[st.id]) return;
+          s.built[st.id] = "migrated";
+          const own = st.checks.filter(c => typeof c !== "string");
+          if (own.length) s.ck[st.id] = own.map(() => true);
+        });
+      }
+      s.checksV = Math.max(oldChecks, P.checksV);
+      // Reading v1: books and courses saved for later or done in the Library get the same long-read status.
+      // The lib entries stay as they are; nothing else is inferred (no book is marked as being read).
+      if (oldReading < 1) {
+        Object.entries(s.lib).forEach(([k, v]) => {
+          if ((v === "later" || v === "done") && longRead(k) && !s.reading[k]) s.reading[k] = { status: v, updated: Store.today() };
+        });
+      }
+      s.readingV = Math.max(oldReading, 1);
+      s.v = 7;
       return s;
     }
-    const hasData = s => s.todo.length || s.log.length || s.notes.length || s.attempts.length || ["r", "pc", "rc", "g", "lib", "act", "practice"].some(k => Object.keys(s[k]).length);
+    const hasData = s => s.todo.length || s.log.length || s.notes.length || s.attempts.length || MAPS.some(k => Object.keys(s[k] || {}).length);
 
     return { blank, migrate, hasData, trackOf, trackLabel, trackName };
   }

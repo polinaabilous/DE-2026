@@ -1,0 +1,4 @@
+{"event_id":"e9","user_id":"u5","event_type":"page_view","ts":"2026-03-03T07:59:00-06:00","amount":null,"product_id":"P3"}
+{"event_id":"e10","user_id":"u5","event_type":"purchase","ts":"2026-03-03T08:00:00-06:00","amount":7.5,"product_id":"P4"}
+{"event_id":"e11","user_id":"u1","event_type":"refund","ts":"2026-03-03T09:00:00Z","amount":"5.00","product_id":"P1"}
+{"event_id":"e12","user_id":"u2","event_type":"purchase","ts":"2026-03-03T23:30:00-08:00","amount":"39.00","product_id":"P1"}

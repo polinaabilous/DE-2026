@@ -2,8 +2,8 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 require('../ae-tracker/cloud-core.js');
 const { pack, unpack, Model } = globalThis.AECloudCore;
-const empty = () => ({v:6,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},lib:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
-const base = () => ({...empty(),r:{S1:[0,2]},pc:{S1:[true,false]},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later'},act:{'2026-10-06':2},
+const empty = () => ({v:7,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},ck:{},done:{},built:{},lib:{},reading:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
+const base = () => ({...empty(),checksV:1,r:{S1:[0,2]},pc:{S1:[true,false]},ck:{S1:[true,false],'v1-frame':[true]},done:{SETUP:'migrated'},built:{'v1-frame':'2026-10-13'},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later',dwt:'later'},reading:{dwt:{status:'reading',note:'Ch. 6 · Order Management',pct:35,updated:'2026-10-13'},corr:{status:'later',updated:'2026-10-12'}},act:{'2026-10-06':2},
   notes:[{id:'note-a',text:'SQL\n**FILTER**\n- One\n```sql\nSELECT 1;\n```',track:'sql',c:'2026-10-06'}],
   log:[{id:'log-a',d:'2026-10-06',text:'Practiced joins',h:1.5,role:'P',note:'legacy',custom:{retained:true}}],
   todo:[{id:'todo-a',text:'Try dbt\nand tests',done:false,track:'dbt'}],curriculumHistory:[{r:{S1:[3,2]}}],custom:{nested:'kept'}});
@@ -74,4 +74,21 @@ test('practice fields and attempts merge independently across offline devices',(
   const stale=new Model(pack(merged));const after=unpack(stale.receive(deleted),empty());
   assert.equal(after.attempts.length,1);after.practice['datalemur:sql-histogram-tweets'].review=true;stale.edit(pack(after));
   assert.equal(stale.pending['["attempts","phone-attempt"]'],undefined);
+});
+
+test('long-read status, note and progress merge per field across offline devices; removals become tombstones',()=>{
+  const s=base(),phone=new Model(pack(s)),laptop=new Model(pack(s));phone.receive(pack(s));laptop.receive(pack(s));
+  for(const k of ['["reading","dwt","status"]','["reading","dwt","note"]','["reading","dwt","pct"]']) assert.ok(pack(s)[k],k);
+  const a=structuredClone(s),b=structuredClone(s);
+  a.reading.dwt.note='Ch. 7 · Accounting';
+  b.reading.dwt.pct=50;b.reading.dwt.status='paused';b.reading.ddia={status:'reading',updated:'2026-10-14'};
+  phone.edit(pack(a));laptop.edit(pack(b));
+  const remote={...pack(s),...Object.fromEntries(Object.entries(laptop.pending).map(([k,v])=>[k,v.value]))};
+  const merged=unpack(phone.receive(remote),empty());
+  assert.deepEqual(merged.reading.dwt,{status:'paused',note:'Ch. 7 · Accounting',pct:50,updated:'2026-10-13'});
+  assert.equal(merged.reading.ddia.status,'reading');
+  assert.deepEqual(unpack(pack(merged),empty()),merged);
+  const cleared=structuredClone(merged);delete cleared.reading.corr;phone.edit(pack(cleared));
+  assert.equal(phone.pending['["reading","corr","status"]'].value,null,'a removed status is a tombstone, not a silent gap');
+  assert.equal(unpack(phone.view,empty()).reading.corr,undefined);
 });

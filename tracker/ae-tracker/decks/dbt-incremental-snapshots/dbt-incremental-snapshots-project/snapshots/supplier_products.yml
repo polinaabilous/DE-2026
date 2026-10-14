@@ -1,0 +1,10 @@
+snapshots:
+  - name: supplier_products_snapshot
+    description: SCD2 history of the supplier catalogue (full daily extract). One row per barcode per version.
+    relation: source('shop_raw', 'supplier_products')
+    config:
+      unique_key: barcode
+      strategy: check                         # the supplier does not always bump last_modified_at
+      check_cols: [product_name, brand, label, npk]
+      hard_deletes: new_record                # full extract: absence = discontinued
+      dbt_valid_to_current: "cast('9999-12-31' as timestamp)"   # current rows get an end date, not NULL

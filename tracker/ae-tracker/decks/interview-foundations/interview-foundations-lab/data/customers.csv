@@ -1,0 +1,13 @@
+customer_id,signup_date,segment,is_staff
+C01,2026-01-20,consumer,false
+C02,2026-02-27,consumer,false
+C03,2026-03-02,consumer,false
+C04,2026-03-03,business,false
+C05,2026-03-04,consumer,false
+C06,2025-11-02,consumer,true
+C07,2026-03-06,consumer,false
+C08,2026-03-10,consumer,false
+C09,2026-03-12,business,false
+C10,2026-03-15,consumer,false
+C11,2026-03-31,consumer,false
+C12,2026-03-31,consumer,false

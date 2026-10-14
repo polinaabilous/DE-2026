@@ -1,0 +1,11 @@
+# Tested versions (pinned). Runtime: pydantic, pandas, pandera, tzdata. The rest are dev tools.
+pydantic==2.13.5
+pandas==3.0.6
+pandera==0.34.1
+tzdata==2026.5
+pytest==9.1.1
+pytest-cov==7.1.0
+mypy==2.4.0
+pandas-stubs==3.0.5.260914
+ruff==0.16.10
+pre-commit==4.6.2

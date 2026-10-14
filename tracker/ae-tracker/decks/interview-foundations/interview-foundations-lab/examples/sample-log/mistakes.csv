@@ -1,0 +1,6 @@
+id,date,kind,problem,pattern,type,rule,retries
+1,2026-10-14,sql,S1b,month-bucket,edge-case,Ask 'whose midnight?' before any date_trunc,2026-10-15:clean;2026-10-18:clean
+2,2026-10-14,sql,S1b,spine,edge-case,'per X per month' means build the X x month spine first,2026-10-15:miss
+3,2026-10-14,sql,S1b,dedupe,clarify,Ask 'can rows repeat?' and name the key before aggregating,
+4,2026-10-16,python,P1b,sort-ties,logic,Every sort in an answer gets a tie-breaker,
+5,2026-10-18,sql,S2b,dedupe,communication,Say the dedupe rule (key + winner + tie-breaker) before typing,

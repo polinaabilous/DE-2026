@@ -1,0 +1,15 @@
+process,fact_table,grain,w,item
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,what,Recipe
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,what,Food
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,when,Date
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,how,Match method
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,how many,grams
+Recipe ingredient lines,fct_recipe_ingredient,one row per recipe ingredient line,how many,match_confidence
+Food nutrients,fct_food_nutrient,one row per food per nutrient per USDA release,what,Food
+Food nutrients,fct_food_nutrient,one row per food per nutrient per USDA release,what,Nutrient
+Food nutrients,fct_food_nutrient,one row per food per nutrient per USDA release,when,USDA release
+Food nutrients,fct_food_nutrient,one row per food per nutrient per USDA release,how many,amount_per_100g
+Reviews,fct_review,one row per review,who,Reviewer
+Reviews,fct_review,one row per review,what,Recipe
+Reviews,fct_review,one row per review,when,Date
+Reviews,fct_review,one row per review,how many,rating

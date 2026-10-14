@@ -1,0 +1,9 @@
+version: 2
+
+models:
+  - name: int_purchases
+    description: Purchase events that count as orders (parseable amount). One row per order_id. Ephemeral.
+    columns:
+      - name: order_id
+        description: Primary key; the purchase event_id.
+        data_tests: [unique, not_null]

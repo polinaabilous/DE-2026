@@ -1,0 +1,10 @@
+version: 2
+
+models:
+  - name: stg_reviews
+    description: Product reviews, cleaned, typed and deduplicated. One row per review_id; the latest edit wins.
+    config:
+      event_time: submitted_at_utc     # lets microbatch models filter this input by batch
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]

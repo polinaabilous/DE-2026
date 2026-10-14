@@ -1,0 +1,4 @@
+payment_id,order_id,type,amount_usd,currency,captured_at_utc
+pay_1013,e23,charge,64.00,USD,2026-03-06 08:10:05
+pay_1014,e26,charge,25.00,USD,2026-03-06 11:03:04
+pay_1015,e27,refund,-25.00,USD,2026-03-06 12:00:08

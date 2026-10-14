@@ -1,0 +1,11 @@
+leafy:                         # must match `profile:` in dbt_project.yml
+  target: dev                  # the default target
+  outputs:
+    dev:
+      type: duckdb             # which adapter
+      path: "{{ env_var('LEAFY_DUCKDB_PATH', 'leafy.duckdb') }}"
+      threads: 4               # models built in parallel
+    ci:
+      type: duckdb
+      path: leafy_ci.duckdb
+      threads: 4

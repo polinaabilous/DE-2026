@@ -1,0 +1,53 @@
+version: 2
+
+models:
+  - name: stg_events
+    description: Website events, cleaned, typed and deduplicated. One row per event_id.
+    columns:
+      - name: event_id
+        description: Primary key of the event.
+        data_tests:
+          - unique
+          - not_null
+      - name: event_type
+        description: Lower-case event type.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ["page_view", "add_to_cart", "purchase", "refund"]
+      - name: customer_id
+        description: Normalised customer id; NULL for guests (not logged in).
+        data_tests:
+          - null_rate:
+              config:
+                where: "event_type = 'purchase'"   # browsing as a guest is normal; buying as one is rare
+                fail_calc: "coalesce(max(null_pct), 0)"
+                warn_if: "> 5"                     # more than 5% guest purchases: look at the login service
+                error_if: "> 20"                   # more than 20%: customer analytics is unusable
+      - name: event_at_utc
+        description: Event time converted to UTC (TIMESTAMP without time zone).
+        data_tests:
+          - not_null
+
+  - name: stg_customers
+    description: One row per customer from the CRM seed, with a normalised customer_id.
+
+  - name: stg_products
+    description: One row per product from the catalogue seed.
+
+  - name: stg_payments
+    description: Settled payments from the payment provider. One row per payment_id; refunds are negative.
+    columns:
+      - name: payment_id
+        data_tests: [unique, not_null]
+      - name: currency
+        data_tests:
+          - accepted_values:
+              arguments: {values: ["USD"]}
+              config: {severity: warn}
+      - name: captured_at_utc
+        data_tests: [not_null]
+      - name: payment_type
+        data_tests:
+          - accepted_values:
+              arguments: {values: ["charge", "refund"]}

@@ -1,0 +1,8 @@
+{"event_id": "e38", "user_id": "u1", "event_type": "page_view", "ts": "2026-03-08T09:00:00Z", "product_id": "P3", "app_version": "2.0.0"}
+{"event_id": "e39", "user_id": "u1", "event_type": "purchase", "ts": "2026-03-08T09:02:00Z", "product_id": "P3", "amount_cents": 1800, "app_version": "2.0.0"}
+{"event_id": "e40", "user_id": "u2", "event_type": "page_view", "ts": "2026-03-08T10:00:00Z", "product_id": "P1", "app_version": "2.0.0"}
+{"event_id": "e41", "user_id": "u2", "event_type": "add_to_cart", "ts": "2026-03-08T10:01:00Z", "product_id": "P1", "app_version": "2.0.0"}
+{"event_id": "e42", "user_id": "u2", "event_type": "purchase", "ts": "2026-03-08T10:03:00Z", "product_id": "P1", "amount_cents": 6400, "app_version": "2.0.0"}
+{"event_id": "e43", "user_id": "u5", "event_type": "page_view", "ts": "2026-03-08T12:00:00Z", "product_id": "P4", "app_version": "2.0.0"}
+{"event_id": "e44", "user_id": "u5", "event_type": "purchase", "ts": "2026-03-08T12:01:00Z", "product_id": "P4", "amount_cents": 1250, "app_version": "2.0.0"}
+{"event_id": "e45", "user_id": "u3", "event_type": "page_view", "ts": "2026-03-08T16:00:00Z", "product_id": "P2", "app_version": "2.0.0"}

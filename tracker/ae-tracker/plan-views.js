@@ -1,93 +1,265 @@
-// Roadmap and skills presentation. Rendering reads state and never writes it.
+// Topics, roadmap and the lesson / stage side panels. Rendering reads state and never writes it.
 globalThis.AEPlanViews = Object.freeze({
-  create({ plan: P, roadmap, getState }) {
-    const { esc, pct } = globalThis.AEUtils;
-    const { order, where, it, role, score, isDone, status, statusLabel, required, progress, stepOptional, stepDone, currentStep, visible } = roadmap;
-    // ---------- small components ----------
-    const tag = id => `<span class="tag" style="--rc:${role(id).color}">${role(id).name}</span>`;
-    const bar = (v, cls = "") => `<div class="bar ${cls}"><i style="width:${pct(v)}"></i></div>`;
-    const nCount = id => getState().notes.filter(n => n.topic === id).length;
-    function card(id) {
-      const x = it(id), st = status(id);
-      return `<button class="card ${st}" data-open="${id}" style="--rc:${role(id).color}">
-        <div class="card-top">${tag(id)}${x.opt ? '<span class="tag opt">optional</span>' : ""}<span class="cid">${id}</span></div>
-        <div class="card-name">${esc(x.name)}</div>
-        <div class="card-meta"><span>~${x.h}h · ${x.dod.length} checks${x.setup ? ` · <span title="Has a few install steps — see 🔧 Set up first">🔧</span>` : ""}${nCount(id) ? ` · 📝 ${nCount(id)}` : ""}</span><span class="st st-${st}">${st === "done" ? "✓ " : ""}${statusLabel[st]}</span></div>
-        ${bar(score(id))}</button>`;
-    }
-    const chip = id => `<button class="chip ${isDone(id) ? "done" : ""}" data-open="${id}" style="--rc:${role(id).color}" title="${esc(it(id).name)} · ${pct(score(id))}">${isDone(id) ? "✓ " : ""}${id} · ${esc(it(id).name)}</button>`;
+  create({ plan: P, roadmap: R, resources: RES, getState }) {
+    const { esc, icon } = globalThis.AEUtils;
+    const md = t => globalThis.AEEditor.inl(t, false);
+    const S = () => getState();
+    const { it, isDone, status, statusLabel, stage, isStage, title } = R;
+    const pad2 = n => String(n).padStart(2, "0");
+    const stageNo = id => P.stages.findIndex(s => s.id === id) + 1;
+    const sectionName = id => (P.road.find(s => s.id === id) || {}).name || "";
+    const opt = id => it(id)?.opt ? `<span class="badge neutral">Optional</span>` : "";
+    const firstSentence = (t, n = 110) => { const s = String(t).split(/(?<=\.)\s/)[0].replace(/\*\*/g, ""); return s.length > n ? s.slice(0, n - 1).replace(/\s+\S*$/, "") + "…" : s; };
 
-    function gate(g, key, apply) {
-      const n = g.items.length, c = g.items.filter((_, i) => getState().g[key + "-" + i]).length;
-      return `<div class="gate ${apply ? "apply" : ""} ${c === n ? "passed" : ""}">
-        <div class="dot">${apply ? "🚪" : c === n ? "✓" : "⛳"}</div>
-        <div class="gate-body"><h4>${esc(g.title)} <span class="muted small">${c}/${n}</span></h4>
-        ${g.note ? `<p class="small">${esc(g.note)}</p>` : ""}
-        <div class="gate-items">${g.items.map((t, i) => `<label><input type="checkbox" data-gate="${key}-${i}" ${getState().g[key + "-" + i] ? "checked" : ""}> ${esc(t)}</label>`).join("")}</div></div></div>`;
+    // "a, b (c, d); e" → ["a", "b (c, d)", "e"] for single-sentence lists; otherwise a paragraph.
+    function learnPoints(c) {
+      const text = String(c).trim().replace(/\.$/, "");
+      if (/[.:]\s/.test(text)) return null;
+      const parts = []; let depth = 0, cur = "";
+      for (let i = 0; i < text.length; i++) {
+        const ch = text[i];
+        if (ch === "(") depth++;
+        if (ch === ")") depth = Math.max(0, depth - 1);
+        if (!depth && (ch === "," || ch === ";") && text[i + 1] === " ") { parts.push(cur.trim()); cur = ""; i++; continue; }
+        cur += ch;
+      }
+      parts.push(cur.trim());
+      return parts.length >= 3 && parts.every(p => p && p.length <= 90) ? parts : null;
     }
 
-    // ---------- views ----------
-    function vRoadmap() {
-      const cur = currentStep(), all = progress(required);
-      const doneCount = required.filter(isDone).length;
-      let h = `<div class="page-head"><div><div class="eyebrow">Your learning plan</div><h2>Your roadmap</h2><p class="muted">Build practical skills, one step at a time.</p></div></div><div class="panel rm-head">
-        <div class="grow"><details class="roadmap-help"><summary>Plan scope & how to use this roadmap</summary>
-        <p class="small"><b>Portfolio v1:</b> ${esc(P.portfolio.question)} ${esc(P.portfolio.scope)} <b>Later releases:</b> lakehouse, orchestration, semantic layer, AI and portability.</p>
-        <p class="muted">Work top to bottom. Each step groups complementary topics — practice, theory and a build piece. Work in topic order within a step and finish a topic’s <b>prerequisites</b> before its deliverable. Click a topic to see what to learn, how to practice and its <b>definition of done</b>. A topic is <b>Done</b> when every check is rated <b>Solid</b> or better.</p>
-        <div class="legend">${Object.values(P.roles).map(r => `<span><i style="background:${r.color}"></i>${r.name}</span>`).join("")}</div></details></div>
-        <div class="kpis small-kpis">
-          <div><b>${pct(all.pct)}</b><span>overall</span></div>
-          <div><b>${doneCount}/${required.length}</b><span>topics done</span></div>
-          <div><b>~${Math.round(all.left)}h</b><span>left (est.)</span></div>
-          <div><b>${cur ? cur.id : "🎉"}</b><span>current step</span></div>
-        </div>
-        <div class="rm-tools"><button class="btn primary" data-act="jump">📍 Jump to current step</button>
-          <label><input type="checkbox" data-act="hideDone" ${getState().ui.hideDone ? "checked" : ""}> Hide finished steps</label>
-          <label><input type="checkbox" data-act="showOpt" ${getState().ui.showOpt ? "checked" : ""}> Show optional topics</label></div>
-      </div><div class="timeline">`;
-      P.stages.forEach(st => {
-        const p = progress(st.steps.flatMap(s => s.items).filter(id => !it(id).opt));
-        h += `<section class="stage"><div class="stage-head"><div class="stage-num">${st.n}</div>
-          <div class="grow"><h3>Stage ${st.n} · ${esc(st.name)}</h3><p class="muted">${esc(st.goal)}</p>${bar(p.pct, "thick")}</div>
-          <div class="stage-p"><b>${pct(p.pct)}</b><span>~${p.h}h</span></div></div>`;
-        st.steps.forEach(sp => {
-          const opt = stepOptional(sp);
-          if (opt && !getState().ui.showOpt) return;
-          const done = stepDone(sp);
-          if (done && getState().ui.hideDone) return;
-          const isCur = cur && cur.id === sp.id;
-          const ids = sp.items.filter(visible);
-          const hrs = ids.reduce((a, id) => a + it(id).h, 0);
-          h += `<div class="step ${done ? "done" : ""} ${isCur ? "current" : ""}" id="step-${sp.id}">
-            <div class="dot">${done ? "✓" : sp.id}</div>
-            <div class="step-body"><div class="step-head"><h4>Step ${sp.id} · ${esc(sp.title)}</h4>
-            ${isCur ? '<span class="here">📍 You are here</span>' : ""}${opt ? '<span class="tag opt">optional</span>' : ""}
-            <span class="muted small">~${hrs}h · follow prerequisite order</span></div>
-            ${done && !isCur ? `<div class="chips">${ids.map(chip).join("")}</div>` : `<div class="cards">${ids.map(card).join("")}</div>`}
-            </div></div>`;
+    // ---------- shared small components ----------
+    function lessonButton(id, extra = "") {
+      const done = isDone(id);
+      return `<button class="road-lesson ${done ? "done" : ""}" data-open="${esc(id)}"><span class="dot ${done ? "done" : status(id) === "doing" ? "doing" : ""}" aria-hidden="true">${done ? "✓" : ""}</span><span class="grow">${esc(title(id))}${isStage(id) ? ' <span class="small muted">· portfolio stage</span>' : ""}</span>${it(id)?.opt ? '<span class="badge neutral">Optional</span>' : ""}${extra}${icon("arrow")}<span class="sr-only">${done ? "Complete" : isStage(id) ? R.stageLabel[R.stageStatus(stage(id))] : statusLabel[status(id)]}</span></button>`;
+    }
+    const sectionTitle = (n, t) => `<h3 class="section-title"><span class="section-number">${n}</span>${t}</h3>`;
+    const linkRes = (r, attrs = "") => r.url ? `<a href="${esc(r.url)}" target="_blank" rel="noopener" ${attrs}>${esc(r.title)}</a>` : `<span ${attrs}>${esc(r.title)}</span>`;
+    // Format badge (colour + icon) and time badge, shared with the Resources views.
+    const fmtBadge = f => { const [label, ic] = RES.FORMATS[f] || [f, "doc"]; return `<span class="fmt f-${esc(f)}">${icon(ic)}${esc(label)}</span>`; };
+    const timeBadge = t => RES.TIME[t] ? `<span class="tb t-${esc(t)}">${RES.TIME[t][0]} ${RES.TIME[t][1]}</span>` : "";
+    const bookBadge = r => RES.currentBooks().has(r.key) ? `<span class="badge book-now" title="The book you're reading now — read just these chapters">📗 Your current book</span>` : "";
+    const libDoneFor = (owner, k) => (S().rc[owner] || {})[k] || RES.libDone(k);
+    function resRow(owner, r, label) {
+      const ck = libDoneFor(owner, r.key);
+      return `<label class="res-row"><input type="checkbox" data-rc="${esc(owner)}|${esc(r.key)}" ${ck ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${label ? `<span class="res-tier">${label}</span>` : ""}${linkRes(r)}${r.note ? ` <span class="res-note">— ${esc(r.note)}</span>` : ""}
+        <span class="res-meta">${fmtBadge(r.format)}${timeBadge(r.time)}${bookBadge(r)}${r.pw ? `<span class="small muted">may need sign-in (${esc(r.pw)})</span>` : ""}</span></span></label>`;
+    }
+    const siteLink = r => `<a class="resource" href="${esc(r.url || "#")}" target="_blank" rel="noopener">${icon("flag")}<span class="grow"><strong>${esc(r.title)}</strong><small>Choose problems on this lesson's topics; track them separately.</small></span>${icon("arrow")}</a>`;
+
+    // ---------- Topics (learning areas) ----------
+    const expanded = new Set();
+    let curLesson = null;
+    function areaLesson(id, n) {
+      const st = status(id), cur = curLesson === id;
+      return `<button class="area-lesson ${cur ? "current" : ""}" data-open="${esc(id)}"><span class="lesson-order ${st === "done" ? "done" : ""}" aria-hidden="true">${st === "done" ? "✓" : pad2(n)}</span><span class="grow"><span class="lesson-title">${esc(it(id).name)}</span><span class="lesson-summary">${esc(firstSentence(it(id).c))}</span></span>${opt(id)}<span class="row-status">${st === "todo" ? "" : statusLabel[st]}</span>${icon("arrow")}</button>`;
+    }
+    function areaCard(a, i) {
+      const ids = R.areaLessons(a), complete = ids.filter(isDone).length;
+      let shown = 0, n = 0;
+      const blocks = a.chapters.map((c, ci) => {
+        const html = `<div class="chapter-block"><div class="chapter-head"><span class="chapter-index">${ci + 1}</span><span class="grow"><strong>${esc(c[0])}</strong><small>${esc(c[1])}</small></span><span class="chapter-progress">${c[2].filter(isDone).length} / ${c[2].length}</span></div>${c[2].map(id => areaLesson(id, ++n)).join("")}</div>`;
+        return { html, size: c[2].length };
+      });
+      const visible = [], hidden = [];
+      blocks.forEach((b, bi) => { if (bi === 0 || shown + b.size <= 4) { visible.push(b.html); shown += b.size; } else hidden.push(b); });
+      const more = hidden.reduce((x, b) => x + b.size, 0);
+      const reading = RES.areaReading(a);
+      const firstRow = ids.map(id => R.rowOf[id]).filter(Boolean)[0];
+      return `<section class="area-card" id="area-${a.id}"><div class="area-head"><div class="row spread"><span class="eyebrow">Area ${pad2(i + 1)}</span><span class="small muted">${complete} / ${ids.length} complete</span></div>
+        <h3>${esc(a.name)}${a.star ? " ⭐" : ""}</h3><p>${esc(a.desc)}</p></div>
+        <div class="area-lessons">${visible.join("")}${hidden.length ? `<details class="area-more" data-area="${a.id}" ${expanded.has(a.id) ? "open" : ""}><summary><span class="show-more">Show ${more} more ${more === 1 ? "lesson" : "lessons"}</span><span class="show-less">Show fewer lessons</span></summary>${hidden.map(b => b.html).join("")}</details>` : ""}</div>
+        <footer class="area-foot">${reading.length ? `<details class="reading-list" data-reading="${a.id}" ${expanded.has("r:" + a.id) ? "open" : ""}><summary>${icon("book")} Area reading list <span class="muted">(${reading.length})</span></summary>${readingList(reading)}</details>` : "<span></span>"}
+        ${firstRow ? `<button class="text-btn" data-road="${firstRow.key}">See on roadmap ${icon("arrow")}</button>` : ""}</footer></section>`;
+    }
+    // Area reading list: books and courses with the chapters each lesson uses. In a lesson panel this lesson's chapters come first.
+    function readingList(list, lesson) {
+      const mine = r => r.lessons.some(l => l.id === lesson);
+      const sorted = lesson ? [...list].sort((a, b) => mine(b) - mine(a)) : list;
+      return `<p class="small muted">Books and courses that span several lessons. Read only the chapters a lesson names.</p><div class="reading-items">${sorted.map(r => {
+        const own = lesson && r.lessons.find(l => l.id === lesson);
+        const uses = r.lessons.filter(l => l.id !== lesson);
+        return `<label class="res-row ${own ? "for-lesson" : ""}"><input type="checkbox" data-lib="${esc(r.key)}" ${RES.libDone(r.key) ? "checked" : ""} aria-label="Mark ${esc(r.title)} done"><span class="grow">${linkRes(r)}
+          <span class="res-meta">${fmtBadge(r.format)}${bookBadge(r)}</span>
+          ${own ? `<small class="reading-for"><b>This lesson:</b> ${esc(own.note || "the whole book")}</small>` : ""}
+          ${uses.length ? `<small class="muted reading-for">${uses.map(l => `${esc(it(l.id).name)}${l.note ? ` — ${esc(l.note)}` : ""}`).join("<br>")}</small>` : ""}</span></label>`;
+      }).join("")}</div>`;
+    }
+    function vTopics() {
+      curLesson = R.lessons.find(id => !isDone(id) && !it(id).opt) || null;
+      const done = R.required.filter(isDone).length;
+      return `<div class="page-head"><div><div class="eyebrow">Learning areas</div><h2>Topics</h2><p class="muted">Choose an area, then open a lesson. What to learn, how to practise and how it connects to your portfolio stay together in its side panel.</p></div>
+        <div class="kpis small-kpis"><div><b>${done}/${R.required.length}</b><span>lessons complete</span></div><div><b>${P.areas.length}</b><span>areas</span></div></div></div>
+        <div class="area-grid">${P.areas.map(areaCard).join("")}</div>`;
+    }
+
+    // ---------- Roadmap (learning & portfolio) ----------
+    function learnCard(row, n) {
+      const ids = row.learn || [];
+      const st = row.stage && stage(row.stage);
+      const req = st ? st.req : row.milestone ? R.prereqs(row.milestone) : ids;
+      const earlier = st ? st.req.filter(id => !ids.includes(id)) : [];
+      const counted = st ? st.req.filter(id => R.isLesson(id)) : ids.filter(id => !it(id).opt);
+      const learned = counted.filter(isDone).length;
+      const lessons = ids.length ? ids.map(id => lessonButton(id, st && !st.req.includes(id) ? '<span class="badge neutral" title="Not required for this stage">Standalone</span>' : "")).join("")
+        : `<p class="small muted">No new lessons — builds on:</p>${req.map(id => lessonButton(id)).join("")}`;
+      return `<article class="learn-card"><div class="row spread"><span class="eyebrow">${pad2(n)}</span><span class="small muted">${counted.length ? `${learned} / ${counted.length} learned` : ""}</span></div>
+        <h4>${esc(row.title)}</h4><div class="road-lessons">${lessons}</div>
+        ${earlier.length ? `<p class="extra">Also needs ${earlier.length} earlier ${earlier.length === 1 ? "lesson" : "lessons"}: ${earlier.map(id => `<button class="link-btn" data-open="${esc(id)}">${esc(title(id))}</button>`).join(", ")}</p>` : ""}</article>`;
+    }
+    function buildCard(row) {
+      if (row.stage) {
+        const s = stage(row.stage), st = R.stageStatus(s);
+        return `<article class="project-card ${st}"><div class="row spread"><span class="eyebrow">Stage ${stageNo(s.id)} · ${esc(sectionName(s.release).split(" · ").pop())}</span><span class="badge ${st === "locked" ? "neutral" : ""}">${st === "built" ? icon("check") : st === "locked" ? icon("lock") : ""}${R.stageLabel[st]}</span></div>
+          <h4>${esc(s.name)}</h4><p>${esc(firstSentence(R.stageDesc(s), 170))}</p>
+          <button class="btn ${st === "ready" ? "primary" : ""}" data-open="${s.id}">Open stage ${icon("arrow")}</button></article>`;
+      }
+      if (row.milestone) {
+        const id = row.milestone, st = status(id);
+        return `<article class="project-card milestone ${st === "done" ? "built" : ""}"><div class="row spread"><span class="eyebrow">${icon("flag")} Career milestone</span><span class="badge ${st === "done" ? "" : "neutral"}">${it(id).opt ? "Optional · " : ""}${statusLabel[st]}</span></div>
+          <h4>${esc(it(id).name)}</h4><p>${esc(firstSentence(it(id).c, 170))}</p>
+          <button class="btn" data-open="${id}">Open lesson ${icon("arrow")}</button></article>`;
+      }
+      const p = row.practice, sites = (p.sites || []).map(k => RES.resolve(k));
+      return `<article class="project-card practice"><div class="row spread"><span class="eyebrow">Standalone</span><span class="badge neutral">No project stage</span></div>
+        <h4>${esc(p.title)}</h4><p>${esc(p.text)}</p>
+        ${sites.length ? `<div class="site-links">${sites.map(r => `<a href="${esc(r.url || "#")}" target="_blank" rel="noopener">${esc(r.title)} ${icon("arrow")}</a>`).join("")}</div>` : ""}</article>`;
+    }
+    function checkpointCard(key) {
+      const g = P.checkpoints[key], n = g.items.length, c = g.items.filter((_, i) => S().g[key + "-" + i]).length;
+      return `<article class="checkpoint-card ${g.apply ? "apply" : ""} ${c === n ? "passed" : ""}"><div class="row spread"><span class="eyebrow">${g.apply ? icon("flag") + " Milestone" : "Checkpoint"}</span><span class="small muted">${c} / ${n}</span></div>
+        <h4>${esc(g.title)}</h4>${g.note ? `<p class="small muted">${esc(g.note)}</p>` : ""}
+        <div class="gate-items">${g.items.map((t, i) => `<label><input type="checkbox" data-gate="${key}-${i}" ${S().g[key + "-" + i] ? "checked" : ""}> <span>${esc(t)}</span></label>`).join("")}</div></article>`;
+    }
+    function vRoadmap(highlight) {
+      const cur = R.currentRow();
+      const built = P.stages.filter(s => isDone(s.id)).length, done = R.required.filter(isDone).length;
+      let n = 0;
+      let h = `<div class="page-head"><div><div class="eyebrow">Learning & portfolio</div><h2>Roadmap</h2><p class="muted">Learn on the left, build on the right. Each row lists the lessons that unlock the next project stage, career milestone or checkpoint.</p></div></div>
+        <section class="road-intro"><div class="grow"><strong>Portfolio · Fuel Smart</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(RES.docUrl(P.portfolio.brief))}" target="_blank" rel="noopener">Project brief</a></p></div>
+          <div class="kpis small-kpis"><div><b>${done}/${R.required.length}</b><span>lessons complete</span></div><div><b>${built}/${P.stages.length}</b><span>stages built</span></div></div>
+          ${cur ? `<button class="btn primary" data-act="jump">${icon("map")} Jump to where you are</button>` : ""}</section>
+        <div class="road-headers"><div><h3>${icon("book")} Learning roadmap</h3><p>The lessons each step needs.</p></div><div></div><div><h3>${icon("box")} Portfolio roadmap</h3><p>Project stages, career milestones and checkpoints.</p></div></div>`;
+      P.road.forEach((sec, si) => {
+        const secStages = P.stages.filter(s => s.release === sec.id);
+        h += `<section class="road-section" id="sec-${sec.id}"><div class="road-section-head"><div class="grow"><span class="eyebrow">${sec.kind === "release" ? (si === 0 ? "Release 1" : `Release ${si + 1}`) : "Career"}</span><h3>${esc(sec.name)}</h3><p class="muted small">${esc(sec.desc)}</p></div>${secStages.length ? `<span class="small muted">${secStages.filter(s => isDone(s.id)).length} / ${secStages.length} ${secStages.length === 1 ? "stage" : "stages"} built</span>` : ""}</div>`;
+        sec.rows.forEach((row, i) => {
+          const key = `${sec.id}-${i}`, rowObj = R.rows.find(r => r.key === key), isCur = cur && cur.key === key;
+          const cls = `road-row ${isCur ? "current" : ""} ${R.rowDone(rowObj) ? "done" : ""} ${highlight === key ? "highlight" : ""}`;
+          if (row.checkpoint) { h += `<div class="${cls} checkpoint-row" id="row-${key}">${isCur ? '<span class="here">You are here</span>' : ""}${checkpointCard(row.checkpoint)}</div>`; return; }
+          h += `<div class="${cls}" id="row-${key}">${isCur ? '<span class="here">You are here</span>' : ""}${learnCard(row, ++n)}<div class="road-connector" aria-hidden="true">${icon("arrow")}</div>${buildCard(row)}</div>`;
         });
-        h += gate(st.gate, "s" + st.n);
-        if (st.apply) h += gate(st.apply, "apply", true);
         h += `</section>`;
       });
-      h += `<div class="panel skip"><h4>Skip for now</h4><div class="chips">${P.skip.map(s => `<span class="chip static">${esc(s)}</span>`).join("")}</div></div>`;
-      return h + `</div>`;
+      h += `<aside class="road-footnote"><strong>Standalone lessons still count.</strong><p>Rows marked “Standalone” hold lessons that no project stage needs — interview patterns, statistics and breadth topics. Practise them with the linked problem sites; they stay in their learning area too.</p>
+        <h4>Skip for now</h4><div class="chips">${P.skip.map(s => `<span class="chip static">${esc(s)}</span>`).join("")}</div></aside>`;
+      return h;
     }
 
-    function vSkills() {
-      let h = `<div class="panel"><h2>Skills map</h2><p class="muted">The same topics, arranged by skill track (rows) and stage (columns). Fill = your self-rating; ✓ = done. Click any topic to open it.</p></div>
-        <div class="skills-wrap"><table class="skills"><thead><tr><th>Track</th>${P.stages.map(s => `<th>${s.n} · ${esc(s.name)}</th>`).join("")}<th>Progress</th></tr></thead><tbody>`;
-      P.tracks.forEach(t => {
-        const ids = order.filter(id => it(id).track === t.id);
-        const p = progress(ids.filter(id => !it(id).opt));
-        h += `<tr><th><div>${esc(t.name)}${t.star ? " ⭐" : ""}</div><span class="muted small">${t.tier}</span></th>
-          ${P.stages.map(s => `<td>${ids.filter(id => where[id].stage === s.n && visible(id)).map(id =>
-            `<button class="schip st-${status(id)}" data-open="${id}" style="--s:${score(id)};--rc:${role(id).color}" title="${esc(it(id).name)} · ${pct(score(id))}"><b>${isDone(id) ? "✓ " : ""}${id}</b><small>${esc(it(id).name)}</small></button>`).join("")}</td>`).join("")}
-          <td class="tp">${bar(p.pct)}<span class="small">${pct(p.pct)}</span></td></tr>`;
-      });
-      return h + `</tbody></table></div>`;
+    // ---------- lesson panel ----------
+    function deckCard(x) {
+      const done = RES.libDone(x.key);
+      return `<article class="deck-card ${x.partial ? "partial" : ""} ${done ? "done" : ""}"><div class="deck-top">${icon("slides")}<span class="grow"><strong>${esc(x.title)}</strong>
+          <small>${x.guide ? "Quick guide" : `${x.slides} slides`}${x.sub && !x.guide ? ` · ${esc(x.sub)}` : ""}</small></span>
+          ${x.partial ? '<span class="badge amber" title="Covers part of this lesson">Partial</span>' : `<span class="badge">${x.guide ? "Guide" : "Whole lesson"}</span>`}</div>
+        <p class="deck-cover"><span class="muted">Covers:</span> ${esc(x.coverage)}</p>
+        <div class="deck-actions"><a class="btn sm primary" href="${esc(x.url)}" target="_blank" rel="noopener">${x.guide ? "Open guide" : "Open deck"} ${icon("arrow")}</a>
+          ${x.mdUrl ? `<a class="btn sm" href="${esc(x.mdUrl)}" target="_blank" rel="noopener">Markdown ↗</a>` : ""}
+          ${x.extras.map(e => `<a class="btn sm" href="${esc(e.url)}" target="_blank" rel="noopener">${esc(e.title.split(" (")[0])} ↗</a>`).join("")}
+          <label class="deck-done"><input type="checkbox" data-lib="${esc(x.key)}" ${done ? "checked" : ""}> Done</label></div></article>`;
+    }
+    function deckSlot(id) {
+      const d = RES.deckFor(id);
+      const planned = d.planned.length ? `<small>Planned: ${d.planned.map(esc).join(" · ")}</small>` : "";
+      if (!d.decks.length) return `<div class="resource inactive deck-missing">${icon("slides")}<span class="grow"><strong>No deck yet</strong>${planned || "<small>Use the resources below for now.</small>"}</span></div>`;
+      return d.decks.map(deckCard).join("") + (d.planned.length && d.decks.every(x => x.partial) ? `<p class="small muted planned">Fuller deck planned: ${d.planned.map(esc).join(" · ")}</p>` : "");
+    }
+    function labSlot(d) {
+      if (!d.labs.length) return `<p class="small muted">Lab will be added with the deck. Until then, use the practice tasks below.</p>`;
+      return d.labs.map(l => `<div class="resource lab">${icon("box")}<span class="grow"><a href="${esc(l.url)}" target="_blank" rel="noopener"><strong>${esc(l.title)}</strong></a>
+        <small>${l.folder ? "Project folder — open its README" : l.slide ? `Deck slide ${l.slide}` : "Runnable file"}${l.slideUrl ? ` · <a href="${esc(l.slideUrl)}" target="_blank" rel="noopener">walkthrough slide ${l.slide}</a>` : ""}</small></span>${icon("arrow")}</div>`).join("");
+    }
+    function lessonBody(id) {
+      const x = it(id), d = RES.deckFor(id), res = RES.lessonRes(id), a = R.areaOf(id);
+      const pre = R.prereqs(id), points = learnPoints(x.c), links = R.connections(id), row = R.rowOf[id];
+      const done = isDone(id), pcs = S().pc[id] || [], cks = R.lessonChecks(id);
+      const reading = RES.areaReading(a), ownReading = reading.filter(r => r.lessons.some(l => l.id === id)).length;
+      const tiers = [res.start && resRow(id, res.start, "Start here"), ...res.deeper.map(r => resRow(id, r, "Go deeper"))].filter(Boolean).join("");
+      const sites = res.sites;
+      const sitesNames = sites.map(r => r.title.split(/ [–—(:]/)[0]).join(", ");
+      const alsoTagged = res.more.length + res.reading.filter(r => !reading.some(z => z.key === r.key)).length;
+      return `${pre.length ? `<section class="panel-prereq"><p class="eyebrow">Learn first</p><div class="prereq-list">${pre.map(p => lessonButton(p)).join("")}</div></section>` : ""}
+        <section class="lesson-section">${sectionTitle(1, "What to learn")}
+          ${points ? `<ul class="learn-list">${points.map(t => `<li><span class="bullet">·</span><span>${md(t)}</span></li>`).join("")}</ul>` : `<p class="learn-text">${md(x.c)}</p>`}
+          ${x.setup ? `<div class="setup-box"><h4>🔧 Set up first <span class="muted small">only what this lesson needs</span></h4><ul>${x.setup.map(t => `<li>${md(t)}</li>`).join("")}</ul></div>` : ""}
+          <h4 class="sub">${d.decks.length > 1 ? "Decks" : "Deck"}</h4>${deckSlot(id)}
+          <h4 class="sub">Resources <span class="muted small">at most ${RES.MAX}</span></h4>
+          ${tiers ? `<div class="res-list">${tiers}</div>` : `<p class="small muted">No single short resource fits this lesson — use the deck${sites.length ? ", the problem sites" : ""} or the area reading list.</p>`}
+          ${reading.length ? `<details class="reading-list in-panel" ${ownReading ? "open" : ""}><summary>${icon("book")} ${esc(a.name)} reading list <span class="muted">(${ownReading ? `${ownReading} for this lesson · ` : ""}${reading.length})</span></summary>${readingList(reading, id)}</details>` : ""}
+          ${alsoTagged ? `<p class="small muted">${alsoTagged} more ${alsoTagged === 1 ? "resource is" : "resources are"} tagged with this lesson in <a href="#resources" data-act="closepanel">Resources → By lesson</a>.</p>` : ""}</section>
+        <section class="lesson-section">${sectionTitle(2, "How to practise")}
+          <article class="practice-card"><div class="row spread"><h4>Lab</h4>${d.labs.length ? '<span class="badge">From the deck</span>' : '<span class="badge neutral">Coming later</span>'}</div>${labSlot(d)}</article>
+          <article class="practice-card"><div class="row spread"><h4>Practice tasks</h4><span class="small muted">${pcs.filter(Boolean).length} / ${x.practice.length}</span></div>
+            <div class="checks">${x.practice.map((t, i) => `<label><input type="checkbox" data-pc="${id}|${i}" ${pcs[i] ? "checked" : ""}> <span>${md(t)}</span></label>`).join("")}</div>
+            ${res.tools.length ? `<p class="small tools-line"><span class="muted">Data & tools for these tasks:</span> ${res.tools.map(r => linkRes(r)).join(" · ")}</p>` : ""}</article>
+          ${sites.length ? `<article class="practice-card practice-directory"><h4>Where to find more problems</h4><p class="small muted">Choose your own questions on this lesson's topics.</p>${sites.map(siteLink).join("")}
+            ${sites.some(r => r.key === "dataLemur") ? `<p class="small"><a href="#trackers/datalemur" data-act="closepanel">Track DataLemur problems in Trackers →</a> · <a href="${esc(RES.docUrl(P.dlCatalog))}" target="_blank" rel="noopener">Offline DataLemur catalog</a></p>` : ""}</article>` : ""}</section>
+        <section class="lesson-section">${sectionTitle(3, "Portfolio connection")}
+          ${links.length ? links.map(s => `<article class="project-link"><div class="row spread"><h4>${esc(s.name)}</h4><span class="badge ${R.stageStatus(s) === "locked" ? "neutral" : ""}">${R.stageLabel[R.stageStatus(s)]}</span></div><p>Stage ${stageNo(s.id)} of the portfolio needs this lesson. ${esc(firstSentence(R.stageDesc(s), 150))}</p><button class="text-btn" data-open="${s.id}">Open portfolio stage ${icon("arrow")}</button></article>`).join("")
+            : `<div class="no-project">${x.opt ? "Optional. " : ""}Standalone — not required for a portfolio stage. ${sites.length ? `Practise with ${esc(sitesNames)}.` : "Practise with the tasks above and keep notes of what you learn."}</div>`}
+          ${row ? `<p class="small muted road-pos">On the roadmap: <button class="link-btn" data-road="${row.key}">${esc(row.title || P.checkpoints[row.checkpoint]?.title || "")} ${icon("arrow")}</button>${row.milestone === id ? " · career milestone" : ""}</p>` : ""}</section>
+        <section class="lesson-section">${sectionTitle(4, "Check your understanding")}
+          <div class="checks boxed">${x.dod.map((t, i) => `<label><input type="checkbox" data-ck="${id}|${i}" ${cks[i] ? "checked" : ""} ${done ? "disabled" : ""}><span>${md(t)}</span></label>`).join("")}</div></section>`;
+    }
+    function lessonFoot(id) {
+      const x = it(id), n = R.lessonChecks(id).filter(Boolean).length, miss = R.missingPrereqs(id);
+      if (isDone(id)) return `<p>Lesson complete${S().done[id] === "migrated" ? " (carried over from your ratings)" : ""}.<br>Reopen it to change the checks.</p><div class="row"><button class="btn" data-act="reopen" data-id="${id}">Reopen</button><button class="btn primary" disabled>${icon("check")} Lesson complete</button></div>`;
+      const why = miss.length ? `Finish first: ${miss.map(p => esc(title(p))).join(", ")}.` : n < x.dod.length ? "Tick every check to complete the lesson." : "Ready to complete.";
+      return `<p>${n} / ${x.dod.length} checks ticked<br>${why}</p><button class="btn primary" data-act="complete" data-id="${id}" ${R.canComplete(id) ? "" : "disabled"}>${miss.length ? icon("lock") : icon("check")} Complete lesson</button>`;
     }
 
-    return { tag, bar, card, chip, roadmap: vRoadmap, skills: vSkills };
+    // ---------- stage panel ----------
+    function stageBody(s) {
+      const learned = s.req.filter(isDone).length, tasks = R.stageTasks(s), checks = R.stageChecks(s), st = R.stageStatus(s);
+      const refs = RES.stageRefs(s);
+      const setup = s.setup && it(s.setup).setup;
+      return `<section class="lesson-section">${sectionTitle(1, "Knowledge needed")}<p class="practice-intro">${learned} of ${s.req.length} required lessons complete. Open one to review or practise it.</p>
+          <div class="prereq-list">${s.req.map(id => lessonButton(id)).join("")}</div>
+          ${s.after.length ? `<p class="eyebrow sub">Earlier portfolio work</p><div class="prereq-list">${s.after.map(id => lessonButton(id)).join("")}</div>` : ""}</section>
+        <section class="lesson-section">${sectionTitle(2, "What this stage covers")}<ul class="scope-list">${s.scope.map(t => `<li>${md(t)}</li>`).join("")}</ul><p class="scope-note">${md(s.boundary)}</p>
+          ${setup ? `<div class="setup-box"><h4>🔧 Set up first</h4><ul>${setup.map(t => `<li>${md(t)}</li>`).join("")}</ul></div>` : ""}
+          ${refs.length ? `<h4 class="sub">References</h4><div class="res-list">${refs.map(([o, r]) => resRow(o, r)).join("")}</div>` : ""}</section>
+        <section class="lesson-section">${sectionTitle(3, "What to do")}<ol class="task-list">${tasks.map(t => `<li><label><input type="checkbox" data-pc="${t.owner}|${t.idx}" ${t.on ? "checked" : ""} aria-label="Mark “${esc(t.title)}” done"><span><strong>${esc(t.title)}</strong><p>${md(t.text)}</p></span></label></li>`).join("")}</ol></section>
+        <section class="lesson-section">${sectionTitle(4, "Deliverable & completion")}<div class="deliverable-box"><strong>${md(s.output)}</strong><p>Suggested files: ${md(s.files)}</p></div>
+          <div class="checks boxed">${checks.map(c => `<label><input type="checkbox" data-ck="${c.owner}|${c.idx}" ${c.on ? "checked" : ""} ${isDone(s.id) ? "disabled" : ""}><span>${md(c.text)}</span></label>`).join("")}</div>
+          ${st === "locked" ? `<p class="small muted">You can review the stage now. Finish its knowledge and earlier stages before marking it built.</p>` : ""}</section>`;
+    }
+    function stageFoot(s) {
+      const st = R.stageStatus(s), checks = R.stageChecks(s), n = checks.filter(c => c.on).length;
+      if (st === "built") return `<p>Stage built${S().built[s.id] === "migrated" ? " (carried over from your ratings)" : ""}.<br>Reopen it to change the checks.</p><div class="row"><button class="btn" data-act="unbuild" data-id="${s.id}">Reopen</button><button class="btn primary" disabled>${icon("check")} Stage built</button></div>`;
+      const miss = [...s.req, ...s.after].filter(id => !isDone(id));
+      const why = miss.length ? `Prerequisites needed: ${miss.length} left.` : n < checks.length ? "Tick every completion check after building the deliverable." : "Ready to mark built.";
+      return `<p>${n} / ${checks.length} completion checks<br>${why}</p><button class="btn primary" data-act="build" data-id="${s.id}" ${R.canBuild(s) ? "" : "disabled"}>${miss.length ? icon("lock") : icon("check")} Mark stage built</button>`;
+    }
+
+    function panelHead(id, back) {
+      const lesson = !isStage(id);
+      const list = lesson ? R.areaLessons(R.areaOf(id)) : P.stages.map(s => s.id), i = list.indexOf(id);
+      const prev = list[i - 1], next = list[i + 1], kind = lesson ? "lesson" : "stage";
+      const eyebrow = lesson ? `${esc(R.areaOf(id).name)} · ${esc(R.areaOf(id).chapters.find(c => c[2].includes(id))[0])}` : `Portfolio · Stage ${stageNo(id)} · ${esc(sectionName(stage(id).release))}`;
+      const st = lesson ? statusLabel[status(id)] : R.stageLabel[R.stageStatus(stage(id))];
+      const neutral = lesson ? status(id) !== "done" : R.stageStatus(stage(id)) === "locked";
+      return `<div class="panel-head"><div class="row spread"><p class="eyebrow">${eyebrow}</p><div class="panel-controls">
+          <button class="panel-icon" data-open="${prev || ""}" data-adjacent="1" ${prev ? "" : "disabled"} aria-label="Previous ${kind}" title="Previous ${kind}"><span class="flip">${icon("arrow")}</span></button>
+          <button class="panel-icon" data-open="${next || ""}" data-adjacent="1" ${next ? "" : "disabled"} aria-label="Next ${kind}" title="Next ${kind}">${icon("arrow")}</button>
+          <button class="panel-icon close" data-act="close" aria-label="Close side panel" title="Close (Esc)">${icon("close")}</button></div></div>
+        ${back ? `<button class="panel-context" data-act="back">← Related ${isStage(back) ? "stage" : "lesson"}: ${esc(title(back))}</button>` : ""}
+        <h2 id="panelTitle" tabindex="-1">${esc(title(id))}</h2>
+        <p class="panel-description">${lesson ? "Learn it, practise it, then tick the checks to complete the lesson." : esc(R.stageDesc(stage(id)))}</p>
+        <div class="row badges"><span class="badge ${neutral ? "neutral" : ""}">${st}</span>${lesson && it(id).opt ? '<span class="badge neutral">Optional</span>' : ""}${lesson && it(id).setup ? '<span class="badge amber">🔧 Setup</span>' : ""}</div></div>`;
+    }
+    const panelBody = id => isStage(id) ? stageBody(stage(id)) : lessonBody(id);
+    const panelFoot = id => isStage(id) ? stageFoot(stage(id)) : lessonFoot(id);
+
+    return { topics: vTopics, roadmap: vRoadmap, panelHead, panelBody, panelFoot, lessonButton, learnPoints, expanded, fmtBadge, timeBadge, bookBadge, deckCard, readingList };
   }
 });

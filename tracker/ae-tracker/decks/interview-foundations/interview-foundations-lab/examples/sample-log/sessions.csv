@@ -1,0 +1,4 @@
+date,kind,problems,minutes,ai,score,feedback
+2026-10-14,sql,"S1a,S1b",52,no,10,S1b: local months and the zero row found only by the checker; grain stated late
+2026-10-16,python,"P1a,P1b",47,no,11,parse clean; forgot the tie-breaker in the sort; complexity stated
+2026-10-18,sql,"S2a,S2b",44,no,13,stated the dedupe rule before typing; DST handled

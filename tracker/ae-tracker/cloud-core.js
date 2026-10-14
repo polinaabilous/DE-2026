@@ -1,6 +1,6 @@
 // Each saved entry/check is independent: a phone edit cannot replace a laptop's whole tracker.
 (() => {
-  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice"]);
+  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"]);
   const LISTS = new Set(["notes", "log", "todo", "attempts"]);
   const LOCAL = new Set(["ui", "savedAt"]);
   const safe = k => typeof k === "string" && !["__proto__", "constructor", "prototype"].includes(k);
@@ -36,7 +36,7 @@
       if (LISTS.has(section) && parts.length === 2 && object(v) && v.id === id) out[section].push(v);
       else if (MAPS.has(section) && parts.length === 2) out[section][id] = v;
       else if (MAPS.has(section) && parts.length === 3) {
-        const array = section === "r" || section === "pc";
+        const array = section === "r" || section === "pc" || section === "ck";
         if (array && !/^(0|[1-9]\d{0,3})$/.test(index)) throw Error("Invalid checklist index.");
         (out[section][id] ||= array ? [] : {})[index] = v;
       } else if (section === "extra" && parts.length === 2 && !MAPS.has(id) && !LISTS.has(id) && !LOCAL.has(id)) out[id] = v;

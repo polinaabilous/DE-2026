@@ -1,0 +1,36 @@
+version: 2
+
+models:
+  - name: fct_reviews
+    description: One row per product review, latest version. Incremental (merge) with a look-back window.
+    data_tests:
+      - dbt_utils.expression_is_true:
+          arguments: {expression: "updated_at_utc >= submitted_at_utc"}
+    columns:
+      - name: review_id
+        data_tests: [unique, not_null]
+      - name: rating
+        data_tests:
+          - dbt_utils.accepted_range:
+              arguments: {min_value: 1, max_value: 5}
+          - not_null:
+              config:
+                warn_if: ">0"            # any unrated review is worth a look
+                error_if: ">2"           # more than two breaks the build
+      - name: customer_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_customer')
+                field: customer_id
+              config:
+                where: "review_date >= '2026-03-04'"   # only recent rows: old orphans are known
+                severity: warn
+                store_failures: true     # keep the failing rows in a table
+
+
+  - name: dim_supplier_product
+    description: SCD2 product dimension on supplier_products_snapshot. One row per barcode per version.
+    data_tests:
+      - dbt_utils.unique_combination_of_columns:
+          arguments: {combination_of_columns: [barcode, valid_from]}

@@ -1,0 +1,46 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read            # least privilege: this workflow only reads the code
+
+concurrency:                # a new push cancels the still-running check of the old one
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality:
+    name: lint, types, tests (py${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - name: Install pinned tools
+        run: python -m pip install -r requirements-dev.txt
+      - name: Lint (Ruff)
+        run: ruff check --output-format=github .
+      - name: Format check (Ruff)
+        run: ruff format --check .
+      - name: Types (mypy)
+        run: mypy
+      - name: Tests and coverage (fails under 80 %)
+        run: pytest --cov-report=xml
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-py${{ matrix.python-version }}
+          path: coverage.xml
