@@ -5,7 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const { execFileSync } = require('node:child_process');
 const data = require('../content/data-landscape.cjs');
-const app = path.resolve(__dirname, '../ae-tracker');
+const app = path.resolve(__dirname, '../de-tracker');
 const context = vm.createContext({ window: {} });
 vm.runInContext(fs.readFileSync(path.join(app, 'data-landscape.js'), 'utf8'), context);
 vm.runInContext(fs.readFileSync(path.join(app, 'data.js'), 'utf8'), context);
@@ -51,7 +51,7 @@ test('connection focus includes incoming references as well as outgoing relation
   assert.ok(model.search({ focus: 'hms', kind: 'concept' }).every(e => e.kind === 'concept'));
 });
 
-test('reference browser data and Markdown are generated consistently and registered locally', () => {
+test('reference browser data is generated consistently and registered locally', () => {
   execFileSync(process.execPath, [path.resolve(__dirname, '../scripts/build-data-landscape.cjs'), '--check']);
   const generated = vm.createContext({}); vm.runInContext(fs.readFileSync(path.join(app, 'data-landscape-data.js'), 'utf8'), generated);
   assert.equal(JSON.stringify(generated.AELandscapeData), JSON.stringify(data));

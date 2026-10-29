@@ -1,6 +1,6 @@
 # Tracker and preparation plan review — October 5, 2026
 
-The curriculum covers the major analytics engineering areas well. Its biggest gaps are prioritization, prerequisite order, realistic effort estimates, and evidence of retained ability. The app already supports ratings, practice checklists, resources, notes, time logs, themes, folder persistence and daily backups. Improve those foundations before expanding the resource library.
+The curriculum covers the major data engineering areas well. Its biggest gaps are prioritization, prerequisite order, realistic effort estimates, and evidence of retained ability. The app already supports ratings, practice checklists, resources, notes, time logs, themes, folder persistence and daily backups. Improve those foundations before expanding the resource library.
 
 Scope: reviewed the full preparation plan and all four app source files, inspected the saved progress file, checked JavaScript syntax and roadmap references, and ran isolated logic probes with mocked browser and filesystem interfaces. This was not a visual browser or accessibility audit. The app and saved progress were not changed.
 
@@ -14,7 +14,7 @@ Scope: reviewed the full preparation plan and all four app source files, inspect
 
 **1. Fix the effort estimate and offer distinct paths**
 
-The data contains 91 topics: 86 required and 5 optional. Required topic estimates sum to 504 hours; including optional topics gives 530 hours. The plan and `PLAN.effort` say 280–350 hours to analytics engineering readiness.
+The data contains 91 topics: 86 required and 5 optional. Required topic estimates sum to 504 hours; including optional topics gives 530 hours. The plan and `PLAN.effort` say 280–350 hours to data engineering readiness.
 
 | Milestone | Sum of current topic estimates | At 10 hours/week |
 |---|---:|---:|
@@ -30,7 +30,7 @@ These are sums of the app's estimates, not predictions of your actual learning t
 
 Offer three selectable scopes:
 
-- **AE application path:** SQL, dimensional modeling, dbt, one warehouse, tests, business metrics, one dashboard, one credible project, interview practice and career assets.
+- **DE application path:** SQL, dimensional modeling, dbt, one warehouse, tests, business metrics, one dashboard, one credible project, interview practice and career assets.
 - **AI specialization:** semantic layer, agent and evaluation, added after a usable core project.
 - **DE extension:** deeper Spark, Airflow, table formats, CDC and infrastructure.
 
@@ -117,7 +117,7 @@ Use stable IDs for checks and gates rather than array positions, plus a separate
 **Suggested delivery order**
 
 1. Preserve data: conflict detection, supported imports, draft recovery and backups before destructive actions.
-2. Correct the roadmap: prerequisites, honest effort, AE/AI/DE scopes, demonstrated-skill exemptions and usable gates.
+2. Correct the roadmap: prerequisites, honest effort, first-release, AI and platform-extension scopes, demonstrated-skill exemptions and usable gates.
 3. Improve daily learning: weekly outcomes, problem log, evidence links and retrieval reviews.
 4. Improve career support, navigation and accessibility; reduce resource noise and content duplication.
 

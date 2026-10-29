@@ -7,7 +7,7 @@ const seed = { v: 4, setupV: 2, curriculumV: 4, r: { S1: [3] }, log: [
   { d: '2026-10-06', h: 1.5, role: 'P', item: 'S1', note: 'Practiced joins' },
   { d: '2026-10-06', h: 0.5, role: 'T', item: 'S1', note: 'Read window docs' }
 ], notes: [{ id: 'old-note', track: 'sql', text: 'Existing note\n- First finding\n- Second finding', c: '2026-10-05', u: '2026-10-05' }] };
-const source = await readFile(join(trackerRoot, 'ae-tracker/app.js'), 'utf8');
+const source = await readFile(join(trackerRoot, 'de-tracker/app.js'), 'utf8');
 const build = source.match(/build: "([^"]+)"/)[1];
 const page = await fixture({ before: errorCapture + `window.TEST_BUILD=${JSON.stringify(build)};localStorage.setItem('ae-prep-tracker-v2',${JSON.stringify(JSON.stringify(seed))});location.hash='#log';`,
   after: '<script src="browser-check.js"></script>' });

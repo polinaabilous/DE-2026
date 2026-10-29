@@ -1,13 +1,13 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-require('../ae-tracker/practice-data.js');
-require('../ae-tracker/practice.js');
+require('../de-tracker/practice-data.js');
+require('../de-tracker/practice.js');
 const catalog = globalThis.AEPracticeCatalog;
 const { createModel } = globalThis.AEPractice;
 const blank = () => ({practice:{},attempts:[]});
 const filters = changes => ({q:'',category:'',difficulty:'',status:'',tag:'',...changes});
 test('SQL catalog keeps its provenance and has at most two broad topics per problem',()=>{
-  const tool=catalog.tools[0],snapshot=require('../../docs/sql/datalemur/problems.json');
+  const tool=catalog.tools[0],snapshot=require('../content/sql/datalemur/problems.json');
   assert.equal(tool.problems.length,54);
   assert.equal(new Set(tool.problems.map(p=>p.slug)).size,54);
   assert.equal(new Set(tool.problems.flatMap(p=>p.topics)).size,11);
@@ -18,7 +18,7 @@ test('SQL catalog keeps its provenance and has at most two broad topics per prob
   }
 });
 test('LeetCode SQL 50 retains official membership, order, sections and difficulties',()=>{
-  const source=require('../../docs/sql/leetcode-sql50/problems.json');
+  const source=require('../content/sql/leetcode-sql50/problems.json');
   const tool=catalog.tools.find(t=>t.id==='leetcode-sql50');
   assert.equal(tool.problems.length,50);
   assert.equal(new Set(tool.problems.map(p=>p.slug)).size,50);
@@ -34,7 +34,7 @@ test('LeetCode SQL 50 retains official membership, order, sections and difficult
   }
 });
 test('LeetCode progress is independent, searchable by number/section and cloud-persistent',()=>{
-  require('../ae-tracker/cloud-core.js');
+  require('../de-tracker/cloud-core.js');
   let state=blank();const m=createModel(catalog,()=>state),lc=m.tool('leetcode-sql50').problems[0],dl=m.tool('datalemur').problems[0];
   m.update('datalemur',dl.slug,{status:'needs-review',notes:'Keep DataLemur notes'});
   m.update('leetcode-sql50',lc.slug,{status:'completed',notes:'**WHERE** filters'});

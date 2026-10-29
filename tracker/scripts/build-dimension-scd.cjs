@@ -3,7 +3,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const { sources, sql, setup, slides } = require('../content/dimension-scd.cjs');
-const folder = path.resolve(__dirname, '../ae-tracker/decks/dim-dimension-tables');
+const folder = path.resolve(__dirname, '../de-tracker/decks/dim-dimension-tables');
 const check = process.argv.includes('--check');
 const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const inline = text => esc(text).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');

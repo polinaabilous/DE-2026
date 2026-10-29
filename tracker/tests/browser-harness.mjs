@@ -13,9 +13,9 @@ export const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const types = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css' };
 
 export async function fixture({ config = null, before = '', after = '' } = {}) {
-  const root = await mkdtemp(join(tmpdir(), 'ae-tracker-test-'));
+  const root = await mkdtemp(join(tmpdir(), 'de-tracker-test-'));
   const publicDir = join(root, 'public');
-  await cp(join(trackerRoot, 'ae-tracker'), publicDir, { recursive: true });
+  await cp(join(trackerRoot, 'de-tracker'), publicDir, { recursive: true });
   await writeFile(join(publicDir, 'firebase-config.js'), `window.AE_FIREBASE = ${JSON.stringify(config)};\n`);
   const original = await readFile(join(publicDir, 'index.html'), 'utf8');
   const html = original.replace('<script src="data.js', `<script>${before}</script>\n<script src="data.js`)

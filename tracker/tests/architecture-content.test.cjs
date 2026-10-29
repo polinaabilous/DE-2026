@@ -38,7 +38,7 @@ test('narrative revision keeps lesson/lab sections stable and confines tables to
 
 test('architecture HTML and Markdown match the authored narrative', () => {
   execFileSync(process.execPath, [path.resolve(__dirname, '../scripts/build-architecture-deck.cjs'), '--check']);
-  const folder = path.resolve(__dirname, '../ae-tracker/decks/architecture-evolution');
+  const folder = path.resolve(__dirname, '../de-tracker/decks/architecture-evolution');
   const html = fs.readFileSync(path.join(folder, 'architecture-evolution.html'), 'utf8');
   assert.equal((html.match(/<section class="slide/g) || []).length, 40);
   assert.equal((html.match(/<table>/g) || []).length, 2);

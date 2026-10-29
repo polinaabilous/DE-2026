@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
 
-const app = path.join(__dirname, '../ae-tracker');
+const app = path.join(__dirname, '../de-tracker');
 function load(dataFile) {
   const ctx = vm.createContext({ window: {}, console, setTimeout, clearTimeout });
   vm.runInContext(fs.readFileSync(dataFile, 'utf8'), ctx);
@@ -64,9 +64,12 @@ test('no old topic, check, practice item, resource, setup step or prerequisite i
     assert.equal(!!y.opt, !!x.opt, `${id} keeps its optional flag`);
     assert.equal(y.dod.length, x.dod.length, `${id} keeps every check line`);
     assert.equal(y.practice.length, x.practice.length, `${id} keeps every practice item`);
-    // Text is unchanged except where a topic code or phase name was replaced by a readable title.
+    // Presentation renames preserve topic IDs, checks and practice positions in saved progress.
+    const renamed = text => text.replace(/analytics([ -])engineer(ing|s)?/gi, (_, separator, suffix = '') => `data${separator}engineer${suffix}`)
+      .replace(/AE-focused/g, 'DE-focused');
+    // Other text changes remain limited to the existing readable-title and project migrations.
     const same = (a, b, what) => assert.ok(a === b || (CODE.test(b) || /phase|step 1\.1|later stage/.test(b)) && !CODE.test(a)
-      || PROJECT_SWAP.has(`${id} ${what}`) && !OLD_PROJECT.test(a), `${id} ${what} changed: ${b}`);
+      || a === renamed(b) || PROJECT_SWAP.has(`${id} ${what}`) && !OLD_PROJECT.test(a), `${id} ${what} changed: ${b}`);
     same(y.c, x.c, 'description');
     x.dod.forEach((t, i) => same(y.dod[i], t, 'check ' + i));
     x.practice.forEach((t, i) => same(y.practice[i], t, 'practice ' + i));
@@ -179,7 +182,7 @@ test('ratings migrate to checks once; completion, gates and other progress are p
 
 test('real saved data and backups migrate without losing anything', () => {
   const { model } = fixture();
-  const dir = path.join(__dirname, '../ae-tracker-data');
+  const dir = path.join(__dirname, '../de-tracker-data');
   const progress = JSON.parse(fs.readFileSync(path.join(dir, 'progress.json'), 'utf8')).data;
   const files = [progress, ...fs.readdirSync(path.join(dir, 'backups')).map(f => JSON.parse(fs.readFileSync(path.join(dir, 'backups', f), 'utf8')))];
   for (const data of files) {
@@ -301,7 +304,7 @@ test('resource plan picks resolve, new resources are verified, every resource ha
 test('production reading resolves once in the Library, maps to lessons and keeps full practice context', () => {
   const { plan, resources, views } = fixture();
   const entries = plan.productionReading;
-  const audit = fs.readFileSync(path.join(app, '../../docs/study-planning/production-reading-map.md'), 'utf8');
+  const audit = fs.readFileSync(path.join(app, '../planning/production-reading-map.md'), 'utf8');
   const keys = new Set(), urls = new Set();
   assert.equal(entries.filter(r => r.priority).length, 5, 'five manageable starting picks');
   for (const r of entries) {
@@ -344,7 +347,7 @@ test('optional production reading shares completion across lessons without compl
 
 test('review decisions remove resources from every recommendation surface and cover the full catalog', () => {
   const { plan, roadmap, resources } = fixture();
-  const report = JSON.parse(fs.readFileSync(path.join(app, '../../docs/study-planning/resource-quality-review.json'), 'utf8'));
+  const report = JSON.parse(fs.readFileSync(path.join(app, '../planning/archive/resource-quality-review.json'), 'utf8'));
   const decisions = new Map(report.decisions.map(x => [x.key, x]));
   assert.equal(decisions.size, report.decisions.length, 'one audit decision per permanent key');
   const rawKeys = new Set([...Object.keys(plan.L), ...Object.keys(plan.LX)]);
@@ -443,9 +446,6 @@ test('deck, lab, extra and document links point to existing files and slide anch
   exists(resources.docUrl(plan.portfolio.brief), 'project brief');
   exists(resources.docUrl(plan.dlCatalog), 'DataLemur catalog');
   assert.ok(Object.values(plan.plannedDecks).every(name => !Object.values(plan.decks).some(d => d.title === name)), 'planned decks are not linked');
-  // Superseded originals were removed from docs/ after the split decks took their content over.
-  for (const f of ['sql/sql-windows-recursion-clean.html', 'sql/sql-interview-patterns-lab.sql', 'data-modeling/dimensional-modeling.html', 'data-formats/de-data-formats.html', 'tools/uv-quick-guide.md'])
-    assert.ok(!fs.existsSync(path.join(repo, 'docs', f)), `docs/${f} moved into the app`);
 });
 
 test('reading status migrates once from saved Library entries without losing lib or resource ticks', () => {

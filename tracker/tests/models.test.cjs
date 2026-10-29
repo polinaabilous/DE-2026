@@ -7,7 +7,7 @@ const vm = require('node:vm');
 function fixture() {
   const ctx = vm.createContext({ window: {}, console, setTimeout, clearTimeout });
   for (const name of ['data', 'utils', 'state', 'progress', 'resources', 'editor', 'plan-views', 'store']) {
-    vm.runInContext(fs.readFileSync(path.join(__dirname, '../ae-tracker', name + '.js'), 'utf8'), ctx);
+    vm.runInContext(fs.readFileSync(path.join(__dirname, '../de-tracker', name + '.js'), 'utf8'), ctx);
   }
   const plan = ctx.window.PLAN;
   const model = ctx.AEState.create(plan, ctx.window.AEStore);

@@ -4,7 +4,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 const crypto = require('node:crypto');
 const assert = require('node:assert/strict');
-const root = path.resolve(__dirname, '../ae-tracker');
+const root = path.resolve(__dirname, '../de-tracker');
 const checkOnly = process.argv.includes('--check');
 const write = (file, content) => checkOnly ? assert.equal(fs.readFileSync(file, 'utf8'), content, `Rebuild deck search: ${path.relative(root, file)}`) : fs.writeFileSync(file, content);
 const marker = /<!-- AE deck search start -->[\s\S]*?<!-- AE deck search end -->\n?/g;

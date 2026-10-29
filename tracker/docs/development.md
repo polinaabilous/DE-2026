@@ -1,8 +1,10 @@
 # Development
 
+The workspace is branded as Data Engineering. Local app and snapshot folders are `de-tracker/` and `de-tracker-data/`; the preparation plan is `data-engineer-prep-plan.md`. Legacy `AE*` JavaScript namespaces, browser storage keys, export-format markers, Firebase project identifiers and migration fixtures retain their existing names for saved-data compatibility. Published books, articles and certifications retain their official titles.
+
 The app is a small static website with no build step. Its script files use explicit browser namespaces so the local version can still open directly from a file. Modules receive their plan, storage helpers or current-state getter as dependencies; they do not reach into the app controller's state.
 
-| File in `ae-tracker/` | Responsibility |
+| File in `de-tracker/` | Responsibility |
 | --- | --- |
 | `index.html`, `styles.css` | Page shell, navigation and visual styles |
 | `data.js` | Curriculum: lessons, learning areas and chapters, roadmap rows, portfolio stages, checkpoints, the deck catalog with lesson coverage and labs, per-lesson resource picks and Library metadata (`LM`) |
@@ -45,14 +47,14 @@ Shared Markdown rendering and editing serve notes, daily logs and practice notes
 - **Hours** are kept in the data only for history; the UI no longer shows estimates.
 ## Decks
 
-Decks live in `ae-tracker/decks/<slug>/` and are published with the app, so links work locally and on Firebase hosting. `deckBase` is `decks/`, relative to the app. `docs/README.md` at the repository root is only an index that links here. Project briefs live under `ae-tracker/projects/` and are published with Hosting. The Flight Reliability HTML brief and Markdown download are generated from `docs/study-planning/flights-project-brief.md`; keep the source and hosted copies synchronized. `portfolio.name` supplies the roadmap title, and `portfolio.brief` points to the hosted HTML. Stages can add explicit dataset `resources` alongside their source-topic references. The offline DataLemur catalog remains under repository `docs/` (`docsBase`) and resolves only when the repository root is served.
+Decks live in `de-tracker/decks/<slug>/` and are published with the app, so links work locally and on Firebase hosting. `deckBase` is `decks/`, relative to the app. Project briefs live under `de-tracker/projects/` and are published with Hosting. The Flight Reliability HTML brief and Markdown download are generated from `tracker/planning/flights-project-brief.md`; keep the source and hosted copies synchronized. `portfolio.name` supplies the roadmap title, and `portfolio.brief` points to the hosted HTML. Stages can add explicit dataset `resources` alongside their source-topic references. The offline DataLemur catalog lives in `content/sql/datalemur/`; `docsBase` is `../content/`, relative to the app, so serve `tracker/` or the repository root to open it.
 
 - `decks` — one entry per deck: `title`, `sub`, `file` (HTML deck or Markdown guide), `md` (companion or `null`), `slides` (numbered slides), `extras` (`[title, file]`, e.g. the data-formats one-page reference) and `guide` for the `tools/` quick guides.
 - `lessonDecks` — lesson → `[slug, what it covers, partial?]`. A lesson can have two decks; the panel shows them all, whole-lesson decks first, with a *Partial* badge, **Open deck**, **Markdown ↗** and a Done tick (`lib["deck:<slug>"]`). Lessons without an entry show “No deck yet”.
 - `lessonLabs` — lesson → `{ title, file, slide? , deck? }`. In an HTML file `slide` is the `#slide-N` anchor; a lab folder (dbt project) links its `README.md` and names the deck slide that walks through it. Lessons without labs show “Lab will be added with the deck”.
-- `plannedDecks` / `lessonPlanned` — decks from `docs/study-planning/study-deck-roadmap.md` that do not exist yet, shown by name only. A lesson with a whole-lesson deck shows none; a lesson with only partial decks shows “Fuller deck planned”.
+- `plannedDecks` / `lessonPlanned` — decks from `tracker/planning/study-deck-roadmap.md` that do not exist yet, shown by name only. A lesson with a whole-lesson deck shows none; a lesson with only partial decks shows “Fuller deck planned”.
 
-These tables were generated from the deck maps written when the long decks were split per lesson (2026-10-13). To add a deck: put its folder under `decks/<slug>/`, add it to `decks`, `lessonDecks` (and `lessonLabs` if it has labs), drop any planned entry it replaces, add it to `docs/README.md`, then run `npm test` — the curriculum tests fail if a deck, companion, lab, extra or `#slide-N` anchor does not exist.
+These tables were generated from the deck maps written when the long decks were split per lesson (2026-10-13). To add a deck: put its folder under `decks/<slug>/`, add it to `decks`, `lessonDecks` (and `lessonLabs` if it has labs), drop any planned entry it replaces, then run `npm test` — the curriculum tests fail if a deck, companion, lab, extra or `#slide-N` anchor does not exist.
 
 ## Resources and the Library
 
@@ -60,9 +62,9 @@ Resources are `L` (`[title, url, kind]`) and `LX` (Library extras with their own
 
 `lessonResources` holds each lesson's picks from the resource plan: `start` (one focused starting resource), `deeper` (at most two; Data Warehouse Toolkit chapters allowed), `reading` (book chapters, shown on the area reading list with the chapter note), `sites` (“Where to find more problems”), `tools` (datasets and tools the practice tasks use), `more` (other specific pages kept with the lesson) and `drop` (broad entries in `learn[]` the panel no longer shows). Entries use `key|note`; the note is shown next to the title (chapters, page sections). `learn[]` itself is unchanged, and active resources tagged to a lesson stay visible under **Also tagged** in Resources → By lesson and on its Library card. `currentBooks` names the book you said you are reading; it is badged “Your current book” until you mark a long read as Reading, after which the badge follows that status.
 
-`productionReading` is the optional practical collection in `data.js`, revised on 2026-10-21 after the full resource audit. It retains worked examples, tool walkthroughs and concrete production lessons. Entries reuse existing `L` or `LX` keys (registration must check both), carry `why`, `try`, optional `gap`/`caution`, topic IDs and five `priority` picks. The catalog populates metadata and optional `lessonResources[id].production`. Articles promoted to Start here or Go deeper retain their exercise/caveat note and are shown once per lesson; the collection filter finds primary and optional selections. Do not copy entries into `learn[]` or change completion checks. The reading map is `docs/study-planning/production-reading-map.md`.
+`productionReading` is the optional practical collection in `data.js`, revised on 2026-10-21 after the full resource audit. It retains worked examples, tool walkthroughs and concrete production lessons. Entries reuse existing `L` or `LX` keys (registration must check both), carry `why`, `try`, optional `gap`/`caution`, topic IDs and five `priority` picks. The catalog populates metadata and optional `lessonResources[id].production`. Articles promoted to Start here or Go deeper retain their exercise/caveat note and are shown once per lesson; the collection filter finds primary and optional selections. Do not copy entries into `learn[]` or change completion checks. The reading map is `tracker/planning/production-reading-map.md`.
 
-`resourceReview.retired` excludes 155 weak, broad, obsolete or redundant entries from every visible Library/recommendation surface. The raw resource identities and all saved reading state remain intact for import/export compatibility. `resources.isActive(key)` is the shared filter for lesson picks, tagged resources, area reading, stage references, roadmap practice links and Library construction. Retired long reads do not block a new active book. The 2026-10-21 audit covers the original 497 external entries plus 34 decks, adds nine worked examples and leaves 385 visible entries. `docs/study-planning/resource-quality-review.{md,json}` records every decision and its inspection scope; keep these files synchronized with catalog edits. Free article access does not imply free cloud/model services.
+`resourceReview.retired` excludes 155 weak, broad, obsolete or redundant entries from every visible Library/recommendation surface. The raw resource identities and all saved reading state remain intact for import/export compatibility. `resources.isActive(key)` is the shared filter for lesson picks, tagged resources, area reading, stage references, roadmap practice links and Library construction. Retired long reads do not block a new active book. The 2026-10-21 audit covers the original 497 external entries plus 34 decks, adds nine worked examples and leaves 385 visible entries. `tracker/planning/archive/resource-quality-review.{md,json}` records every decision and its inspection scope; keep these files synchronized with catalog edits. Free article access does not imply free cloud/model services.
 
 The **Library** (Resources → Library) has three parts:
 
@@ -96,9 +98,9 @@ The navigation hub is `#trackers`; each registered tool has a `#trackers/<id>` r
 
 DataLemur currently includes only the 54 SQL problems in the public signed-out snapshot. Original site tags remain in `tags`; detailed editorial tags remain in `suggestedTags`. The UI and filters use `topics`: one or two curated broad topics per problem, drawn from 11 topic groups. Difficulty and status filters use native radio buttons; the topic picker expands only when needed. Problem statements and solutions are not hosted. The complete premium catalog is outside this snapshot.
 
-LeetCode SQL 50 includes all 50 official study-plan entries, preserving their section and order, with nine editorial broad topics. `docs/sql/leetcode-sql50/problems.json` records official public API metadata and provenance; `topics.json` keeps editorial labels separate. Its route is `#trackers/leetcode-sql50`. Search includes problem numbers and original sections, company metadata stays absent, and progress keys remain tool-specific. The same builder regenerates both catalogs.
+LeetCode SQL 50 includes all 50 official study-plan entries, preserving their section and order, with nine editorial broad topics. `tracker/content/sql/leetcode-sql50/problems.json` records official public API metadata and provenance; `topics.json` keeps editorial labels separate. Its route is `#trackers/leetcode-sql50`. Search includes problem numbers and original sections, company metadata stays absent, and progress keys remain tool-specific. The same builder regenerates both catalogs.
 
-Public source data is in `../docs/sql/datalemur/problems.json`; the reviewed SQL tag mapping is in `../docs/sql/datalemur/suggested-tags.json`. After refreshing and reviewing that source, rebuild the hosted catalog from `tracker/`:
+Public source data is in `content/sql/datalemur/problems.json`; the reviewed SQL tag mapping is in `content/sql/datalemur/suggested-tags.json`. After refreshing and reviewing that source, rebuild the hosted catalog from `tracker/`:
 
 ```sh
 node scripts/build-practice-catalog.cjs
@@ -140,7 +142,7 @@ After an app change, update the build in `app.js` and asset version strings in `
 npm run deploy
 ```
 
-Hosting publishes only `ae-tracker/`, which includes the decks in `ae-tracker/decks/` (dotfiles such as the dbt projects' `.gitignore` are skipped). Tests, scripts, notes, backups and CLI credentials are outside that directory. Generated logs and deployment caches are ignored by Git.
+Hosting publishes only `de-tracker/`, which includes the decks in `de-tracker/decks/` (dotfiles such as the dbt projects' `.gitignore` are skipped). Tests, scripts, notes, backups and CLI credentials are outside that directory. Generated logs and deployment caches are ignored by Git.
 
 ## Saved-folder backup
 
@@ -160,7 +162,7 @@ The completed one-time project-creation and account-migration scripts were remov
 
 ### Data map authoring and checks
 
-Edit `content/data-landscape.cjs`, then run `npm run build:map`. The builder validates source and relationship identities and generates `ae-tracker/data-landscape-data.js` plus `docs/reference/data-landscape.md`. `node scripts/build-data-landscape.cjs --check` checks that both outputs match the source. Each entry needs a purpose group, type, summary, definition, reason, distinction, caveat, source IDs, labeled related terms and a lesson mapping. Example stack arrows are labeled relationships, not claims that every brand/version combination is interoperable.
+Edit `content/data-landscape.cjs`, then run `npm run build:map`. The builder validates source and relationship identities and generates `de-tracker/data-landscape-data.js` for the interactive Data map. `node scripts/build-data-landscape.cjs --check` checks that the generated data matches the source. Each entry needs a purpose group, type, summary, definition, reason, distinction, caveat, source IDs, labeled related terms and a lesson mapping. Example stack arrows are labeled relationships, not claims that every brand/version combination is interoperable.
 
 `npm test` validates catalog integrity, aliases, combined filters, incoming/outgoing relationships and reproducible generation. `npm run test:map` uses an isolated fixture and Chrome profile with actual desktop/390px phone emulation to check navigation, filters, comparison panels, deep links, Escape/back/focus behavior, related lessons, both themes and unchanged personal progress. Screenshots go to the OS temporary directory. Approved and deployed to Firebase Hosting on 2026-10-22 as build `2026-10-22.2`, including compact detail panels.
 
@@ -168,13 +170,13 @@ The architecture content module includes an editorial inventory of tool/format i
 
 ### Python API JSON walkthrough (2026-10-26, local)
 
-The files-and-streams deck now includes lesson **12A**, “Nested API JSON: parse and flatten selected fields,” immediately after atomic writes. Its stable anchor is `#slide-52`; existing `slide-1` through `slide-51` retain their meanings and lesson numbers. The catalog counts 52 lessons; the toolbar counts all 54 rendered pages, including the two introductory Why sections. The companion Markdown includes the same input, code, output, API-fetch example and practice. Shared search was rebuilt. This addition has not been deployed.
+The files-and-streams deck now includes lesson **12A**, “Nested API JSON: parse and flatten selected fields,” immediately after atomic writes. Its stable anchor is `#slide-52`; existing `slide-1` through `slide-51` retain their meanings and lesson numbers. The catalog counts 52 lessons; the toolbar counts all 54 rendered pages, including the two introductory Why sections. The companion Markdown includes the same input, code, output, API-fetch example and practice. Shared search was rebuilt. This addition was included in the October 28, 2026 Hosting release, build `2026-10-28.1`.
 
 The examples were executed with Python 3.13.7: exact two-row output, missing/null/empty addresses, omitted optional fields, empty input, required ID failure and invalid address types. The API-fetch snippet was checked against a temporary localhost HTTP server. Desktop/390px Chrome checks cover direct links, preserved neighboring anchors, actual page count, Contents search, Copy, expandable API code, reading mode and horizontal overflow.
 
 ### Detailed SCD Types 3, 4 and 6 (2026-10-27, local)
 
-The Dimension tables deck now has 26 lessons plus its two introductory Why sections. Six worked sections appear immediately after the SCD overview: 9A/9B (Type 3), 9C/9D (Kimball Type 4 mini-dimensions), 9E/9F (Type 6). Stable anchors are `slide-21` through `slide-26`; original `slide-1` through `slide-20` retain their meanings. The toolbar counts all 28 pages. Overview rows link to their walkthroughs. No learning-progress identities changed. This revision has not been deployed.
+The Dimension tables deck now has 26 lessons plus its two introductory Why sections. Six worked sections appear immediately after the SCD overview: 9A/9B (Type 3), 9C/9D (Kimball Type 4 mini-dimensions), 9E/9F (Type 6). Stable anchors are `slide-21` through `slide-26`; original `slide-1` through `slide-20` retain their meanings. The toolbar counts all 28 pages. Overview rows link to their walkthroughs. No learning-progress identities changed. This revision was included in the October 28, 2026 Hosting release, build `2026-10-28.1`.
 
 Author `content/dimension-scd.cjs`, then run `npm run build:scd` and `npm run build:search`. The renderer updates a marked region in the existing HTML shell, a Markdown supplement, and an in-memory DuckDB lab. `node scripts/build-dimension-scd.cjs --check` verifies reproducibility. The supplement is a catalog extra rather than a full Markdown companion, so shared search continues indexing all original HTML lessons. The lesson panel links both the notes and runnable lab.
 

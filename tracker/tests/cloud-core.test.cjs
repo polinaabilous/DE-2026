@@ -1,6 +1,6 @@
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-require('../ae-tracker/cloud-core.js');
+require('../de-tracker/cloud-core.js');
 const { pack, unpack, Model } = globalThis.AECloudCore;
 const empty = () => ({v:7,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},ck:{},done:{},built:{},lib:{},reading:{},deckVisits:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
 const base = () => ({...empty(),checksV:1,r:{S1:[0,2]},pc:{S1:[true,false]},ck:{S1:[true,false],'v1-frame':[true]},done:{SETUP:'migrated'},built:{'v1-frame':'2026-10-13'},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later',dwt:'later'},reading:{dwt:{status:'reading',note:'Ch. 6 · Order Management',pct:35,updated:'2026-10-13'},corr:{status:'later',updated:'2026-10-12'}},act:{'2026-10-06':2},

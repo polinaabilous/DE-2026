@@ -4,10 +4,10 @@ import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const source = resolve(root, 'ae-tracker-data');
+const source = resolve(root, 'de-tracker-data');
 const ctx = { window: {}, Date, Map, Set, setTimeout, clearTimeout };
 vm.createContext(ctx);
-for (const name of ['utils.js', 'store.js']) vm.runInContext(readFileSync(resolve(root, 'ae-tracker', name), 'utf8'), ctx);
+for (const name of ['utils.js', 'store.js']) vm.runInContext(readFileSync(resolve(root, 'de-tracker', name), 'utf8'), ctx);
 const progress = JSON.parse(readFileSync(resolve(source, 'progress.json'), 'utf8'));
 const notes = [];
 for (const name of readdirSync(resolve(source, 'notes'))) {

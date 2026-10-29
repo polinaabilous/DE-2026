@@ -1,6 +1,7 @@
 {
   "hosting": {
-    "public": "ae-tracker",
+    "site": "de-roadmap",
+    "public": "de-tracker",
     "predeploy": ["node scripts/build-deck-search.cjs"],
     "ignore": [
       "firebase.json",
@@ -50,7 +51,7 @@
   "auth": {
     "providers": {
       "googleSignIn": {
-        "oAuthBrandDisplayName": "AE Roadmap",
+        "oAuthBrandDisplayName": "DE Roadmap",
         "supportEmail": "polinaa.bilous@gmail.com",
         "authorizedRedirectUris": [
           "https://ae-roadmap-dc348858.web.app/__/auth/handler"

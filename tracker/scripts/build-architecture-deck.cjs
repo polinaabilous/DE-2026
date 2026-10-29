@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
-const root = path.resolve(__dirname, '../ae-tracker/decks');
+const root = path.resolve(__dirname, '../de-tracker/decks');
 const out = path.join(root, 'architecture-evolution');
 const check = process.argv.includes('--check');
 const title = 'Data architecture: how we got here';

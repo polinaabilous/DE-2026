@@ -7,7 +7,7 @@ const content = require('../content/dimension-scd.cjs');
 
 test('advanced SCD materials stay reproducible and preserve existing dimension lesson links', () => {
   execFileSync(process.execPath,[path.resolve(__dirname,'../scripts/build-dimension-scd.cjs'),'--check']);
-  const folder=path.resolve(__dirname,'../ae-tracker/decks/dim-dimension-tables');
+  const folder=path.resolve(__dirname,'../de-tracker/decks/dim-dimension-tables');
   const html=fs.readFileSync(path.join(folder,'dim-dimension-tables.html'),'utf8');
   const md=fs.readFileSync(path.join(folder,'scd-advanced.md'),'utf8');
   const ids=[...html.matchAll(/<section\b[^>]*\bid="([^"]+)"/g)].map(m=>m[1]);

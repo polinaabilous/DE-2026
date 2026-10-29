@@ -1,5 +1,5 @@
 {
-  "name": "ae-roadmap-tracker",
+  "name": "de-roadmap-tracker",
   "private": true,
   "scripts": {
     "build:search": "node scripts/build-deck-search.cjs",

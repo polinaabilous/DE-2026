@@ -1,1 +1,38 @@
+# Local datasets and generated exercise output; keep small source fixtures tracked.
 datasets/
+**/data/out/
+*.duckdb
+*.duckdb.wal
+
+# Operating system files.
+.DS_Store
+._*
+Thumbs.db
+
+# Python environments, caches and packaging output.
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+.coverage
+.coverage.*
+htmlcov/
+*.egg-info/
+build/
+dist/
+
+# JavaScript dependencies and dbt build output.
+node_modules/
+target/
+dbt_packages/
+logs/
+
+# Local credentials and configuration; keep example environment files.
+.env
+.env.*
+!.env.example
+!.env.*.example

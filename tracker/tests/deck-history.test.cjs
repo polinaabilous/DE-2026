@@ -3,7 +3,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
 const vm = require('node:vm');
-require('../ae-tracker/deck-history.js');
+require('../de-tracker/deck-history.js');
 const { create, catalog } = globalThis.AEDeckHistory;
 const memoryStorage = () => {
   const data = new Map();
@@ -45,7 +45,7 @@ test('recent decks use the current catalog, newest first, and URL matching ignor
   assert.equal(c.recent({one:1000,two:2000},1).length,1);
 });
 test('all registered HTML decks record direct visits through the generated shared script', () => {
-  const root=path.resolve(__dirname,'../ae-tracker'),ctx={window:{}};
+  const root=path.resolve(__dirname,'../de-tracker'),ctx={window:{}};
   vm.runInNewContext(fs.readFileSync(path.join(root,'data.js'),'utf8'),ctx);
   for(const [id,deck] of Object.entries(ctx.window.PLAN.decks)) {
     if(!deck.file.endsWith('.html'))continue;

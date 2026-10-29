@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Data Engineer Roadmap</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧭</text></svg>">
+<script>(() => { const t = localStorage.getItem("ae-theme"); if (t === "light" || t === "dark") document.documentElement.dataset.theme = t; })();</script>
+<link rel="stylesheet" href="styles.css?v=20261028.2">
+<link rel="stylesheet" href="data-landscape.css?v=20261028.2">
+<!-- AE deck search start -->
+<link rel="stylesheet" href="deck-search.css?v=28b717c9b0431ba3">
+<script src="deck-history.js?v=28b717c9b0431ba3"></script>
+<script defer src="deck-search-core.js?v=28b717c9b0431ba3"></script>
+<script defer src="deck-search.js?v=28b717c9b0431ba3" data-index="deck-search-index.json?v=3beab058e3b1ac86"></script>
+<!-- AE deck search end -->
+</head>
+<body>
+<header>
+  <div class="brand"><span class="brand-mark"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Z"/><path d="M12 5v15"/></svg></span><h1>DE Roadmap<span class="brand-subtitle">Learning workspace</span></h1></div>
+  <div class="nav-caption">Your learning</div>
+  <nav aria-label="Main navigation">
+    <a href="#topics"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="8" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/></svg><span>Topics</span></a>
+    <a href="#roadmap"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 6 6-3 6 3 6-3v15l-6 3-6-3-6 3V6Z"/><path d="M9 3v15M15 6v15"/></svg><span>Roadmap</span></a>
+    <a href="#resources"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5c-3-2-7-2-10-1v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1Z"/><path d="M12 5v15"/></svg><span>Resources</span></a>
+    <a href="#data-map"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="5" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><path d="M12 7v4M5 16v-5h14v5M12 11H5"/></svg><span>Data map</span></a>
+    <a href="#notes"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h8M8 11h8M8 15h5"/></svg><span>Notes</span></a>
+    <a href="#log"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18M8 15h3M8 18h7"/></svg><span>Log</span></a>
+    <a href="#todo"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="m7 12 3 3 7-7"/></svg><span>To do</span></a>
+    <div class="nav-group"><a href="#trackers" id="trackerNavLink" aria-expanded="false" aria-controls="trackerSubnav"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M8 2v4M16 2v4m-9 8 2 2 4-4M15 12h3M15 16h3"/></svg><span>Trackers</span></a><div id="trackerSubnav" class="nav-submenu" hidden></div></div>
+    <a href="#dashboard"><svg class="ui-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+  </nav>
+  <div class="hbtns">
+    <div class="appearance-row"><span>Appearance</span><button class="btn" data-act="theme" id="themeBtn" title="Switch theme" aria-label="Switch theme"></button></div>
+    <button class="btn pill" data-act="data" id="dataBtn" title="Where your progress is stored">Browser only</button>
+    <button class="btn cloud-account" data-act="cloudsignin" id="cloudBtn" hidden>Sign in with Google</button>
+    <input type="file" id="importFile" accept="application/json" hidden>
+  </div>
+</header>
+<section id="cloudGate" class="cloud-gate" aria-label="Sign in" hidden>
+  <div class="panel cloud-welcome"><div class="eyebrow">DE Roadmap</div><h2>Your learning, wherever you are.</h2>
+  <p class="muted">Sign in to open your notes, progress and daily log.</p>
+  <button class="btn primary" data-act="cloudsignin" id="cloudGateSignIn">Continue with Google</button>
+  <p id="cloudGateError" class="small" role="alert" hidden></p></div>
+</section>
+<div class="workspace"><main id="view"></main></div>
+<dialog id="drawer" aria-labelledby="panelTitle"></dialog>
+<dialog id="landscapeDialog" aria-labelledby="landscapeTitle"></dialog>
+<dialog id="dataDlg" aria-label="Your data"></dialog>
+<dialog id="practiceDlg" aria-labelledby="practiceDialogTitle"></dialog>
+<div id="toast" role="status" aria-live="polite"></div>
+<script src="data.js?v=20261028.2"></script>
+<script src="utils.js?v=20261028.2"></script>
+<script src="state.js?v=20261028.2"></script>
+<script src="progress.js?v=20261028.2"></script>
+<script src="resources.js?v=20261028.2"></script>
+<script src="editor.js?v=20261028.2"></script>
+<script src="plan-views.js?v=20261028.2"></script>
+<script src="store.js?v=20261028.2"></script>
+<script src="firebase-config.js?v=20261028.2"></script>
+<script src="cloud-core.js?v=20261028.2"></script>
+<script src="cloud.js?v=20261028.2"></script>
+<script src="practice-data.js?v=20261028.2"></script>
+<script src="practice.js?v=20261028.2"></script>
+<script src="data-landscape-data.js?v=20261028.2"></script>
+<script src="data-landscape.js?v=20261028.2"></script>
+<script src="app.js?v=20261028.2"></script>
+</body>
+</html>
