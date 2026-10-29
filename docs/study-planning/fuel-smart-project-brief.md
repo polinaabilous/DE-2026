@@ -1,4 +1,6 @@
-# Fuel Smart — portfolio project brief
+# Fuel Smart — archived portfolio project brief
+
+This project was replaced by [Flight Reliability](flights-project-brief.md) on October 14, 2026. Retained as a reference for standalone recipe exercises.
 
 **One data space: food and nutrition.** Fuel Smart helps you eat well for training without counting calories. It turns public recipe, ingredient and packaged-food data into trusted nutrition metrics, a dashboard and, later, an evaluated "what should I cook?" agent.
 

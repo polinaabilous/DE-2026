@@ -1,0 +1,63 @@
+(async () => {
+  const failures = [], checks = [];
+  const check = (condition, name) => { checks.push(name); if (!condition) throw Error(name); };
+  const $ = selector => document.querySelector(selector);
+  const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+  const until = async predicate => { for (let i = 0; i < 180; i++) { if (predicate()) return; await wait(40); } throw Error('Timed out waiting for search UI'); };
+  const search = async query => {
+    $('#aeSearchInput').value = query;
+    $('.ae-search-form').requestSubmit();
+    await until(() => !$('.ae-search-status').hasAttribute('aria-busy'));
+  };
+  try {
+    await until(() => !!$('.ae-search-launcher'));
+    const before = JSON.stringify(AE.state());
+    check(window.searchIndexFetches === 0, 'Study content is not downloaded until search opens');
+    $('.ae-search-launcher').click();
+    check($('#aeDeckSearchDialog').open && document.activeElement === $('#aeSearchInput'), 'Search opens as a focused compact dialog');
+    await search('CTE vs subquery');
+    check(!!$('.ae-search-result a[href*="sql-query-structure"]'), 'Natural-language comparison finds the relevant source deck');
+    check(!!$('.ae-search-result mark'), 'Matching words are highlighted');
+    const source = $('.ae-search-result h3 a');
+    const sourceHtml = await (await fetch(source.href)).text();
+    check(sourceHtml.includes('id="'+new URL(source.href).hash.slice(1)+'"'), 'Search result opens a real slide anchor');
+    $('.ae-search-result summary').click();
+    check($('.ae-search-result details').open && $('.ae-search-result pre').textContent.length>40, 'Source passage expands inside the search window');
+    await search('What is the difference between ROWS and RANGE?');
+    check($('.ae-search-result').textContent.includes('ROWS vs RANGE'), 'Window frame query finds the comparison');
+    await search('qualfy');check($('.ae-search-result').textContent.includes('QUALIFY'), 'Common one-letter misspelling still finds the topic');
+    await search('uv quick guide');check(!!$('.ae-search-result a[href*="uv-quick-guide.md"]'), 'Markdown-only guides are searchable');
+    await search('zzzzqqqxxx');check(!$('.ae-search-result') && $('.ae-search-status').textContent.includes('No matching'), 'No-result state suggests a simpler query');
+    await search('safetyneedle');
+    check(!$('.ae-search-results img') && !$('.ae-search-results script') && $('.ae-search-results').textContent.includes('<img'), 'Source HTML examples stay literal and cannot execute');
+    $('#aeSearchInput').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    check(!$('#aeDeckSearchDialog').open && document.activeElement === $('.ae-search-launcher'), 'Escape closes only search and restores focus');
+    document.body.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true}));
+    check($('#aeDeckSearchDialog').open, 'Ctrl K opens search outside an editor');
+    await search('pytest fixtures');
+    check(window.searchIndexFetches===1, 'Opening and searching again reuse the in-memory index');
+    const rect=$('#aeDeckSearchDialog').getBoundingClientRect();
+    check(rect.left>=0 && rect.right<=innerWidth+1 && rect.top>=0 && rect.bottom<=innerHeight+1, 'Search window fits the current desktop or phone viewport');
+    $('.ae-search-close').click();
+    AE.openItem('S1');await wait(0);
+    $('#drawer [data-deck-search-open]').click();
+    check($('#drawer').open && $('#aeDeckSearchDialog').open, 'Search opens above a lesson side panel');
+    $('#aeSearchInput').dispatchEvent(new KeyboardEvent('keydown',{key:'Escape',bubbles:true,cancelable:true}));
+    check($('#drawer').open && !$('#aeDeckSearchDialog').open, 'Closing search keeps the lesson panel open');
+    AE.closePanel();
+    const editor=document.createElement('textarea');document.body.append(editor);editor.focus();
+    editor.dispatchEvent(new KeyboardEvent('keydown',{key:'k',ctrlKey:true,bubbles:true,cancelable:true}));
+    check(!$('#aeDeckSearchDialog').open, 'Search shortcut leaves text-editor shortcuts alone');editor.remove();
+    check(JSON.stringify(AE.state())===before, 'Search never changes notes, progress or cloud state');
+
+    const frame=document.createElement('iframe');frame.src='decks/sql-window-functions/sql-window-functions.html';document.body.append(frame);
+    await until(()=>!!frame.contentDocument?.querySelector('.ae-search-launcher'));
+    const doc=frame.contentDocument;doc.querySelector('.ae-search-launcher').click();
+    doc.querySelector('#aeSearchInput').value='LAST_VALUE';doc.querySelector('.ae-search-form').requestSubmit();
+    await until(()=>!!doc.querySelector('.ae-search-result'));
+    check(doc.querySelector('#aeDeckSearchDialog').open && doc.querySelector('.ae-search-results').textContent.includes('LAST_VALUE'), 'Standalone deck pages can search the whole study library');
+    frame.remove();
+    $('.ae-search-launcher').click();await search('ROWS vs RANGE');
+  } catch(error) { failures.push(error.stack || String(error)); }
+  const result=document.createElement('pre');result.id='search-browser-result';result.textContent=JSON.stringify({passed:checks.length,failures,errors:window.testErrors,width:innerWidth});document.body.append(result);
+})();

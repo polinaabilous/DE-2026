@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Flight Reliability · Project brief</title>
+<style>:root{color-scheme:light dark;--bg:#f7faf7;--paper:#fff;--ink:#24382d;--muted:#52665a;--line:#dce7de;--accent:#216747}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.65 system-ui,sans-serif}main{max-width:1050px;margin:32px auto;padding:28px 40px;background:var(--paper);border:1px solid var(--line);border-radius:16px}nav{display:flex;flex-wrap:wrap;gap:24px;margin-bottom:28px}a{color:var(--accent);text-underline-offset:3px}h1{font-size:clamp(28px,5vw,40px);line-height:1.2}h2{font-size:24px;margin-top:38px}li{margin:9px 0}table{width:100%;border-collapse:collapse;font-size:15px;line-height:1.5}th,td{padding:12px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}th{background:var(--bg)}.table-wrap{overflow:auto}code{font-size:.9em}footer{border-top:1px solid var(--line);margin-top:32px;padding-top:16px;color:var(--muted);font-size:14px}@media(max-width:640px){main{margin:0;padding:22px 18px;border:0;border-radius:0}th,td{min-width:150px;padding:10px}}@media(prefers-color-scheme:dark){:root{--bg:#14221b;--paper:#1d2d24;--ink:#e5eee7;--muted:#b4c6ba;--line:#385041;--accent:#83d6a5}}@media print{main{max-width:none;margin:0;border:0}nav{display:none}body{font-size:12px}}
+</style></head><body><main><nav><a href="../../#roadmap">← Roadmap</a><a href="flights-project-brief.md">Markdown version</a></nav><h1>Flight Reliability — portfolio project brief</h1>
+<p><strong>Question:</strong> Which airline and departure window has historically been most reliable for a selected US domestic route?</p>
+<p>Build a public route explorer that helps visitors compare historical cancellation risk, substantial arrival delays and the worst-delay percentiles. A later release adds weather observations and a replay of one airport disruption.</p>
+<h2>First release</h2>
+<ul>
+<li><strong>Period:</strong> January–March 2025, pinned in the dataset manifest.</li>
+<li><strong>Routes:</strong> Flights whose origin and destination are both in SEA, SFO, LAX, DEN, ORD and JFK. Keep every matching row, including cancellations and diversions. These airports are an initial scope choice, not a claim that every route has enough comparable flights.</li>
+<li><strong>Source:</strong> BTS Reporting Carrier On-Time Performance. Use the reporting carrier consistently; distinguish it from marketing-airline identity if that dataset is added later.</li>
+<li><strong>Stack:</strong> Python ingestion → month-partitioned Parquet → DuckDB + dbt → tested reliability marts → a public web dashboard such as Evidence.</li>
+<li><strong>Offline fixture:</strong> A small source-shaped sample with expected results for cancellations, diversions, missing arrival delay, duplicate/conflicting records, overnight flights and midnight/2400 cases.</li>
+<li><strong>Manifest:</strong> Source table and URLs, monthly files, checksums, download dates, exact filter, selected/rejected counts and schema version. Store source event time and retrieval time separately.</li>
+</ul>
+<p>The initial output is one useful route explorer and one finding supported by its data. Weather, Spark, Airflow, AI and a second warehouse come after this release.</p>
+<h2>What visitors can do</h2>
+<ol>
+<li>Choose a route and date range, then compare reporting carriers and scheduled local departure windows within that same route and period.</li>
+<li>See cancellation rate, substantial-delay rate and p90 delay alongside flight counts and missing-outcome coverage.</li>
+<li>Inspect low-sample labels and understand exactly which flights each metric includes.</li>
+<li>Open the source and metric definitions from the dashboard; see the data-as-of date.</li>
+<li>In the next release, replay one airport disruption alongside measured weather and a comparable baseline period.</li>
+</ol>
+<h2>Three first-release metrics</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Definition</th>
+<th>Required context</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cancellation rate</td>
+<td>Cancelled flight legs / all selected scheduled flight legs</td>
+<td>Total scheduled count; keep diversions in this denominator</td>
+</tr>
+<tr>
+<td>Substantial arrival-delay rate</td>
+<td>Legs with recorded arrival delay ≥30 minutes / non-cancelled, non-diverted legs with a recorded arrival delay</td>
+<td>Eligible count and missing-delay exclusions; this is the project&#39;s chosen threshold</td>
+</tr>
+<tr>
+<td>p90 arrival delay</td>
+<td>90th percentile of max(recorded arrival delay, 0) over the same eligible population</td>
+<td>Counts, percentile method and date range; early arrivals contribute zero</td>
+</tr>
+</tbody></table></div>
+<p>Publish cancelled, diverted and missing-outcome counts separately. Never turn a missing delay into zero. Do not mix the cancellation denominator with the eligible-arrival denominator or average group percentages without their counts.</p>
+<p>Start with a configurable threshold of 100 eligible flights per comparison cell. Label smaller groups as insufficient evidence rather than hiding their existence. This threshold is a presentation rule, not a guarantee of statistical precision. Formal intervals and route/season/mix sensitivity checks can follow the statistics lesson.</p>
+<h2>Data sources and access</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Source</th>
+<th>What it supplies</th>
+<th>How it is used</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><a href="https://transtats.bts.gov/ONTIME/Index.aspx">BTS flight statistics</a></td>
+<td>Historical reported US domestic schedules, outcomes, cancellation and diversion information</td>
+<td>First-release flight data; published files have a reporting lag</td>
+</tr>
+<tr>
+<td><a href="https://www.transtats.bts.gov/Fields.asp?gnoyr_VQ=FGJ">BTS reporting-carrier field dictionary and download</a></td>
+<td>DOT carrier/airport IDs, local HHMM times, delay fields and elapsed-time fields</td>
+<td>Pin the table and schema; prefer stable DOT identities over assuming codes never change</td>
+</tr>
+<tr>
+<td><a href="https://www.ncei.noaa.gov/products/global-historical-climatology-network-hourly">NOAA GHCNh</a></td>
+<td>Historical station weather observations, metadata and quality information; bulk PSV/Parquet access</td>
+<td>Second release: selected airport/station/time ranges, with explicit units and quality filtering</td>
+</tr>
+</tbody></table></div>
+<p>Use published bulk downloads rather than inventing a flight REST API. The initial bulk-file pipeline needs no commercial flight subscription. Check the source&#39;s download method and latest availability when implementing it; save the successful URLs and source versions in the manifest. An initial manually downloaded source file is acceptable while automating the downloader.</p>
+<p>The product describes historical reporting-carrier outcomes. Ticket prices, live status, worldwide coverage and passenger connection itineraries are outside these sources. Source links, attribution and retrieval dates belong in the public README.</p>
+<h2>Model and correctness</h2>
+<ul>
+<li><strong>Flight fact:</strong> One selected scheduled flight leg. Test a candidate key using flight date, DOT reporting-carrier ID, flight number, origin, destination and scheduled departure time. Prove uniqueness; quarantine unexplained conflicting rows rather than silently inventing a tie-breaker. Preserve the raw row/source-version identity for audit.</li>
+<li><strong>Dimensions:</strong> Airport, reporting carrier and date. The same airport dimension serves the origin and destination roles. Store a documented local departure-window definition.</li>
+<li><strong>Marts:</strong> Aggregate by route, carrier, date period and departure window. Retain numerators, denominators and coverage so filters and rollups remain correct.</li>
+<li><strong>Time:</strong> BTS HHMM values are local times. Use the reported arrival-delay field for v1 outcomes. Preserve signed source delay as well as the non-negative metric value. Full UTC alignment for weather must account for origin/destination zones, elapsed times, midnight/2400, date rollovers and DST ambiguity; flag unresolved cases.</li>
+<li><strong>Incremental writes:</strong> New monthly files create new partitions. A corrected source month replaces or merges that affected partition under a tested version policy. Compare the result with a full rebuild. Fixture corrections are simulations and must be labelled as such.</li>
+<li><strong>History:</strong> An SCD2 exercise can snapshot reference attributes you capture. A simulated airport-name/time-zone change tests the mechanism; it does not establish historical attributes absent from the source.</li>
+</ul>
+<h2>Weather and disruption replay</h2>
+<p>Choose one airport, an event period and a comparable baseline. For an airport-wide replay, expand beyond the six-airport route slice to all reported legs touching that airport and record the changed scope.</p>
+<p>Map the airport to an appropriate station using documented distance and coverage criteria. Store station observations as a separate fact. Normalize weather units, apply source quality flags, resolve timestamps to UTC and use an explicit hourly aggregation or nearest-observation tolerance. Assert that adding weather does not multiply flight rows, and publish unmatched coverage.</p>
+<p>The replay shows weather and flight outcomes together. It can report observed associations; it cannot establish causal attribution or predict future disruption from proximity alone.</p>
+<h2>Learning and project progression</h2>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+<th>Stage</th>
+<th>Learn first</th>
+<th>Build and prove</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Frame the question</td>
+<td>Minimal lab; requirements and stakeholders</td>
+<td>Decision, pinned sample contract and README stub</td>
+</tr>
+<tr>
+<td>Bounded ingester</td>
+<td>Python foundations; ingestion; quality and testing</td>
+<td>Batched ZIP/CSV ingestion, Parquet, manifest, validation, fixture and CI</td>
+</tr>
+<tr>
+<td>Explore flight outcomes</td>
+<td>Windows; SQL patterns; aggregation; joins/grain; time analysis</td>
+<td>Identity/time rules, comparison metrics, profiling and count reconciliation</td>
+</tr>
+<tr>
+<td>Analytical model</td>
+<td>Facts, dimensions and metric design</td>
+<td>Flight-leg grain, role-playing airports and precise denominator definitions</td>
+</tr>
+<tr>
+<td>Tested marts</td>
+<td>Query structure; modeling; dbt; tests and contracts</td>
+<td>Sources/staging/marts, expected-result fixtures, reproducible build</td>
+</tr>
+<tr>
+<td>Public first release</td>
+<td>Writing and dashboard storytelling</td>
+<td>Route explorer, one supported finding, public URL and clear limits</td>
+</tr>
+<tr>
+<td>Weather replay</td>
+<td>Reuse ingestion, DataFrames, temporal joins, modeling and quality</td>
+<td>Station mapping, separate observation fact, tested joins and event replay</td>
+</tr>
+<tr>
+<td>Lakehouse</td>
+<td>Spark; Delta/Iceberg; storage architecture</td>
+<td>Measured multi-year archive, corrected-month replay, silver reconciliation and recovery</td>
+</tr>
+<tr>
+<td>Orchestration</td>
+<td>Databricks setup; Airflow scheduling, integration and DAG testing</td>
+<td>Published-month discovery, interval backfills, retries and failure recovery</td>
+</tr>
+<tr>
+<td>Quality and observability</td>
+<td>Observability and incidents</td>
+<td>Source-aware freshness, count/coverage checks and a fixture incident</td>
+</tr>
+<tr>
+<td>Performance and cost</td>
+<td>Plans, columnar storage, distributed execution and materializations</td>
+<td>Measured scans/joins/aggregates with actual bytes, timing and cost</td>
+</tr>
+<tr>
+<td>Semantic layer</td>
+<td>Semantic modeling and documentation</td>
+<td>Certified definitions reused by the dashboard</td>
+</tr>
+<tr>
+<td>AI evaluation</td>
+<td>Agents, evaluation and warehouse LLM functions</td>
+<td>Read-only historical assistant and grounded narratives, tested against 40 questions</td>
+</tr>
+<tr>
+<td>Portability and story</td>
+<td>Cloud/IAM, Terraform, warehouse adapters and architecture</td>
+<td>Portable marts, decision records and a concise public demo</td>
+</tr>
+</tbody></table></div>
+<p>Interview practice remains a separate practice route linked from lessons. JSON/recursion, experimentation and other skills can use standalone labs when the flight project does not naturally need them. Existing recipe-based decks remain useful exercises: reuse their methods and templates with the flight question rather than presenting their food metrics as portfolio work.</p>
+<h2>Scope and release discipline</h2>
+<p>Ship the small public version before adding platforms. Add weather before scaling. Expand the real archive gradually and record its actual size; 1/10/100 GB experiments are optional, and synthetic repetitions must be labelled. AI comes after trustworthy metrics and must abstain from unsupported prices, live predictions and causal explanations.</p>
+<p>Keep collecting decisions while building. Resume work and basic interview practice continue before the application checkpoint; work, synthetic and equivalent personal-project evidence remain valid.</p>
+<p>The tracker retains existing lesson and stage IDs so saved notes and progress remain connected. Review any previously ticked portfolio criteria against these new flight deliverables.</p>
+<footer>Roadmap updated October 14, 2026. Source field definitions should be checked again when the pipeline is implemented.</footer></main></body></html>

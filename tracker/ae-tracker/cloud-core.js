@@ -1,6 +1,6 @@
 // Each saved entry/check is independent: a phone edit cannot replace a laptop's whole tracker.
 (() => {
-  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"]);
+  const MAPS = new Set(["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading", "deckVisits"]);
   const LISTS = new Set(["notes", "log", "todo", "attempts"]);
   const LOCAL = new Set(["ui", "savedAt"]);
   const safe = k => typeof k === "string" && !["__proto__", "constructor", "prototype"].includes(k);
@@ -66,7 +66,12 @@
       this.remote = { ...remote };
       this.ack(acknowledgements);
       this.view = { ...remote };
-      for (const [k, change] of Object.entries(this.pending)) this.view[k] = change.value;
+      for (const [k, change] of Object.entries(this.pending)) {
+        const parts = JSON.parse(k);
+        // An older offline open must not replace a newer open from another device.
+        if (parts[0] === "deckVisits" && parts.length === 2 && Number(remote[k]) > Number(change.value) && change.value !== null) delete this.pending[k];
+        else this.view[k] = change.value;
+      }
       for (const k of Object.keys(this.view)) if (this.view[k] === null) delete this.view[k];
       return this.view;
     }

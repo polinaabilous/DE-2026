@@ -12,6 +12,8 @@
 
 **Additions beyond the original brief** are marked *(added)*.
 
+**2026-10-26 update:** lesson 12A adds a small API JSON → flat rows walkthrough after atomic writes. Its stable anchor is `slide-52`; existing lesson anchors and numbers are retained. The deck now has 52 lessons plus two introductory “Why” sections.
+
 ## Contents
 
 1. [Python files, generators, and practical data scripts](#slide-1)
@@ -28,6 +30,7 @@
 10. [JSON Lines: one record per line, streamable](#slide-10)
 11. [gzip and compression](#slide-11)
 12. [Atomic writes: never leave half a file](#slide-12)
+   - [12A. Nested API JSON: parse and flatten selected fields](#slide-52)
 13. [Iterables versus iterators](#slide-13)
 14. [Generators and yield](#slide-14)
 15. [Generator pipelines: read → parse → validate](#slide-15)
@@ -79,7 +82,7 @@
 
 The Python foundations deck cleaned data already in memory. This deck covers what comes before and after: files of unknown encoding, compressed logs larger than memory, databases that must stay consistent when something fails, and scripts a scheduler runs unattended.
 
-- **Part A, files:** `pathlib`, encodings, CSV, JSON, JSONL, gzip, atomic writes.
+- **Part A, files:** `pathlib`, encodings, CSV, JSON, JSONL, gzip, atomic writes, nested API JSON to flat rows.
 - **Part B, streams:** iterables vs iterators, generators and `yield`, `itertools`, bounded batches, measuring memory.
 - **Part C, edges and databases:** aware UTC datetimes, `zoneinfo` and DST, `Decimal` at boundaries, DB-API, parameterised queries, transactions, DuckDB.
 - **Part D, scripts and concurrency:** context managers, decorators, logging, environment configuration, a CLI, `uv` and `pyproject.toml`, Ruff, testing with pytest, threads, processes, asyncio, and the GIL.
@@ -888,6 +891,106 @@ Downstream jobs often poll a folder. Give them a clear “done” signal: the at
 > **The main idea:** write output to a temp file in the same folder and `os.replace` it into place; delete the temp file on failure. Readers then see either the old file or the complete new one.
 
 *Read more:* [os.replace](https://docs.python.org/3/library/os.html#os.replace), [tempfile](https://docs.python.org/3/library/tempfile.html).
+
+---
+
+<a id="slide-52"></a>
+## 12A. Nested API JSON: parse and flatten selected fields
+
+*Files · API response → selected flat fields*
+
+An API may wrap its records inside a top-level object called an **envelope**. Here, `data` is the list of users. Parsing turns JSON text into Python dictionaries and lists; **flattening** builds new dictionaries containing the fields you want. We will keep **one output row per user**.
+
+### 1. A small response body
+
+Copy this and the next block into the same script. This synthetic response needs no account or network access.
+
+```python
+body = """{
+  "data": [
+    {"id": 1, "name": "Maya",
+     "address": {"city": "Seattle"},
+     "tags": ["new", "vip"]},
+    {"id": 2, "name": "Leo",
+     "address": null}
+  ]
+}"""
+```
+
+### 2. Parse, then select fields
+
+```python
+import json
+
+payload = json.loads(body)
+rows = []
+for user in payload["data"]:
+    address = user.get("address")
+    # Missing key or JSON null becomes an empty dict.
+    if address is None:
+        address = {}
+    if not isinstance(address, dict):
+        raise ValueError(
+            "address must be an object or null"
+        )
+    rows.append({
+        "user_id": user["id"],
+        "name": user.get("name"),
+        "city": address.get("city"),
+    })
+print(json.dumps(rows, indent=2))
+```
+
+### 3. The flat result
+
+| user_id | name | city |
+| --- | --- | --- |
+| 1 | Maya | Seattle |
+| 2 | Leo | `None` (JSON `null`) |
+
+- `user["id"]` treats the ID as required: a missing key raises `KeyError`. `user.get("name")` returns `None` when an optional name is absent.
+- `address.city` becomes a top-level `city` column. Missing or null addresses produce `None` in Python, shown as `null` when dumped back to JSON. Unexpected address types fail explicitly.
+- We intentionally omit `tags`. Expanding a list into multiple rows is a separate decision that changes the grain. Selecting fields here preserves the number of users.
+
+#### JSON output
+
+```json
+[
+  {
+    "user_id": 1,
+    "name": "Maya",
+    "city": "Seattle"
+  },
+  {
+    "user_id": 2,
+    "name": "Leo",
+    "city": null
+  }
+]
+```
+
+#### Fetch this structure from a real API
+
+`urllib.request` is Python’s built-in library for opening URLs. `urlopen()` returns a file-like HTTP response, and `with` closes it after use. Replace `payload = json.loads(body)` with the following: `json.load(response)` reads and parses the response body directly. The example URL is a placeholder; adapt the endpoint and the `data` key to your API.
+
+```python
+from urllib.request import urlopen
+
+# Illustrative URL: replace with your endpoint.
+with urlopen("https://api.example.com/users", timeout=10) as response:
+    payload = json.load(response)
+# Continue with rows = [] and the same for loop above.
+```
+
+For pagination, authentication, retries and larger responses, continue with [the ingestion deck](../python-ingestion/python-ingestion.html#slide-6).
+
+#### Try it yourself
+
+Remove Leo’s `address` key: his output row should remain, with `city` set to null. Then try `"address": "unknown"`: the code should raise `ValueError`. Finally, add an optional `country` field to the selected columns and check that the output still has one row per input user.
+
+> **The main idea:** Parse the response, locate its record list, then build one flat dictionary per record. Choose required fields, optional fields and the output grain deliberately.
+
+*Read more:* [Python json: load and loads](https://docs.python.org/3/library/json.html), [Python dictionaries: get](https://docs.python.org/3/library/stdtypes.html#dict.get), [Python urllib.request: urlopen](https://docs.python.org/3/library/urllib.request.html).
 
 ---
 

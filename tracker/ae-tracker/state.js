@@ -8,10 +8,10 @@ globalThis.AEState = Object.freeze({
     // notes: [{ id, track, text, topic?, c, u }] (first line of text = title) · lib: { resourceKey: "done"|"later" } · act: { "YYYY-MM-DD": actions }
     // reading: { resourceKey: { status: "reading"|"paused"|"later"|"done", note?, pct?, updated } } for long reads (books and courses)
     // ck: { lessonOrSourceId: [checked…] } · done: { lessonId: date } · built: { stageId: date } · r: legacy 4-level ratings, kept as evidence
-    const MAPS = ["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading"];
+    const MAPS = ["r", "pc", "rc", "g", "lib", "act", "practice", "ck", "done", "built", "reading", "deckVisits"];
     // checksV and readingV are set by migrate(), never by defaults: cloud records are unpacked over blank(), and an
     // old account without the marker must still be migrated.
-    const blank = () => ({ v: 7, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, ck: {}, done: {}, built: {}, notes: [], lib: {}, reading: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
+    const blank = () => ({ v: 7, setupV: 2, curriculumV: P.curriculumV, savedAt: 0, r: {}, pc: {}, rc: {}, g: {}, ck: {}, done: {}, built: {}, notes: [], lib: {}, reading: {}, deckVisits: {}, act: {}, log: [], todo: [], practice: {}, attempts: [], ui: { hideDone: false, showOpt: true, res: "topic" } });
     const longRead = k => ["book", "course"].includes(P.LM[k]?.f || (P.L[k] || P.LX[k] || [])[2]);
     const trackOf = topic => P.items[topic] ? P.items[topic].track : stageIds.has(topic) ? "pf" : GEN;
     const trackLabel = t => t === GEN ? "General" : trackName[t] || t;

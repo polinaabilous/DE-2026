@@ -119,7 +119,7 @@ globalThis.AEPlanViews = Object.freeze({
           <h4>${esc(it(id).name)}</h4><p>${esc(firstSentence(it(id).c, 170))}</p>
           <button class="btn" data-open="${id}">Open lesson ${icon("arrow")}</button></article>`;
       }
-      const p = row.practice, sites = (p.sites || []).map(k => RES.resolve(k));
+      const p = row.practice, sites = (p.sites || []).map(k => RES.resolve(k)).filter(r => RES.isActive(r.key));
       return `<article class="project-card practice"><div class="row spread"><span class="eyebrow">Standalone</span><span class="badge neutral">No project stage</span></div>
         <h4>${esc(p.title)}</h4><p>${esc(p.text)}</p>
         ${sites.length ? `<div class="site-links">${sites.map(r => `<a href="${esc(r.url || "#")}" target="_blank" rel="noopener">${esc(r.title)} ${icon("arrow")}</a>`).join("")}</div>` : ""}</article>`;
@@ -135,7 +135,7 @@ globalThis.AEPlanViews = Object.freeze({
       const built = P.stages.filter(s => isDone(s.id)).length, done = R.required.filter(isDone).length;
       let n = 0;
       let h = `<div class="page-head"><div><div class="eyebrow">Learning & portfolio</div><h2>Roadmap</h2><p class="muted">Learn on the left, build on the right. Each row lists the lessons that unlock the next project stage, career milestone or checkpoint.</p></div></div>
-        <section class="road-intro"><div class="grow"><strong>Portfolio · Fuel Smart</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(RES.docUrl(P.portfolio.brief))}" target="_blank" rel="noopener">Project brief</a></p></div>
+        <section class="road-intro"><div class="grow"><strong>Portfolio · ${esc(P.portfolio.name)}</strong><p>${esc(P.portfolio.question)}</p><p class="small muted">${esc(P.portfolio.scope)} <a href="${esc(RES.docUrl(P.portfolio.brief))}" target="_blank" rel="noopener">Project brief</a></p></div>
           <div class="kpis small-kpis"><div><b>${done}/${R.required.length}</b><span>lessons complete</span></div><div><b>${built}/${P.stages.length}</b><span>stages built</span></div></div>
           ${cur ? `<button class="btn primary" data-act="jump">${icon("map")} Jump to where you are</button>` : ""}</section>
         <div class="road-headers"><div><h3>${icon("book")} Learning roadmap</h3><p>The lessons each step needs.</p></div><div></div><div><h3>${icon("box")} Portfolio roadmap</h3><p>Project stages, career milestones and checkpoints.</p></div></div>`;
@@ -194,6 +194,7 @@ globalThis.AEPlanViews = Object.freeze({
           <h4 class="sub">${d.decks.length > 1 ? "Decks" : "Deck"}</h4>${deckSlot(id)}
           <h4 class="sub">Resources <span class="muted small">at most ${RES.MAX}</span></h4>
           ${tiers ? `<div class="res-list">${tiers}</div>` : `<p class="small muted">No single short resource fits this lesson — use the deck${sites.length ? ", the problem sites" : ""} or the area reading list.</p>`}
+          ${res.production.length ? `<details class="reading-list in-panel production-reading"><summary>${icon("doc")} Production reading <span class="muted">(${res.production.length}) · optional</span></summary><p class="small muted">Free articles and practical guides, with an exercise to try. Reading ticks do not affect lesson completion.</p><div class="res-list">${res.production.map(r => resRow(id, r)).join("")}</div></details>` : ""}
           ${reading.length ? `<details class="reading-list in-panel" ${ownReading ? "open" : ""}><summary>${icon("book")} ${esc(a.name)} reading list <span class="muted">(${ownReading ? `${ownReading} for this lesson · ` : ""}${reading.length})</span></summary>${readingList(reading, id)}</details>` : ""}
           ${alsoTagged ? `<p class="small muted">${alsoTagged} more ${alsoTagged === 1 ? "resource is" : "resources are"} tagged with this lesson in <a href="#resources" data-act="closepanel">Resources → By lesson</a>.</p>` : ""}</section>
         <section class="lesson-section">${sectionTitle(2, "How to practise")}
@@ -202,7 +203,8 @@ globalThis.AEPlanViews = Object.freeze({
             <div class="checks">${x.practice.map((t, i) => `<label><input type="checkbox" data-pc="${id}|${i}" ${pcs[i] ? "checked" : ""}> <span>${md(t)}</span></label>`).join("")}</div>
             ${res.tools.length ? `<p class="small tools-line"><span class="muted">Data & tools for these tasks:</span> ${res.tools.map(r => linkRes(r)).join(" · ")}</p>` : ""}</article>
           ${sites.length ? `<article class="practice-card practice-directory"><h4>Where to find more problems</h4><p class="small muted">Choose your own questions on this lesson's topics.</p>${sites.map(siteLink).join("")}
-            ${sites.some(r => r.key === "dataLemur") ? `<p class="small"><a href="#trackers/datalemur" data-act="closepanel">Track DataLemur problems in Trackers →</a> · <a href="${esc(RES.docUrl(P.dlCatalog))}" target="_blank" rel="noopener">Offline DataLemur catalog</a></p>` : ""}</article>` : ""}</section>
+            ${sites.some(r => r.key === "dataLemur") ? `<p class="small"><a href="#trackers/datalemur" data-act="closepanel">Track DataLemur problems in Trackers →</a> · <a href="${esc(RES.docUrl(P.dlCatalog))}" target="_blank" rel="noopener">Offline DataLemur catalog</a></p>` : ""}
+            ${sites.some(r => r.key === "lcSql50") ? `<p class="small"><a href="#trackers/leetcode-sql50" data-act="closepanel">Track LeetCode SQL 50 problems in Trackers →</a></p>` : ""}</article>` : ""}</section>
         <section class="lesson-section">${sectionTitle(3, "Portfolio connection")}
           ${links.length ? links.map(s => `<article class="project-link"><div class="row spread"><h4>${esc(s.name)}</h4><span class="badge ${R.stageStatus(s) === "locked" ? "neutral" : ""}">${R.stageLabel[R.stageStatus(s)]}</span></div><p>Stage ${stageNo(s.id)} of the portfolio needs this lesson. ${esc(firstSentence(R.stageDesc(s), 150))}</p><button class="text-btn" data-open="${s.id}">Open portfolio stage ${icon("arrow")}</button></article>`).join("")
             : `<div class="no-project">${x.opt ? "Optional. " : ""}Standalone — not required for a portfolio stage. ${sites.length ? `Practise with ${esc(sitesNames)}.` : "Practise with the tasks above and keep notes of what you learn."}</div>`}
@@ -249,6 +251,7 @@ globalThis.AEPlanViews = Object.freeze({
       const st = lesson ? statusLabel[status(id)] : R.stageLabel[R.stageStatus(stage(id))];
       const neutral = lesson ? status(id) !== "done" : R.stageStatus(stage(id)) === "locked";
       return `<div class="panel-head"><div class="row spread"><p class="eyebrow">${eyebrow}</p><div class="panel-controls">
+          <button class="panel-icon" data-deck-search-open aria-label="Search study decks" title="Search decks (⌘/Ctrl K)">${icon("search")}</button>
           <button class="panel-icon" data-open="${prev || ""}" data-adjacent="1" ${prev ? "" : "disabled"} aria-label="Previous ${kind}" title="Previous ${kind}"><span class="flip">${icon("arrow")}</span></button>
           <button class="panel-icon" data-open="${next || ""}" data-adjacent="1" ${next ? "" : "disabled"} aria-label="Next ${kind}" title="Next ${kind}">${icon("arrow")}</button>
           <button class="panel-icon close" data-act="close" aria-label="Close side panel" title="Close (Esc)">${icon("close")}</button></div></div>

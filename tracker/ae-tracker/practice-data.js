@@ -1277,6 +1277,694 @@ globalThis.AEPracticeCatalog = {
           ]
         }
       ]
+    },
+    {
+      "id": "leetcode-sql50",
+      "name": "LeetCode SQL 50",
+      "shortName": "LC",
+      "description": "All 50 study-plan problems, in official order, with compact solving topics.",
+      "url": "https://leetcode.com/studyplan/top-sql-50/",
+      "defaultCategory": "SQL",
+      "snapshot": "2026-10-14",
+      "searchPlaceholder": "Search problems, numbers or sections…",
+      "suggestedTagsReviewedAt": "2026-10-14",
+      "suggestedTagMethod": "Editorial broad solving topics, informed by official plan sections and the familiar SQL tasks. One or two labels per problem; alternative solving approaches remain valid. These labels are not official LeetCode question tags.",
+      "coverage": "All 50 problems from the official SQL 50 study plan, imported through LeetCode’s public study-plan API. Original sections and order are retained; company tags are not included.",
+      "problems": [
+        {
+          "id": 1757,
+          "title": "Recyclable and Low Fat Products",
+          "slug": "recyclable-and-low-fat-products",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Select",
+          "url": "https://leetcode.com/problems/recyclable-and-low-fat-products/",
+          "tags": [],
+          "topics": [
+            "Filtering"
+          ]
+        },
+        {
+          "id": 584,
+          "title": "Find Customer Referee",
+          "slug": "find-customer-referee",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Select",
+          "url": "https://leetcode.com/problems/find-customer-referee/",
+          "tags": [],
+          "topics": [
+            "NULLs & duplicates"
+          ]
+        },
+        {
+          "id": 595,
+          "title": "Big Countries",
+          "slug": "big-countries",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Select",
+          "url": "https://leetcode.com/problems/big-countries/",
+          "tags": [],
+          "topics": [
+            "Filtering"
+          ]
+        },
+        {
+          "id": 1148,
+          "title": "Article Views I",
+          "slug": "article-views-i",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Select",
+          "url": "https://leetcode.com/problems/article-views-i/",
+          "tags": [],
+          "topics": [
+            "NULLs & duplicates"
+          ]
+        },
+        {
+          "id": 1683,
+          "title": "Invalid Tweets",
+          "slug": "invalid-tweets",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Select",
+          "url": "https://leetcode.com/problems/invalid-tweets/",
+          "tags": [],
+          "topics": [
+            "Strings & regex"
+          ]
+        },
+        {
+          "id": 1378,
+          "title": "Replace Employee ID With The Unique Identifier",
+          "slug": "replace-employee-id-with-the-unique-identifier",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/replace-employee-id-with-the-unique-identifier/",
+          "tags": [],
+          "topics": [
+            "Joins"
+          ]
+        },
+        {
+          "id": 1068,
+          "title": "Product Sales Analysis I",
+          "slug": "product-sales-analysis-i",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/product-sales-analysis-i/",
+          "tags": [],
+          "topics": [
+            "Joins"
+          ]
+        },
+        {
+          "id": 1581,
+          "title": "Customer Who Visited but Did Not Make Any Transactions",
+          "slug": "customer-who-visited-but-did-not-make-any-transactions",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/customer-who-visited-but-did-not-make-any-transactions/",
+          "tags": [],
+          "topics": [
+            "Joins"
+          ]
+        },
+        {
+          "id": 197,
+          "title": "Rising Temperature",
+          "slug": "rising-temperature",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/rising-temperature/",
+          "tags": [],
+          "topics": [
+            "Dates & time",
+            "Joins"
+          ]
+        },
+        {
+          "id": 1661,
+          "title": "Average Time of Process per Machine",
+          "slug": "average-time-of-process-per-machine",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/average-time-of-process-per-machine/",
+          "tags": [],
+          "topics": [
+            "Aggregation",
+            "Joins"
+          ]
+        },
+        {
+          "id": 577,
+          "title": "Employee Bonus",
+          "slug": "employee-bonus",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/employee-bonus/",
+          "tags": [],
+          "topics": [
+            "Joins"
+          ]
+        },
+        {
+          "id": 1280,
+          "title": "Students and Examinations",
+          "slug": "students-and-examinations",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/students-and-examinations/",
+          "tags": [],
+          "topics": [
+            "Joins",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 570,
+          "title": "Managers with at Least 5 Direct Reports",
+          "slug": "managers-with-at-least-5-direct-reports",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/managers-with-at-least-5-direct-reports/",
+          "tags": [],
+          "topics": [
+            "Joins",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1934,
+          "title": "Confirmation Rate",
+          "slug": "confirmation-rate",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Basic Joins",
+          "url": "https://leetcode.com/problems/confirmation-rate/",
+          "tags": [],
+          "topics": [
+            "Aggregation",
+            "Joins"
+          ]
+        },
+        {
+          "id": 620,
+          "title": "Not Boring Movies",
+          "slug": "not-boring-movies",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/not-boring-movies/",
+          "tags": [],
+          "topics": [
+            "Filtering"
+          ]
+        },
+        {
+          "id": 1251,
+          "title": "Average Selling Price",
+          "slug": "average-selling-price",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/average-selling-price/",
+          "tags": [],
+          "topics": [
+            "Aggregation",
+            "Joins"
+          ]
+        },
+        {
+          "id": 1075,
+          "title": "Project Employees I",
+          "slug": "project-employees-i",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/project-employees-i/",
+          "tags": [],
+          "topics": [
+            "Aggregation",
+            "Joins"
+          ]
+        },
+        {
+          "id": 1633,
+          "title": "Percentage of Users Attended a Contest",
+          "slug": "percentage-of-users-attended-a-contest",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/percentage-of-users-attended-a-contest/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1211,
+          "title": "Queries Quality and Percentage",
+          "slug": "queries-quality-and-percentage",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/queries-quality-and-percentage/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1193,
+          "title": "Monthly Transactions I",
+          "slug": "monthly-transactions-i",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/monthly-transactions-i/",
+          "tags": [],
+          "topics": [
+            "Aggregation",
+            "Dates & time"
+          ]
+        },
+        {
+          "id": 1174,
+          "title": "Immediate Food Delivery II",
+          "slug": "immediate-food-delivery-ii",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/immediate-food-delivery-ii/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 550,
+          "title": "Game Play Analysis IV",
+          "slug": "game-play-analysis-iv",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Basic Aggregate Functions",
+          "url": "https://leetcode.com/problems/game-play-analysis-iv/",
+          "tags": [],
+          "topics": [
+            "Dates & time",
+            "Joins"
+          ]
+        },
+        {
+          "id": 2356,
+          "title": "Number of Unique Subjects Taught by Each Teacher",
+          "slug": "number-of-unique-subjects-taught-by-each-teacher",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/number-of-unique-subjects-taught-by-each-teacher/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1141,
+          "title": "User Activity for the Past 30 Days I",
+          "slug": "user-activity-for-the-past-30-days-i",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/user-activity-for-the-past-30-days-i/",
+          "tags": [],
+          "topics": [
+            "Dates & time",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1070,
+          "title": "Product Sales Analysis III",
+          "slug": "product-sales-analysis-iii",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/product-sales-analysis-iii/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "Joins"
+          ]
+        },
+        {
+          "id": 596,
+          "title": "Classes With at Least 5 Students",
+          "slug": "classes-with-at-least-5-students",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/classes-with-at-least-5-students/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1729,
+          "title": "Find Followers Count",
+          "slug": "find-followers-count",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/find-followers-count/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 619,
+          "title": "Biggest Single Number",
+          "slug": "biggest-single-number",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/biggest-single-number/",
+          "tags": [],
+          "topics": [
+            "NULLs & duplicates",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1045,
+          "title": "Customers Who Bought All Products",
+          "slug": "customers-who-bought-all-products",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Sorting and Grouping",
+          "url": "https://leetcode.com/problems/customers-who-bought-all-products/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1731,
+          "title": "The Number of Employees Which Report to Each Employee",
+          "slug": "the-number-of-employees-which-report-to-each-employee",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/",
+          "tags": [],
+          "topics": [
+            "Joins",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1789,
+          "title": "Primary Department for Each Employee",
+          "slug": "primary-department-for-each-employee",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/primary-department-for-each-employee/",
+          "tags": [],
+          "topics": [
+            "Conditional logic"
+          ]
+        },
+        {
+          "id": 610,
+          "title": "Triangle Judgement",
+          "slug": "triangle-judgement",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/triangle-judgement/",
+          "tags": [],
+          "topics": [
+            "Conditional logic"
+          ]
+        },
+        {
+          "id": 180,
+          "title": "Consecutive Numbers",
+          "slug": "consecutive-numbers",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/consecutive-numbers/",
+          "tags": [],
+          "topics": [
+            "Window functions"
+          ]
+        },
+        {
+          "id": 1164,
+          "title": "Product Price at a Given Date",
+          "slug": "product-price-at-a-given-date",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/product-price-at-a-given-date/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "Dates & time"
+          ]
+        },
+        {
+          "id": 1204,
+          "title": "Last Person to Fit in the Bus",
+          "slug": "last-person-to-fit-in-the-bus",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/last-person-to-fit-in-the-bus/",
+          "tags": [],
+          "topics": [
+            "Window functions"
+          ]
+        },
+        {
+          "id": 1907,
+          "title": "Count Salary Categories",
+          "slug": "count-salary-categories",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Advanced Select and Joins",
+          "url": "https://leetcode.com/problems/count-salary-categories/",
+          "tags": [],
+          "topics": [
+            "Conditional logic",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1978,
+          "title": "Employees Whose Manager Left the Company",
+          "slug": "employees-whose-manager-left-the-company",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/employees-whose-manager-left-the-company/",
+          "tags": [],
+          "topics": [
+            "Joins",
+            "NULLs & duplicates"
+          ]
+        },
+        {
+          "id": 626,
+          "title": "Exchange Seats",
+          "slug": "exchange-seats",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/exchange-seats/",
+          "tags": [],
+          "topics": [
+            "Conditional logic"
+          ]
+        },
+        {
+          "id": 1341,
+          "title": "Movie Rating",
+          "slug": "movie-rating",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/movie-rating/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1321,
+          "title": "Restaurant Growth",
+          "slug": "restaurant-growth",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/restaurant-growth/",
+          "tags": [],
+          "topics": [
+            "Window functions",
+            "Dates & time"
+          ]
+        },
+        {
+          "id": 602,
+          "title": "Friend Requests II: Who Has the Most Friends",
+          "slug": "friend-requests-ii-who-has-the-most-friends",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 585,
+          "title": "Investments in 2016",
+          "slug": "investments-in-2016",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/investments-in-2016/",
+          "tags": [],
+          "topics": [
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 185,
+          "title": "Department Top Three Salaries",
+          "slug": "department-top-three-salaries",
+          "difficulty": "Hard",
+          "category": "SQL",
+          "section": "Subqueries",
+          "url": "https://leetcode.com/problems/department-top-three-salaries/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "Joins"
+          ]
+        },
+        {
+          "id": 1667,
+          "title": "Fix Names in a Table",
+          "slug": "fix-names-in-a-table",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/fix-names-in-a-table/",
+          "tags": [],
+          "topics": [
+            "Strings & regex"
+          ]
+        },
+        {
+          "id": 1527,
+          "title": "Patients With a Condition",
+          "slug": "patients-with-a-condition",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/patients-with-a-condition/",
+          "tags": [],
+          "topics": [
+            "Strings & regex"
+          ]
+        },
+        {
+          "id": 196,
+          "title": "Delete Duplicate Emails",
+          "slug": "delete-duplicate-emails",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/delete-duplicate-emails/",
+          "tags": [],
+          "topics": [
+            "NULLs & duplicates"
+          ]
+        },
+        {
+          "id": 176,
+          "title": "Second Highest Salary",
+          "slug": "second-highest-salary",
+          "difficulty": "Medium",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/second-highest-salary/",
+          "tags": [],
+          "topics": [
+            "Ranking",
+            "NULLs & duplicates"
+          ]
+        },
+        {
+          "id": 1484,
+          "title": "Group Sold Products By The Date",
+          "slug": "group-sold-products-by-the-date",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/group-sold-products-by-the-date/",
+          "tags": [],
+          "topics": [
+            "Strings & regex",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1327,
+          "title": "List the Products Ordered in a Period",
+          "slug": "list-the-products-ordered-in-a-period",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/list-the-products-ordered-in-a-period/",
+          "tags": [],
+          "topics": [
+            "Dates & time",
+            "Aggregation"
+          ]
+        },
+        {
+          "id": 1517,
+          "title": "Find Users With Valid E-Mails",
+          "slug": "find-users-with-valid-e-mails",
+          "difficulty": "Easy",
+          "category": "SQL",
+          "section": "Advanced String Functions / Regex / Clause",
+          "url": "https://leetcode.com/problems/find-users-with-valid-e-mails/",
+          "tags": [],
+          "topics": [
+            "Strings & regex"
+          ]
+        }
+      ]
     }
   ]
 };

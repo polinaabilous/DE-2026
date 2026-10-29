@@ -2,7 +2,13 @@
 
 The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../tracker/ae-tracker/decks/), so they are published with the app and open from each lesson panel and the Library. This page is an index by learning area. Links are relative, so serve the **repository root** locally (`python -m http.server 8000 --bind 127.0.0.1`) or browse them on GitHub.
 
+## Practical and production reading
+
+[Curated free reading map](study-planning/production-reading-map.md) — 37 practical articles and guides mapped to roadmap lessons, with five starting picks and exercises. The [full resource audit](study-planning/resource-quality-review.md) records the removal of 155 weak or redundant entries and nine targeted replacements. Also available in the tracker under **Resources → Show production reading** and in lesson side panels.
+
 ## Getting started
+
+**Data map:** the tracker now has a searchable reference page for 112 tools, formats and concepts grouped by purpose, with connections, comparisons and side panels. Open [**Data map** on the tracker](https://ae-roadmap-dc348858.web.app/#data-map). The generated [Markdown reference](reference/data-landscape.md) contains the same definitions and primary sources. Published on 2026-10-22 with compact detail panels.
 
 | Deck | Lessons | Files |
 | --- | --- | --- |
@@ -27,7 +33,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | Deck | Lessons | Files |
 | --- | --- | --- |
 | **Python foundations for data engineering** · 48 slides | Python for data engineering | [Deck](../tracker/ae-tracker/decks/python-foundations/python-foundations.html) · [Markdown](../tracker/ae-tracker/decks/python-foundations/python-foundations.md) |
-| **Python files, generators, and practical data scripts** · 51 slides | Python for data engineering | [Deck](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.html) · [Markdown](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.md) |
+| **Python files, generators, and practical data scripts** · 52 slides | Python for data engineering | [Deck](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.html) · [Markdown](../tracker/ae-tracker/decks/python-files-streams/python-files-streams.md) |
 | **pandas for data engineering, with a Polars bridge** · 55 slides | DataFrames: pandas & Polars | [Deck](../tracker/ae-tracker/decks/pandas-polars/pandas-polars.html) · [Markdown](../tracker/ae-tracker/decks/pandas-polars/pandas-polars.md) |
 | **Reliable Python ingestion: APIs and files to Parquet** · 52 slides | Ingestion engineering | [Deck](../tracker/ae-tracker/decks/python-ingestion/python-ingestion.html) · [Markdown](../tracker/ae-tracker/decks/python-ingestion/python-ingestion.md) |
 | **Python quality and tooling: tests, validation, types, pre-commit and CI** · 38 slides | Python quality & tooling | [Deck](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling.html) · [Markdown](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling.md) · [Lab folder](../tracker/ae-tracker/decks/python-quality-tooling/python-quality-tooling-lab/README.md) |
@@ -38,7 +44,7 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | --- | --- | --- |
 | **Why dimensional modeling** · 19 slides | Why dimensional modeling · Requirements & bus matrix (part) | [Deck](../tracker/ae-tracker/decks/dim-why-dimensional/dim-why-dimensional.html) |
 | **Fact tables** · 13 slides | Fact tables | [Deck](../tracker/ae-tracker/decks/dim-fact-tables/dim-fact-tables.html) |
-| **Dimension tables** · 20 slides | Dimension tables | [Deck](../tracker/ae-tracker/decks/dim-dimension-tables/dim-dimension-tables.html) |
+| **Dimension tables** · 26 slides | Dimension tables | [Deck](../tracker/ae-tracker/decks/dim-dimension-tables/dim-dimension-tables.html) · [SCD 3/4/6 notes](../tracker/ae-tracker/decks/dim-dimension-tables/scd-advanced.md) · [Runnable lab](../tracker/ae-tracker/decks/dim-dimension-tables/lab/README.md) |
 | **Model a business end to end** · 17 slides | Requirements & bus matrix (part) · Interview: modeling, metrics & dbt cases (part) | [Deck](../tracker/ae-tracker/decks/dim-modeling-project/dim-modeling-project.html) |
 | **Modeling approaches: star, One Big Table, Data Vault, Activity Schema and Inmon** · 31 slides | Modern modeling adaptations · Platform modeling & serving (modeling part) | [Deck](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches.html) · [Markdown](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches.md) · [Lab folder](../tracker/ae-tracker/decks/modeling-approaches/modeling-approaches-lab/README.md) |
 
@@ -66,6 +72,14 @@ The lesson decks now live with the tracker in [`tracker/ae-tracker/decks/`](../t
 | --- | --- | --- |
 | **File formats in practice** · 20 slides | Semi-structured data (part) · Columnar warehouses (part) · Ingestion engineering (part) | [Deck](../tracker/ae-tracker/decks/data-file-formats/data-file-formats.html) · [Markdown](../tracker/ae-tracker/decks/data-file-formats/data-file-formats.md) · [Data formats one-page reference](../tracker/ae-tracker/decks/data-file-formats/de-data-formats-one-page.html) |
 
+## Data architecture
+
+**Narrative revision (2026-10-22):** the architecture deck now follows one fictional travel company through the needs behind each change, with compact first-use tool cards beside the story and an optional continuous reading mode. The cards show the tool’s role, a short explanation and a documentation link; only the first starts expanded on desktop, while smaller screens show all cards collapsed below the story. The Markdown and deck search retain the definitions. Only the lab comparison and glossary remain as tables. The section count and lab links are preserved. [Open the local deck](http://127.0.0.1:8000/decks/architecture-evolution/architecture-evolution.html). Deployed to Firebase Hosting on 2026-10-22 as build `2026-10-22.3`. [Open the live deck](https://ae-roadmap-dc348858.web.app/decks/architecture-evolution/architecture-evolution.html).
+
+| Deck | Lessons | Files |
+| --- | --- | --- |
+| **Data architecture: how we got here** · 40 slides | Storage architecture · Pipeline patterns (part) · Platform modeling & serving (part) · Governance (part) · Trade-offs & organization (part) | [Deck](../tracker/ae-tracker/decks/architecture-evolution/architecture-evolution.html) · [Markdown](../tracker/ae-tracker/decks/architecture-evolution/architecture-evolution.md) · [Runnable lab](../tracker/ae-tracker/decks/architecture-evolution/lab/README.md) |
+
 ## Spark & Databricks
 
 | Deck | Lessons | Files |
@@ -92,7 +106,7 @@ Lessons without a deck show “No deck yet” in the tracker; planned decks and 
 
 | Topic | Materials |
 | --- | --- |
-| SQL practice | [DataLemur catalog](sql/datalemur/index.html) · [Catalog notes and exports](sql/datalemur/README.md) |
-| Study planning | [Fuel Smart project brief](study-planning/fuel-smart-project-brief.md) · [Future decks and reusable prompts](study-planning/study-deck-roadmap.md) · [Roadmap mockup](study-planning/roadmap-mockup.html) · [Full study plan](../tracker/analytics-engineer-prep-plan.md) |
+| SQL practice | [DataLemur catalog](sql/datalemur/index.html) · [Catalog notes and exports](sql/datalemur/README.md) · [LeetCode SQL 50 catalog notes](sql/leetcode-sql50/README.md) |
+| Study planning | [Flight Reliability project brief](study-planning/flights-project-brief.md) · [Future decks and reusable prompts](study-planning/study-deck-roadmap.md) · [Roadmap mockup](study-planning/roadmap-mockup.html) · [Full study plan](../tracker/analytics-engineer-prep-plan.md) |
 
 To add a deck, put its folder under `tracker/ae-tracker/decks/<slug>/` and register it in `tracker/ae-tracker/data.js` (see [development notes](../tracker/docs/development.md#decks)); then add it to this index.

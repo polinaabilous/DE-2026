@@ -1,6 +1,7 @@
 {
   "hosting": {
     "public": "ae-tracker",
+    "predeploy": ["node scripts/build-deck-search.cjs"],
     "ignore": [
       "firebase.json",
       "**/.*",

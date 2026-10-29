@@ -16,6 +16,10 @@ globalThis.AEResources = Object.freeze({
     const TIME = { quick: ["⚡", "≤30 min"], hour: ["⏱", "~1 hour"], series: ["📺", "Pick a piece"], deep: ["📚", "Multi-session"], ref: ["🔎", "Reference"] };
     const raw = k => P.L[k] || P.LX[k];
     const meta = k => P.LM[k] || {};
+    // Retired keys still resolve for old backups; no visible recommendation uses them.
+    const isActive = k => !P.resourceReview?.retired?.[k];
+    const production = new Map((P.productionReading || []).map(r => [r.key, r]));
+    const active = entries => entries.filter(r => isActive(r.key));
     const formatOf = k => FORMATS[meta(k).f] ? meta(k).f : ({ docs: "docs", tool: "tool" })[(raw(k) || [])[2]] || (raw(k) || [])[2] || "article";
     const timeOf = k => meta(k).t || (P.LX[k] && P.LX[k][4]) || ({ docs: "ref", tool: "ref", book: "deep", course: "deep" })[formatOf(k)] || "series";
     // Long reads = books and courses: they get a Reading / Later / Done status instead of a quick tick.
@@ -24,11 +28,14 @@ globalThis.AEResources = Object.freeze({
 
     function resolve(entry) {
       if (Array.isArray(entry)) return { key: entry[0], title: entry[0], url: entry[1], kind: entry[2] || "docs", format: entry[2] || "docs", time: "ref" };
-      const [k, note] = entry.split("|");
+      const [k, explicitNote] = entry.split("|");
       const r = raw(k);
       if (!r) { console.error("Missing resource " + k); return { key: k, title: k, url: null, kind: "?", format: "article", time: "ref" }; }
       const m = meta(k);
-      return { key: k, title: r[0], url: r[1], kind: r[2], format: formatOf(k), time: timeOf(k), why: m.why || (P.LX[k] && P.LX[k][5]) || "", pw: m.pw, note };
+      const practical = production.get(k);
+      const context = practical ? (practical.priority ? "Good first read. " : "") + m.why.replace(/^Production reading\. /, "") : undefined;
+      const note = practical && explicitNote && !explicitNote.includes(practical.try) ? explicitNote + " " + context : explicitNote || context;
+      return { key: k, title: r[0], url: r[1], kind: r[2], format: formatOf(k), time: timeOf(k), why: m.why || (P.LX[k] && P.LX[k][5]) || "", pw: m.pw, note, production: !!practical };
     }
 
     // ---------- per-lesson picks: deck(s) first, then at most 3 resources ----------
@@ -44,27 +51,34 @@ globalThis.AEResources = Object.freeze({
     function lessonRes(id) {
       if (picks[id]) return picks[id];
       const x = it(id), o = P.lessonResources[id];
-      const entries = x.learn.map(resolve);
-      let start, deeper, reading, sites, tools, extra;
+      const entries = active(x.learn.map(resolve));
+      const resolveActive = list => active((list || []).map(resolve));
+      let start, deeper, reading, sites, tools, extra, practical;
       if (o) {
-        start = o.start ? resolve(o.start) : null;
-        deeper = (o.deeper || []).map(resolve);
-        reading = (o.reading || []).map(resolve);
-        sites = uniq([...(o.sites || []).map(resolve), ...entries.filter(r => r.kind === "practice" && !(o.drop || []).includes(r.key))]);
-        tools = (o.tools || []).map(resolve);
-        extra = [...(o.more || []), ...(o.drop || [])].map(resolve);
+        start = o.start ? resolveActive([o.start])[0] || null : null;
+        deeper = resolveActive(o.deeper);
+        reading = resolveActive(o.reading);
+        sites = uniq([...resolveActive(o.sites), ...entries.filter(r => r.kind === "practice" && !(o.drop || []).includes(r.key))]);
+        tools = resolveActive(o.tools);
+        practical = resolveActive(o.production);
+        extra = resolveActive([...(o.more || []), ...(o.drop || [])]);
       } else {
         const cands = entries.filter(r => r.kind !== "practice" && !broad(r.key));
         start = cands[0] || null; deeper = cands.slice(1, MAX);
         reading = entries.filter(r => r.kind !== "practice" && broad(r.key));
-        sites = entries.filter(r => r.kind === "practice"); tools = []; extra = [];
+        sites = entries.filter(r => r.kind === "practice"); tools = []; extra = []; practical = [];
       }
-      const placed = new Set([start, ...deeper, ...reading, ...sites, ...tools].filter(Boolean).map(r => r.key));
+      // One article may become a primary pick after review. Show it once and keep its
+      // full exercise/caveat note, regardless of which section owns it.
+      deeper = uniq(deeper).filter(r => r.key !== start?.key);
+      const primary = new Set([start, ...deeper].filter(Boolean).map(r => r.key));
+      practical = uniq(practical).filter(r => !primary.has(r.key));
+      const placed = new Set([start, ...deeper, ...practical, ...reading, ...sites, ...tools].filter(Boolean).map(r => r.key));
       const more = uniq([...extra, ...entries]).filter(r => !placed.has(r.key));
-      return (picks[id] = { start, deeper, reading, sites, tools, more });
+      return (picks[id] = { start, deeper, production: practical, reading, sites, tools, more });
     }
     // Every resource tagged to a lesson, in display order.
-    const tagged = id => { const r = lessonRes(id); return uniq([r.start, ...r.deeper, ...r.reading, ...r.sites, ...r.tools, ...r.more]); };
+    const tagged = id => { const r = lessonRes(id); return uniq([r.start, ...r.deeper, ...r.production, ...r.reading, ...r.sites, ...r.tools, ...r.more]); };
     const areaReading = a => {
       const out = new Map(), id = typeof a === "string" ? a : a.id;
       const add = (r, lesson) => {
@@ -72,19 +86,20 @@ globalThis.AEResources = Object.freeze({
         if (lesson) out.get(r.key).lessons.push({ id: lesson, note: r.note || "" });
       };
       areaLessons(a).forEach(l => lessonRes(l).reading.forEach(r => add(r, l)));
-      (P.areaReadingExtra[id] || []).map(resolve).forEach(r => add(r));
+      active((P.areaReadingExtra[id] || []).map(resolve)).forEach(r => add(r));
       return [...out.values()];
     };
     // Portfolio stages show the picks of the portfolio topics they carry (start, go deeper, datasets/tools).
     const stageRefs = s => {
       const seen = new Set(), out = [];
       s.from.forEach(id => { const r = lessonRes(id); [r.start, ...r.deeper, ...r.tools].filter(Boolean).forEach(x => { if (!seen.has(x.key)) { seen.add(x.key); out.push([id, x]); } }); });
+      active((s.resources || []).map(resolve)).forEach(r => { if (!seen.has(r.key)) { seen.add(r.key); out.push([s.id, r]); } });
       return out;
     };
 
     // ---------- decks published with the app (ae-tracker/decks/) ----------
     const deckUrl = (slug, slide) => P.deckBase + P.decks[slug].file + (slide ? "#slide-" + slide : "");
-    const docUrl = path => P.docsBase + path;
+    const docUrl = path => path.startsWith("projects/") ? path : P.docsBase + path;
     const deckInfo = slug => {
       const d = P.decks[slug];
       return { slug, key: "deck:" + slug, title: d.title, sub: d.sub || "", slides: d.slides || 0, guide: !!d.guide, url: deckUrl(slug),
@@ -109,15 +124,16 @@ globalThis.AEResources = Object.freeze({
       const entry = (k, r) => m.get(k) || m.set(k, { key: k, title: r.title, url: r.url, kind: r.kind, format: r.format, time: r.time, why: r.why || "", pw: r.pw, areas: [], topics: [] }).get(k);
       const ids = order.concat(Object.keys(P.items).filter(id => !order.includes(id)));
       ids.forEach(id => {
-        const own = uniq([...it(id).learn.map(resolve), ...tagged(id)]);
+        const own = uniq([...active(it(id).learn.map(resolve)), ...tagged(id)]);
         own.forEach(r => {
           const x = entry(r.key, r);
           if (!x.topics.includes(id)) x.topics.push(id);
           if (!x.areas.includes(it(id).track)) x.areas.push(it(id).track);
         });
       });
-      Object.keys(P.L).forEach(k => { if (!m.has(k)) entry(k, resolve(k)).areas.push(...(ORPHAN[k] || [])); });
+      Object.keys(P.L).forEach(k => { if (isActive(k) && !m.has(k)) entry(k, resolve(k)).areas.push(...(ORPHAN[k] || [])); });
       Object.entries(P.LX).forEach(([k, r]) => {
+        if (!isActive(k)) return;
         const x = entry(k, resolve(k));
         x.areas = [...new Set([...r[3], ...x.areas])];
       });
@@ -154,7 +170,7 @@ globalThis.AEResources = Object.freeze({
     // ---------- long reads: Reading / Paused / Later / Done, with a short progress note ----------
     const isLong = k => libItem[k]?.shelf === "long";
     const longStatus = k => reading()[k]?.status || (libDone(k) ? "done" : libLater(k) ? "later" : "");
-    const readingNow = () => Object.keys(reading()).filter(k => reading()[k]?.status === "reading" && raw(k));
+    const readingNow = () => Object.keys(reading()).filter(k => reading()[k]?.status === "reading" && raw(k) && isActive(k));
     // Only one book or course at a time: starting another one needs the current one paused first.
     const readingConflicts = k => readingNow().filter(x => x !== k);
     function setLongStatus(k, status) {
@@ -196,7 +212,7 @@ globalThis.AEResources = Object.freeze({
       return [d && libItem[d.key], article && libItem[article.key], video && libItem[video.key]].filter(Boolean);
     }
 
-    return { resolve, lessonRes, tagged, areaReading, stageRefs, deckFor, deckUrl, docUrl, broad, MAX, LIB, libItem, TIME, FORMATS, FORMAT_ORDER, formatOf, shelfOf,
+    return { resolve, isActive, lessonRes, tagged, areaReading, stageRefs, deckFor, deckUrl, docUrl, broad, MAX, LIB, libItem, TIME, FORMATS, FORMAT_ORDER, formatOf, shelfOf,
       libDone, libLater, setLibDone, isLong, longStatus, readingNow, readingConflicts, setLongStatus, startReading, setProgress, currentBooks, quickPicks };
   }
 });

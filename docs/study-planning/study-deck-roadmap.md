@@ -122,6 +122,10 @@ Create these when their tracker topics begin. The SQL deck covers window mechani
 
 ### 16. Data architecture and modern modeling decisions
 
+**Readability revision, 2026-10-22 (deployed as `2026-10-22.3`):** the deck is now a connected travel-company narrative. Tools are defined in compact side cards when introduced, and continuous reading is available. On smaller screens the cards are collapsed below the story; definitions also remain in the Markdown and deck search. Existing section identities, lesson links and the synthetic lab are retained.
+
+**Update, 2026-10-21:** [Data architecture: how we got here](../../tracker/ae-tracker/decks/architecture-evolution/architecture-evolution.html) now covers A2 in full: warehouse/lake/lakehouse history, storage/compute, catalogs, medallion and a runnable source-version/transaction lab. It adds partial context for A1/A3/A5/A6, including streaming architecture and data mesh. The tracker names the remaining A1/A3 deck **Pipeline and data-serving architecture**: deeper CDC and pipeline implementations, semantic-layer placement and BI/API/reverse-ETL/agent serving still need fuller treatment. The original broader brief follows for context; it is not all missing anymore.
+
 **Files:** `data-architecture-foundations` · **When:** 2.2–2.4; revisit 3.4 · **Coverage:** M4, A1–A3; foundations for PF11.
 
 > Teach ETL/ELT, batch/micro-batch/streaming, CDC, warehouse/lake/lakehouse, compute versus storage, medallion versus dbt layers, catalogs, and serving to BI/APIs/reverse ETL/agents. Compare star schemas and OBT with brief Inmon/Data Vault/Activity Schema awareness. Trace the same requirement through two plausible architectures and defend the simplest adequate choice. Start with the portfolio's local DuckDB/dbt v1 and add later capabilities only when a requirement justifies them. Finish with an architecture diagram and decision-record exercises.

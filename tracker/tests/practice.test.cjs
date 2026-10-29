@@ -17,6 +17,37 @@ test('SQL catalog keeps its provenance and has at most two broad topics per prob
     assert.ok(p.url.startsWith('https://datalemur.com/questions/'));
   }
 });
+test('LeetCode SQL 50 retains official membership, order, sections and difficulties',()=>{
+  const source=require('../../docs/sql/leetcode-sql50/problems.json');
+  const tool=catalog.tools.find(t=>t.id==='leetcode-sql50');
+  assert.equal(tool.problems.length,50);
+  assert.equal(new Set(tool.problems.map(p=>p.slug)).size,50);
+  assert.deepEqual(tool.problems.map(p=>({id:p.id,title:p.title,slug:p.slug,section:p.section,difficulty:p.difficulty})),
+    source.problems.map(p=>({id:p.id,title:p.title,slug:p.slug,section:p.section,difficulty:p.difficulty})));
+  assert.equal(new Set(tool.problems.map(p=>p.section)).size,7);
+  assert.equal(new Set(tool.problems.flatMap(p=>p.topics)).size,9);
+  assert.deepEqual(['Easy','Medium','Hard'].map(d=>tool.problems.filter(p=>p.difficulty===d).length),[32,17,1]);
+  for(const p of tool.problems){
+    assert.equal(p.category,'SQL');assert.ok(p.topics.length>=1 && p.topics.length<=2);
+    assert.equal(p.url,`https://leetcode.com/problems/${p.slug}/`);
+    assert.deepEqual(p.tags,[], 'curated topics are not presented as official question tags');
+  }
+});
+test('LeetCode progress is independent, searchable by number/section and cloud-persistent',()=>{
+  require('../ae-tracker/cloud-core.js');
+  let state=blank();const m=createModel(catalog,()=>state),lc=m.tool('leetcode-sql50').problems[0],dl=m.tool('datalemur').problems[0];
+  m.update('datalemur',dl.slug,{status:'needs-review',notes:'Keep DataLemur notes'});
+  m.update('leetcode-sql50',lc.slug,{status:'completed',notes:'**WHERE** filters'});
+  assert.equal(m.stats('leetcode-sql50').completed,1);assert.equal(m.stats('datalemur').review,1);
+  assert.equal(m.matches('leetcode-sql50',lc,filters({q:'1757'})),true);
+  assert.equal(m.matches('leetcode-sql50',lc,filters({q:'Select',status:'completed',tag:'Filtering'})),true);
+  state=globalThis.AECloudCore.unpack(globalThis.AECloudCore.pack(state),blank());
+  assert.equal(m.entry('leetcode-sql50',lc.slug).notes,'**WHERE** filters');
+  assert.equal(m.entry('datalemur',dl.slug).notes,'Keep DataLemur notes');
+  m.update('leetcode-sql50',lc.slug,{status:'needs-review'});
+  assert.equal(m.entry('leetcode-sql50',lc.slug).notes,'**WHERE** filters');
+  assert.equal(m.entry('datalemur',dl.slug).status,'needs-review');
+});
 test('progress statuses, compact topics and search follow replacement state',()=>{
   let state=blank();const m=createModel(catalog,()=>state),p=m.tool('datalemur').problems[0];
   assert.equal(m.entry('datalemur',p.slug).status,'not-started');

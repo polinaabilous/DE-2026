@@ -1,0 +1,7 @@
+{
+  "purpose": "Explicit current source-file selection; not a lakehouse commit protocol",
+  "current_months": [
+    {"month": "2025-01", "file": "2025-01-v2.csv"},
+    {"month": "2025-02", "file": "2025-02-v1.csv"}
+  ]
+}

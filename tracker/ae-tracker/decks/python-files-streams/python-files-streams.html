@@ -65,7 +65,13 @@ tr.hl td{background:#c8e4d0!important;color:#155334}tr.dim td{opacity:.38}
 .job p{margin:0;font-size:15px;line-height:1.6}.card .job{margin:10px 0 4px}.card .job p{font-size:14px}
 .new-tag{display:inline-block;background:#f5ead6;color:#815117;border-radius:6px;padding:0 7px;font-size:11px;font-weight:650;letter-spacing:.4px;vertical-align:middle;margin-left:6px}
 @media screen and (max-width:800px){.job{flex-direction:column;gap:4px}}
-.job{display:flex;gap:18px;align-items:flex-start;border:1px dashed #b9cfb6;border-radius:12px;padding:12px 16px;margin:4px 0 18px;background:#fbfcf9}.job-label{flex:0 0 92px;font-size:10px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--amber);padding-top:4px}.job p{margin:0;font-size:15px;line-height:1.6}.card .job{margin:10px 0 4px}.card .job p{font-size:14px}.new-tag{display:inline-block;background:#f5ead6;color:#815117;border-radius:6px;padding:0 7px;font-size:11px;font-weight:650;letter-spacing:.4px;vertical-align:middle;margin-left:6px}.slide.why .folio{text-transform:uppercase;letter-spacing:1px}@media screen and (max-width:800px){.job{flex-direction:column;gap:4px}}.slide.why{padding-bottom:56px}</style></head>
+.job{display:flex;gap:18px;align-items:flex-start;border:1px dashed #b9cfb6;border-radius:12px;padding:12px 16px;margin:4px 0 18px;background:#fbfcf9}.job-label{flex:0 0 92px;font-size:10px;letter-spacing:1.3px;text-transform:uppercase;font-weight:700;color:var(--amber);padding-top:4px}.job p{margin:0;font-size:15px;line-height:1.6}.card .job{margin:10px 0 4px}.card .job p{font-size:14px}.new-tag{display:inline-block;background:#f5ead6;color:#815117;border-radius:6px;padding:0 7px;font-size:11px;font-weight:650;letter-spacing:.4px;vertical-align:middle;margin-left:6px}.slide.why .folio{text-transform:uppercase;letter-spacing:1px}@media screen and (max-width:800px){.job{flex-direction:column;gap:4px}}.slide.why{padding-bottom:56px}</style><!-- AE deck search start -->
+<link rel="stylesheet" href="../../deck-search.css?v=767872b0fd31be28">
+<script src="../../deck-history.js?v=767872b0fd31be28" data-deck="python-files-streams"></script>
+<script defer src="../../deck-search-core.js?v=767872b0fd31be28"></script>
+<script defer src="../../deck-search.js?v=767872b0fd31be28" data-index="../../deck-search-index.json?v=e15213bf37201939"></script>
+<!-- AE deck search end -->
+</head>
 <body><a class="skip-link" href="#deck">Skip to content</a><header class="topbar"><a class="brand" href="#slide-1"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span><span>Files and streams<small>Python for data engineering · deck 2 of 2</small></span></a><nav class="top-actions" aria-label="Deck tools"><button class="quiet-button js-control" id="open-contents">Contents</button><button class="quiet-button js-control" id="reading" aria-pressed="false">Read</button><button class="quiet-button print js-control" id="print">Print / PDF</button><a class="markdown-link" href="python-files-streams.md" download>Markdown ↗</a></nav></header>
 <main id="deck" tabindex="-1"><section class="slide cover" id="slide-1" data-num="01" aria-labelledby="title-1" data-title="Python files, generators, and practical data scripts" data-category="Start here">
 <div class="cover-grid"><div><p class="eyebrow">Python for data engineering · deck 2 of 2 · tested on CPython 3.12.10 and DuckDB 1.5.6</p>
@@ -439,6 +445,52 @@ write_atomic after crash: ['day,events', '2026-03-01,100']
 after success: ['day,events', '2026-03-02,11', '2026-03-03,4']
 leftover temp files: []
 </code></pre></div></div><div class="cards cards-2"><article class="card"><h3>Notes</h3><ul><li>The temp file must be in the <strong>same directory</strong> (same file system); a rename across drives is a copy, not atomic.</li><li>On Windows, <code>os.replace</code> fails if another process has the target open; retry or write a new versioned file name instead.</li><li>Object stores (ADLS, S3) have no atomic rename across folders in all modes; there, write to a staging path and use a commit marker or a table format (Delta) that provides atomic commits.</li><li>Lesson 27 turns this into a reusable <code>with atomic_write(path) as f:</code> (exercise 7).</li></ul></article><article class="card"><h3>Readers need a signal too</h3><p>Downstream jobs often poll a folder. Give them a clear “done” signal: the atomic rename itself, a <code>_SUCCESS</code> marker file written last (Spark and Hadoop do this), or a row in a load log (lesson 26).</p><aside class="job"><span class="job-label">On the job</span><p>Half-written outputs cause some of the hardest incidents: a dashboard showing 40% of yesterday’s sales with no error anywhere. Atomic writes plus a success marker are a cheap, standard defence in any job that writes files.</p></aside></article></div></div><aside class="takeaway"><span class="takeaway-label">The main idea</span><p>write output to a temp file in the same folder and <code>os.replace</code> it into place; delete the temp file on failure. Readers then see either the old file or the complete new one.</p></aside><footer class="sources"><span>Read more · optional</span><a href="https://docs.python.org/3/library/os.html#os.replace">os.replace</a>, <a href="https://docs.python.org/3/library/tempfile.html">tempfile</a>.</footer><span class="folio" aria-hidden="true">12</span></section>
+<section class="slide" id="slide-52" data-num="12A" aria-labelledby="title-52" data-title="Nested API JSON: parse and flatten selected fields" data-category="Files"><header class="slide-heading"><p class="eyebrow">Files · 12A · API response → selected flat fields</p><h2 id="title-52" tabindex="-1">Nested API JSON: parse and flatten selected fields</h2></header><div class="slide-body"><p>An API may wrap its records inside a top-level object called an <strong>envelope</strong>. Here, <code>data</code> is the list of users. Parsing turns JSON text into Python dictionaries and lists; <strong>flattening</strong> builds new dictionaries containing the fields you want. We will keep <strong>one output row per user</strong>.</p><div class="cards cards-2"><article class="card"><h3>1. A small response body</h3><p>Copy this and the next block into the same script. This synthetic response needs no account or network access.</p><div class="code-block"><div class="code-label"><span>PYTHON</span><button class="copy-code" aria-label="Copy python example">Copy</button></div><pre><code class="language-python">body = &quot;&quot;&quot;{
+  &quot;data&quot;: [
+    {&quot;id&quot;: 1, &quot;name&quot;: &quot;Maya&quot;,
+     &quot;address&quot;: {&quot;city&quot;: &quot;Seattle&quot;},
+     &quot;tags&quot;: [&quot;new&quot;, &quot;vip&quot;]},
+    {&quot;id&quot;: 2, &quot;name&quot;: &quot;Leo&quot;,
+     &quot;address&quot;: null}
+  ]
+}&quot;&quot;&quot;
+</code></pre></div></article><article class="card"><h3>2. Parse, then select fields</h3><div class="code-block"><div class="code-label"><span>PYTHON</span><button class="copy-code" aria-label="Copy python example">Copy</button></div><pre><code class="language-python">import json
+
+payload = json.loads(body)
+rows = []
+for user in payload[&quot;data&quot;]:
+    address = user.get(&quot;address&quot;)
+    # Missing key or JSON null becomes an empty dict.
+    if address is None:
+        address = {}
+    if not isinstance(address, dict):
+        raise ValueError(
+            &quot;address must be an object or null&quot;
+        )
+    rows.append({
+        &quot;user_id&quot;: user[&quot;id&quot;],
+        &quot;name&quot;: user.get(&quot;name&quot;),
+        &quot;city&quot;: address.get(&quot;city&quot;),
+    })
+print(json.dumps(rows, indent=2))
+</code></pre></div></article></div><h3>3. The flat result</h3><div class="table-scroll" tabindex="0" role="region" aria-label="Flattened users"><table><thead><tr><th scope="col">user_id</th><th scope="col">name</th><th scope="col">city</th></tr></thead><tbody><tr><td>1</td><td>Maya</td><td>Seattle</td></tr><tr><td>2</td><td>Leo</td><td><code>None</code> (JSON <code>null</code>)</td></tr></tbody></table></div><ul><li><code>user[&quot;id&quot;]</code> treats the ID as required: a missing key raises <code>KeyError</code>. <code>user.get(&quot;name&quot;)</code> returns <code>None</code> when an optional name is absent.</li><li><code>address.city</code> becomes a top-level <code>city</code> column. Missing or null addresses produce <code>None</code> in Python, shown as <code>null</code> when dumped back to JSON. Unexpected address types fail explicitly.</li><li>We intentionally omit <code>tags</code>. Expanding a list into multiple rows is a separate decision that changes the grain. Selecting fields here preserves the number of users.</li></ul><details><summary>See the JSON output</summary><pre><code class="language-json">[
+  {
+    &quot;user_id&quot;: 1,
+    &quot;name&quot;: &quot;Maya&quot;,
+    &quot;city&quot;: &quot;Seattle&quot;
+  },
+  {
+    &quot;user_id&quot;: 2,
+    &quot;name&quot;: &quot;Leo&quot;,
+    &quot;city&quot;: null
+  }
+]</code></pre></details><details><summary>Fetch this structure from a real API</summary><p><code>urllib.request</code> is Python’s built-in library for opening URLs. <code>urlopen()</code> returns a file-like HTTP response, and <code>with</code> closes it after use. Replace <code>payload = json.loads(body)</code> with the following: <code>json.load(response)</code> reads and parses the response body directly. The example URL is a placeholder; adapt the endpoint and the <code>data</code> key to your API.</p><div class="code-block"><div class="code-label"><span>PYTHON</span><button class="copy-code" aria-label="Copy python example">Copy</button></div><pre><code class="language-python">from urllib.request import urlopen
+
+# Illustrative URL: replace with your endpoint.
+with urlopen(&quot;https://api.example.com/users&quot;, timeout=10) as response:
+    payload = json.load(response)
+# Continue with rows = [] and the same for loop above.
+</code></pre></div><p>For pagination, authentication, retries and larger responses, continue with <a href="../python-ingestion/python-ingestion.html#slide-6">the ingestion deck</a>.</p></details><details><summary>Try it yourself</summary><p>Remove Leo’s <code>address</code> key: his output row should remain, with <code>city</code> set to null. Then try <code>&quot;address&quot;: &quot;unknown&quot;</code>: the code should raise <code>ValueError</code>. Finally, add an optional <code>country</code> field to the selected columns and check that the output still has one row per input user.</p></details></div><aside class="takeaway"><span class="takeaway-label">The main idea</span><p>Parse the response, locate its record list, then build one flat dictionary per record. Choose required fields, optional fields and the output grain deliberately.</p></aside><footer class="sources"><span>Read more · optional</span><a href="https://docs.python.org/3/library/json.html">Python json: load and loads</a>, <a href="https://docs.python.org/3/library/stdtypes.html#dict.get">Python dictionaries: get</a>, <a href="https://docs.python.org/3/library/urllib.request.html">Python urllib.request: urlopen</a>.</footer><span class="folio" aria-hidden="true">12A</span></section>
 <section class="slide" id="slide-13" data-num="13" aria-labelledby="title-13" data-title="Iterables versus iterators" data-category="Streams"><header class="slide-heading"><p class="eyebrow">Streams · the protocol behind every for loop</p><h2 id="title-13" tabindex="-1">Iterables versus iterators</h2></header><div class="slide-body"><p>An <strong>iterable</strong> is anything you can loop over: it can hand out an iterator (<code>iter(x)</code>). An <strong>iterator</strong> is the object that actually walks: each <code>next(it)</code> returns the next item, and it raises <code>StopIteration</code> when exhausted. A <code>for</code> loop calls <code>iter()</code> once, then <code>next()</code> until <code>StopIteration</code>. In C# terms: iterable ≈ <code>IEnumerable</code>, iterator ≈ <code>IEnumerator</code>.</p><div class="code-pair"><div class="code-block"><div class="code-label"><span>PYTHON</span><button class="copy-code" aria-label="Copy python example">Copy</button></div><pre><code class="language-python">ids = ["e1", "e2", "e3"]          # a list is an ITERABLE: each iter() starts a fresh walk
 it = iter(ids)                     # an ITERATOR: remembers its position
 print(next(it), next(it))
@@ -2586,10 +2638,10 @@ print("All tests passed")
 const body=document.body,slides=[...document.querySelectorAll('.slide')],total=slides.length;
 const dialog=document.getElementById('contents'),list=document.getElementById('contents-list'),search=document.getElementById('search');
 const previous=document.getElementById('previous'),next=document.getElementById('next'),read=document.getElementById('reading');
-let current=0,reading=false;const lab=(s,i)=>s.dataset.num||String(i+1).padStart(2,'0');const lastNum=lab(slides[total-1],total-1);
+let current=0,reading=false;const lab=(s,i)=>s.dataset.num||String(i+1).padStart(2,'0');
 list.innerHTML=slides.map((s,i)=>'<li><a href="#'+s.id+'" data-i="'+i+'"><span class="contents-number">'+lab(s,i)+'</span><span class="contents-title">'+s.dataset.title.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))+'<small>'+s.dataset.category+'</small></span></a></li>').join('');
 function fromHash(){const el=location.hash.length>1?document.getElementById(decodeURIComponent(location.hash.slice(1))):null;const i=slides.indexOf(el);return i>=0?i:0;}
-function update(){slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',String(!reading&&i!==current))});previous.disabled=current===0;next.disabled=current===total-1;document.getElementById('counter').textContent=lab(slides[current],current)+' / '+lastNum;document.getElementById('chapter').textContent=slides[current].dataset.category;document.getElementById('progress').style.width=((current+1)/total*100)+'%';document.getElementById('status').textContent='Slide '+(current+1)+' of '+total+': '+slides[current].dataset.title;list.querySelectorAll('a').forEach((a,i)=>a.setAttribute('aria-current',String(i===current)));document.title=slides[current].dataset.title+' · Files and streams';}
+function update(){slides.forEach((s,i)=>{s.classList.toggle('active',i===current);s.setAttribute('aria-hidden',String(!reading&&i!==current))});previous.disabled=current===0;next.disabled=current===total-1;document.getElementById('counter').textContent=(current+1)+' / '+total;document.getElementById('chapter').textContent=slides[current].dataset.category;document.getElementById('progress').style.width=((current+1)/total*100)+'%';document.getElementById('status').textContent='Slide '+(current+1)+' of '+total+': '+slides[current].dataset.title;list.querySelectorAll('a').forEach((a,i)=>a.setAttribute('aria-current',String(i===current)));document.title=slides[current].dataset.title+' · Files and streams';}
 function go(n,{hash=true,focus=false}={}){current=Math.max(0,Math.min(total-1,n));update();if(hash)history.replaceState(null,'','#'+slides[current].id);if(reading)slides[current].scrollIntoView({behavior:'smooth',block:'start'});else window.scrollTo({top:0,behavior:'instant'});if(focus)slides[current].querySelector('h1,h2').focus({preventScroll:true});}
 body.classList.add('enhanced');go(fromHash(),{hash:false});
 previous.addEventListener('click',()=>go(current-1));next.addEventListener('click',()=>go(current+1));window.addEventListener('hashchange',()=>{if(/^#(slide|why)-\d+$/.test(location.hash))go(fromHash(),{hash:false})});

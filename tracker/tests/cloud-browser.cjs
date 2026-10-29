@@ -20,7 +20,23 @@ async function connect(profile){
  try{
   for(const p of [a,b]){await p.send('Page.enable');await p.send('Network.enable');await p.send('Page.navigate',{url:process.env.AE_BROWSER_TEST_URL+'#notes'});await p.until("window.AECloud?.info().status==='signed-out'",'SDK ready');}
   await a.evaluate(login);await a.until("AECloud.info().status==='synced'",'first migration');assert.equal(await a.evaluate('AE.state().notes.length'),1);assert.equal(await a.evaluate('AE.state().r.S1[0]'),3);console.log('PASS: first Google sign-in migrates existing browser data.');
+  await b.send('Emulation.setDeviceMetricsOverride',{width:390,height:844,deviceScaleFactor:1,mobile:true});
   await b.evaluate(login);await b.until("AECloud.info().status==='synced' && AE.state().notes.length===1",'phone load');console.log('PASS: second device loads the same private account.');
+  await a.evaluate("AEDeckHistory.store.record('sql-window-functions')");
+  await a.until("AECloud.info().status==='synced'",'deck open saved');
+  await b.until("AE.state().deckVisits['sql-window-functions']>0",'phone receives deck history');
+  assert.equal(await a.evaluate("AE.state().deckVisits['sql-window-functions']"),await b.evaluate("AE.state().deckVisits['sql-window-functions']"));
+  assert.equal(await b.evaluate("AE.state().lib['deck:sql-window-functions']"),undefined);
+  console.log('PASS: recent decks sync to the phone without marking them complete.');
+  await b.evaluate("location.hash='#topics';window.dispatchEvent(new HashChangeEvent('hashchange'))");
+  await b.until("!!document.querySelector('.recent-deck') && !document.querySelector('[data-recent-decks]').hidden",'phone actually renders synced recent decks');
+  assert.ok(await b.evaluate("document.querySelector('.recent-deck').getBoundingClientRect().width>0 && document.querySelector('.recent-deck').getBoundingClientRect().height>=44"));
+  await b.send('Page.reload');
+  await b.until("window.AECloud?.info().status==='synced' && !!document.querySelector('.recent-deck')",'phone cold reload renders history');
+  assert.equal(await b.evaluate("document.querySelector('[data-recent-decks]').hidden"),false);
+  assert.ok(await b.evaluate("document.querySelector('.recent-deck').href.includes('sql-window-functions')"));
+  await b.evaluate("location.hash='#notes';window.dispatchEvent(new HashChangeEvent('hashchange'))");
+  console.log('PASS: synced history is visible at 390px, including after a fresh phone page load.');
   const firstId=await a.evaluate(note(null,'Laptop note\n- SQL FILTER\n- CASE'));await a.until("AECloud.info().status==='synced'",'laptop save');await b.until('AE.state().notes.length===2','phone receives');assert.ok(await b.evaluate("AE.state().notes.some(n=>n.text.includes('SQL FILTER'))"));console.log('PASS: notes automatically sync to the phone.');
   await a.send('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});
   const offlineId=await a.evaluate(note(null,'Offline laptop note\nQueued until reconnect'));assert.ok(await a.evaluate("AECloud.info().pending>0"));

@@ -1,0 +1,179 @@
+{
+  "reviewed_at": "2026-10-14",
+  "method": "Editorial broad solving topics, informed by official plan sections and the familiar SQL tasks. One or two labels per problem; alternative solving approaches remain valid. These labels are not official LeetCode question tags.",
+  "topics": {
+    "1757": [
+      "Filtering"
+    ],
+    "584": [
+      "NULLs & duplicates"
+    ],
+    "595": [
+      "Filtering"
+    ],
+    "1148": [
+      "NULLs & duplicates"
+    ],
+    "1683": [
+      "Strings & regex"
+    ],
+    "1378": [
+      "Joins"
+    ],
+    "1068": [
+      "Joins"
+    ],
+    "1581": [
+      "Joins"
+    ],
+    "197": [
+      "Dates & time",
+      "Joins"
+    ],
+    "1661": [
+      "Aggregation",
+      "Joins"
+    ],
+    "577": [
+      "Joins"
+    ],
+    "1280": [
+      "Joins",
+      "Aggregation"
+    ],
+    "570": [
+      "Joins",
+      "Aggregation"
+    ],
+    "1934": [
+      "Aggregation",
+      "Joins"
+    ],
+    "620": [
+      "Filtering"
+    ],
+    "1251": [
+      "Aggregation",
+      "Joins"
+    ],
+    "1075": [
+      "Aggregation",
+      "Joins"
+    ],
+    "1633": [
+      "Aggregation"
+    ],
+    "1211": [
+      "Aggregation"
+    ],
+    "1193": [
+      "Aggregation",
+      "Dates & time"
+    ],
+    "1174": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "550": [
+      "Dates & time",
+      "Joins"
+    ],
+    "2356": [
+      "Aggregation"
+    ],
+    "1141": [
+      "Dates & time",
+      "Aggregation"
+    ],
+    "1070": [
+      "Ranking",
+      "Joins"
+    ],
+    "596": [
+      "Aggregation"
+    ],
+    "1729": [
+      "Aggregation"
+    ],
+    "619": [
+      "NULLs & duplicates",
+      "Aggregation"
+    ],
+    "1045": [
+      "Aggregation"
+    ],
+    "1731": [
+      "Joins",
+      "Aggregation"
+    ],
+    "1789": [
+      "Conditional logic"
+    ],
+    "610": [
+      "Conditional logic"
+    ],
+    "180": [
+      "Window functions"
+    ],
+    "1164": [
+      "Ranking",
+      "Dates & time"
+    ],
+    "1204": [
+      "Window functions"
+    ],
+    "1907": [
+      "Conditional logic",
+      "Aggregation"
+    ],
+    "1978": [
+      "Joins",
+      "NULLs & duplicates"
+    ],
+    "626": [
+      "Conditional logic"
+    ],
+    "1341": [
+      "Ranking",
+      "Aggregation"
+    ],
+    "1321": [
+      "Window functions",
+      "Dates & time"
+    ],
+    "602": [
+      "Aggregation"
+    ],
+    "585": [
+      "Aggregation"
+    ],
+    "185": [
+      "Ranking",
+      "Joins"
+    ],
+    "1667": [
+      "Strings & regex"
+    ],
+    "1527": [
+      "Strings & regex"
+    ],
+    "196": [
+      "NULLs & duplicates"
+    ],
+    "176": [
+      "Ranking",
+      "NULLs & duplicates"
+    ],
+    "1484": [
+      "Strings & regex",
+      "Aggregation"
+    ],
+    "1327": [
+      "Dates & time",
+      "Aggregation"
+    ],
+    "1517": [
+      "Strings & regex"
+    ]
+  }
+}

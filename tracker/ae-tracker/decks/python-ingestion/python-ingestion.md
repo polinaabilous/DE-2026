@@ -120,7 +120,7 @@ Ingestion is the first step of every data platform, and the most failure-prone: 
 
 > **The main idea:** reliable ingestion is about guarantees: bounded retries, checkpoints, deterministic IDs, atomic publication, and counts that add up.
 
-*Read more:* [httpx](https://www.python-httpx.org/), [PyArrow: Parquet](https://arrow.apache.org/docs/python/parquet.html).
+*Read more:* [httpx](https://www.python-httpx.org/), [PyArrow: Parquet](https://arrow.apache.org/docs/python/parquet/parquet.html).
 
 ---
 
@@ -2463,7 +2463,7 @@ part-00001.parquet 3,500 rows [3500] 269,096 bytes ZSTD | created_by: parquet-cp
 
 > **The main idea:** open one ParquetWriter per output file with the explicit schema, write bounded batches as row groups, close it to write the footer, then record each file’s rows, size and hash.
 
-*Read more:* [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet.html), [pyarrow.parquet.ParquetWriter](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetWriter.html), [Apache Parquet docs](https://parquet.apache.org/docs/).
+*Read more:* [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet/parquet.html), [pyarrow.parquet.ParquetWriter](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetWriter.html), [Apache Parquet docs](https://parquet.apache.org/docs/).
 
 ---
 
@@ -3480,7 +3480,7 @@ rows after the cutoff: 0
 
 > **The main idea:** verify the published files with a different engine than the one that wrote them: schema, row counts, uniqueness, and the cutoff all match the manifest.
 
-*Read more:* [DuckDB: Parquet](https://duckdb.org/docs/stable/data/parquet/overview), [DuckDB: Hive partitioning](https://duckdb.org/docs/stable/data/partitioning/hive_partitioning), [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet.html).
+*Read more:* [DuckDB: Parquet](https://duckdb.org/docs/stable/data/parquet/overview), [DuckDB: Hive partitioning](https://duckdb.org/docs/stable/data/partitioning/hive_partitioning), [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet/parquet.html).
 
 ---
 
@@ -4651,7 +4651,7 @@ The same guarantees appear at larger scale: Spark and Fabric pipelines landing i
 - HTTP: [RFC 9110 HTTP Semantics](https://www.rfc-editor.org/rfc/rfc9110) ([§9.2 methods](https://www.rfc-editor.org/rfc/rfc9110#section-9.2), [§5.6.7 HTTP-date](https://www.rfc-editor.org/rfc/rfc9110#section-5.6.7), [§10.2.3 Retry-After](https://www.rfc-editor.org/rfc/rfc9110#section-10.2.3), [§15 status codes](https://www.rfc-editor.org/rfc/rfc9110#section-15)), [RFC 6585 (429)](https://www.rfc-editor.org/rfc/rfc6585#section-4), [RFC 8288 Web Linking](https://www.rfc-editor.org/rfc/rfc8288), [MDN: Retry-After](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Retry-After), [MDN: 429](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status/429), [MDN: HTTP status codes](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Status), [IETF draft: Idempotency-Key header](https://datatracker.ietf.org/doc/draft-ietf-httpapi-idempotency-key-header/).
 - Retries: [AWS: Exponential backoff and jitter](https://aws.amazon.com/blogs/architecture/exponential-backoff-and-jitter/), [Azure: Retry pattern](https://learn.microsoft.com/en-us/azure/architecture/patterns/retry), [Azure: transient fault handling](https://learn.microsoft.com/en-us/azure/architecture/best-practices/transient-faults).
 - GitHub and GH Archive: [GitHub REST: pagination](https://docs.github.com/en/rest/using-the-rest-api/using-pagination-in-the-rest-api), [GitHub REST: rate limits](https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api), [GitHub REST: best practices](https://docs.github.com/en/rest/using-the-rest-api/best-practices-for-using-the-rest-api), [GitHub event types](https://docs.github.com/en/rest/using-the-rest-api/github-event-types), [GH Archive](https://www.gharchive.org/).
-- Arrow and Parquet: [PyArrow](https://arrow.apache.org/docs/python/), [pyarrow.schema](https://arrow.apache.org/docs/python/generated/pyarrow.schema.html), [PyArrow data types](https://arrow.apache.org/docs/python/api/datatypes.html), [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet.html), [pyarrow.parquet.ParquetWriter](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetWriter.html), [PyArrow datasets and partitioning](https://arrow.apache.org/docs/python/dataset.html), [Apache Parquet docs](https://parquet.apache.org/docs/), [DuckDB: Parquet](https://duckdb.org/docs/stable/data/parquet/overview), [DuckDB: Hive partitioning](https://duckdb.org/docs/stable/data/partitioning/hive_partitioning).
+- Arrow and Parquet: [PyArrow](https://arrow.apache.org/docs/python/), [pyarrow.schema](https://arrow.apache.org/docs/python/generated/pyarrow.schema.html), [PyArrow data types](https://arrow.apache.org/docs/python/api/datatypes.html), [PyArrow: reading and writing Parquet](https://arrow.apache.org/docs/python/parquet/parquet.html), [pyarrow.parquet.ParquetWriter](https://arrow.apache.org/docs/python/generated/pyarrow.parquet.ParquetWriter.html), [PyArrow datasets and partitioning](https://arrow.apache.org/docs/python/dataset.html), [Apache Parquet docs](https://parquet.apache.org/docs/), [DuckDB: Parquet](https://duckdb.org/docs/stable/data/parquet/overview), [DuckDB: Hive partitioning](https://duckdb.org/docs/stable/data/partitioning/hive_partitioning).
 - dlt: [dlt docs](https://dlthub.com/docs/intro), [dlt REST API source](https://dlthub.com/docs/dlt-ecosystem/verified-sources/rest_api/basic), [dlt incremental loading](https://dlthub.com/docs/general-usage/incremental-loading), [dlt schema evolution](https://dlthub.com/docs/general-usage/schema-evolution), [dlt telemetry](https://dlthub.com/docs/reference/telemetry).
 - Secrets: [Azure Key Vault overview](https://learn.microsoft.com/en-us/azure/key-vault/general/overview), [Key Vault secrets with Python](https://learn.microsoft.com/en-us/azure/key-vault/secrets/quick-create-python), [Managed identities](https://learn.microsoft.com/en-us/entra/identity/managed-identities-azure-resources/overview), [DefaultAzureCredential](https://learn.microsoft.com/en-us/python/api/azure-identity/azure.identity.defaultazurecredential).
 - Python: [gzip](https://docs.python.org/3/library/gzip.html), [hashlib](https://docs.python.org/3/library/hashlib.html), [os.replace](https://docs.python.org/3/library/os.html#os.replace), [os.rename](https://docs.python.org/3/library/os.html#os.rename), [email.utils.parsedate_to_datetime](https://docs.python.org/3/library/email.utils.html#email.utils.parsedate_to_datetime), [http.server](https://docs.python.org/3/library/http.server.html), [random](https://docs.python.org/3/library/random.html), [json](https://docs.python.org/3/library/json.html), [heapq](https://docs.python.org/3/library/heapq.html).

@@ -73,37 +73,45 @@ Self-paced and built around stage gates. Move on when you meet a phase's exit cr
 
 ## 3. Roadmap: learn → build
 
-The tracker's **Roadmap** page follows this order. Each row lists the lessons that unlock the next portfolio stage, career milestone or checkpoint. A lesson can be completed only after its "Learn first" lessons; a stage can be marked built only after its required lessons and earlier stages. Lessons that no stage needs are standalone practice (DataLemur, LeetCode, labs) and still appear on the roadmap.
+The tracker connects lessons on the left to portfolio stages on the right. Open either side panel for prerequisites, practice, tasks and completion criteria. Lessons stay in one roadmap row; later stages can reuse them.
 
-### First release · Fuel Smart
+### First release · Flight Reliability
 
-One question, a bounded recipe sample, tested marts and one useful dashboard — your application evidence.
+One historical reliability question, three months of flight data, tested marts and a public route explorer — your application evidence.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Your lab & the question:** Minimal lab, Requirements & stakeholders | Portfolio stage: **Frame the question & the sample** |
 | ✓ | **Checkpoint · Lab ready** | All setup checks ticked |
 | 2 | **Python for data & ingestion:** Python for data engineering, Ingestion engineering, Python quality & tooling | Portfolio stage: **Build the bounded ingester** |
-| 3 | **Analytical SQL on recipes & reviews:** Window functions, Classic SQL patterns, Joins and grain, Semi-structured data | Portfolio stage: **Explore the sample & match ingredients** |
-| 4 | **More SQL & DataFrames:** Advanced aggregation, Time-based analysis, DataFrames: pandas & Polars | Standalone: Interview practice |
+| 3 | **Analytical SQL on flight outcomes:** Window functions, Classic SQL patterns, Advanced aggregation, Joins and grain, Time-based analysis | Portfolio stage: **Explore flight outcomes & time** |
+| 4 | **DataFrames & standalone JSON:** Semi-structured data, DataFrames: pandas & Polars | Practice: Interview practice — DataFrames support the later weather extension; JSON stays a standalone lab. Find interview questions here, then track your chosen problems separately. |
 | 5 | **Dimensional modeling & metrics:** Why dimensional modeling, Fact tables, Dimension tables, Business models & metrics, Metric design | Portfolio stage: **Design the analytical model** |
-| 6 | **Interview foundations:** — | Career milestone: **Interview foundations: explain and practice** |
+| 6 | **Interview foundations:** Reuse completed prerequisites | Career milestone: **Interview foundations: explain and practice** |
 | ✓ | **Checkpoint · Core SQL, modeling & ingester** | Medium window problems in under 15 min; I can explain grain, the 3 fact types and SCDs; I can write a precise metric definition; Bounded ingester validates records, re-runs safely and passes tests in CI |
 | 7 | **dbt, tests & contracts:** Query structure and style, Modern modeling adaptations, dbt fundamentals, Jinja, macros, packages, Incremental, snapshots, unit tests, Test strategy, Data contracts | Portfolio stage: **Build tested dbt marts** |
 | 8 | **Writing & dashboards:** Writing, Storytelling & dashboards | Portfolio stage: **Ship dashboard v1 & README** |
-| 9 | **SQL depth & performance:** Warehouse writes, How a query runs, Row-store indexing, Columnar warehouses | Standalone: Depth labs |
-| 10 | **Spark & Delta (local labs):** Spark fundamentals, PySpark, Delta Lake + Iceberg basics, Pipeline patterns | Standalone: Local labs |
-| 11 | **Statistics & optional experience:** Statistics essentials, Experience: telemetry star schema (work or personal) (optional) | Standalone: Statistics & experience practice |
+| 9 | **SQL depth & performance:** Warehouse writes, How a query runs, Row-store indexing, Columnar warehouses | Practice: Depth labs — Write up each performance experiment — the performance & cost stage collects them later. Reliable writes prepare the lakehouse extension. |
+| 10 | **Spark & Delta (local labs):** Spark fundamentals, PySpark, Delta Lake + Iceberg basics, Pipeline patterns | Practice: Local labs — Run these locally now; the lakehouse extension reuses them after you start applying. |
+| 11 | **Statistics & optional experience:** Statistics essentials, Experience: telemetry star schema (work or personal) | Practice: Statistics & experience practice — Statistics is part of the depth checkpoint. The experience exercise is optional evidence from work, synthetic or personal data. |
 | ✓ | **Checkpoint · SQL depth, performance & quality** | Hard SQL in 20–25 min; ≥3 performance experiments from the query-plan, indexing and columnar lessons written up; Delta MERGE working; Tests and contracts run in CI; I can explain p-values, CIs and power simply |
 | 12 | **Career assets:** Personal brand & network | Career milestone: **Resume, LinkedIn & STAR stories** |
-| ✓ | **Ready to apply** | SQL depth, performance & quality checkpoint passed; Portfolio v1 shipped: bounded dataset, tested dbt marts and dashboard; Resume and LinkedIn prepared; Basic SQL, Python and modeling interview practice done |
+| ✓ | **Ready to apply** | SQL depth, performance & quality checkpoint passed; Flight Reliability v1 shipped: bounded dataset, tested dbt marts and public route explorer; Resume and LinkedIn prepared; Basic SQL, Python and modeling interview practice done |
+
+### Extension · Weather & disruption replay
+
+Connect NOAA observations to flight outcomes and publish one historical airport replay.
+
+| # | Learn | Unlocks |
+| --- | --- | --- |
+| 1 | **Reuse Python, temporal joins & modeling:** Reuse completed prerequisites | Portfolio stage: **Add weather & replay a disruption** |
 
 ### Extension · Lakehouse
 
-Full recipes and 3.7M+ Open Food Facts products in local bronze and silver Delta tables.
+A measured multi-year flight archive and selected weather observations in bronze and silver Delta tables.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Storage architecture:** Storage architecture | Portfolio stage: **Local bronze → silver lakehouse** |
 
 ### Extension · Orchestration
@@ -111,7 +119,7 @@ Full recipes and 3.7M+ Open Food Facts products in local bronze and silver Delta
 Databricks, Airflow and Cosmos run the pipeline on a schedule.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Databricks & Airflow:** Databricks platform, Airflow core concepts, Airflow authoring, Airflow integrations, Airflow ops & alternatives, Reliability | Portfolio stage: **Orchestrate with Airflow** |
 
 ### Extension · Quality & observability
@@ -119,16 +127,16 @@ Databricks, Airflow and Cosmos run the pipeline on a schedule.
 Freshness, reconciliation and an incident handled end to end.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Observability & incidents:** Observability, Incidents & trust | Portfolio stage: **Quality & observability** |
-| 2 | **Experimentation:** Experimentation, Statistics in Python | Standalone: Experiment analysis practice |
+| 2 | **Experimentation:** Experimentation, Statistics in Python | Practice: Experiment analysis practice — Experiment analysis is an interview and analytics skill; no portfolio stage depends on it. |
 
 ### Extension · Performance & cost
 
 Benchmarks and cost per model at larger volumes.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Distributed execution & cost:** Distributed execution, Materialization & cost (FinOps), Spark performance | Portfolio stage: **Performance & cost lab** |
 
 ### Extension · Semantic layer
@@ -136,7 +144,7 @@ Benchmarks and cost per model at larger volumes.
 Certified metrics feeding the dashboard.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Semantic modeling & AI context:** Semantic layer modeling, Requirements & bus matrix, dbt governance & scale, Semantic layer for AI, Documentation as context | Portfolio stage: **Semantic layer** |
 
 ### Extension · AI agent + evaluation
@@ -144,34 +152,34 @@ Certified metrics feeding the dashboard.
 An evaluated agent over certified metrics.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Agents & evaluation:** Agents over data, Evaluating AI analytics, LLM functions in the warehouse, AI-assisted development | Portfolio stage: **AI agent + evaluation ⭐** |
-| 2 | **Optional AI breadth:** Unstructured data for AI (optional), Experience: metrics exposed to an agent (work or personal) (optional) | Standalone: Optional practice |
+| 2 | **Optional AI breadth:** Unstructured data for AI, Experience: metrics exposed to an agent (work or personal) | Practice: Optional practice — Breadth and optional work evidence; not required for any stage. |
 
 ### Extension · Portability & infrastructure
 
 Terraform, least privilege and gold on Snowflake.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Cloud, Terraform & warehouses:** Cloud fundamentals & IAM, Terraform, Snowflake, BigQuery, dbt deployment & CI | Portfolio stage: **Portability & infrastructure** |
-| 2 | **Optional platform breadth:** Ingestion tools & CDC (optional), BI breadth (optional), Streaming (awareness) (optional) | Standalone: Optional practice |
+| 2 | **Optional platform breadth:** Ingestion tools & CDC, BI breadth, Streaming (awareness) | Practice: Optional practice — Awareness-level topics; try one small lab each if time allows. |
 
 ### Extension · Architecture docs
 
 The architecture document and decision records for everything you shipped.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Platform modeling & governance:** Platform modeling & serving, Governance & security | Portfolio stage: **Architecture & decision records** |
-| ✓ | **Checkpoint · Extensions built** | Lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built; Architecture doc + ≥5 decision records + TESTING.md; AI evaluation report published |
+| ✓ | **Checkpoint · Extensions built** | Weather replay, lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built; Architecture doc + ≥5 decision records + TESTING.md; AI evaluation report published |
 
 ### Extension · Polished story & demo
 
 A short demo and public write-up of the shipped releases.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Trade-offs:** Trade-offs & organization | Portfolio stage: **Polished story & demo** |
 
 ### Interview-ready
@@ -179,26 +187,27 @@ A short demo and public write-up of the shipped releases.
 Advanced timed practice, design and metric cases, then full mock loops.
 
 | # | Learn | Unlocks |
-|---|---|---|
+| --- | --- | --- |
 | 1 | **Interview Python:** Interview-style Python | Career milestone: **Interview: timed SQL & Python** |
-| 2 | **Design, metric & modeling cases:** System design interviews, Diagnosing metric changes, Interview: modeling, metrics & dbt cases | Standalone: Interview practice |
-| 3 | **Mock loops:** — | Career milestone: **Mock loops & take-home** |
-| 4 | **Optional certification:** Optional certification (optional) | Standalone: Optional certification |
+| 2 | **Design, metric & modeling cases:** System design interviews, Diagnosing metric changes, Interview: modeling, metrics & dbt cases | Practice: Interview practice — Out loud, one design, one metric and one modeling case per week. |
+| 3 | **Mock loops:** Reuse completed prerequisites | Career milestone: **Mock loops & take-home** |
+| 4 | **Optional certification:** Optional certification | Practice: Optional certification — Only if a target role asks for it; the course and practice exam are the practice route. Not required for any stage or milestone. |
 | ✓ | **Checkpoint · Interview-ready** | 3 mock loops passed; Resume and LinkedIn rewritten; Applications going out via referrals |
 
-> **Ready to apply:** pass the SQL depth, performance & quality checkpoint, ship the first release (bounded ingester, tested dbt marts and dashboard), prepare the resume and LinkedIn, and complete interview foundations. Start applying through referrals; continue extensions and advanced interviews alongside applications. Work-data access is not required.
+Apply after the first release, career preparation, interview foundations and the depth checkpoint. Continue weather and the other extensions alongside applications.
 
 ### Portfolio stages
 
 | Release | Stage | Needs lessons | After stages |
-|---|---|---|---|
-| First release · Fuel Smart | Frame the question & the sample | Minimal lab, Requirements & stakeholders | — |
-| First release · Fuel Smart | Build the bounded ingester | Python for data engineering, Ingestion engineering, Python quality & tooling | Frame the question & the sample |
-| First release · Fuel Smart | Explore the sample & match ingredients | Window functions, Classic SQL patterns, Joins and grain, Semi-structured data | Build the bounded ingester |
-| First release · Fuel Smart | Design the analytical model | Why dimensional modeling, Fact tables, Dimension tables, Business models & metrics, Metric design | Explore the sample & match ingredients |
-| First release · Fuel Smart | Build tested dbt marts | Query structure and style, Modern modeling adaptations, dbt fundamentals, Jinja, macros, packages, Incremental, snapshots, unit tests, Test strategy, Data contracts | Design the analytical model |
-| First release · Fuel Smart | Ship dashboard v1 & README | Writing, Storytelling & dashboards | Build tested dbt marts |
-| Extension · Lakehouse | Local bronze → silver lakehouse | PySpark, Delta Lake + Iceberg basics | Ship dashboard v1 & README |
+| --- | --- | --- | --- |
+| First release · Flight Reliability | Frame the question & the sample | Minimal lab, Requirements & stakeholders | — |
+| First release · Flight Reliability | Build the bounded ingester | Python for data engineering, Ingestion engineering, Python quality & tooling | Frame the question & the sample |
+| First release · Flight Reliability | Explore flight outcomes & time | Window functions, Classic SQL patterns, Advanced aggregation, Joins and grain, Time-based analysis | Build the bounded ingester |
+| First release · Flight Reliability | Design the analytical model | Why dimensional modeling, Fact tables, Dimension tables, Business models & metrics, Metric design | Explore flight outcomes & time |
+| First release · Flight Reliability | Build tested dbt marts | Query structure and style, Modern modeling adaptations, dbt fundamentals, Jinja, macros, packages, Incremental, snapshots, unit tests, Test strategy, Data contracts | Design the analytical model |
+| First release · Flight Reliability | Ship dashboard v1 & README | Writing, Storytelling & dashboards | Build tested dbt marts |
+| Extension · Weather & disruption replay | Add weather & replay a disruption | DataFrames: pandas & Polars, Ingestion engineering, Joins and grain, Time-based analysis, Fact tables, dbt fundamentals, Test strategy | Ship dashboard v1 & README |
+| Extension · Lakehouse | Local bronze → silver lakehouse | PySpark, Delta Lake + Iceberg basics | Ship dashboard v1 & README, Add weather & replay a disruption |
 | Extension · Orchestration | Orchestrate with Airflow | Airflow core concepts, Airflow authoring, Airflow integrations, Airflow ops & alternatives, Databricks platform | Local bronze → silver lakehouse |
 | Extension · Quality & observability | Quality & observability | Test strategy, Data contracts, Observability, Incidents & trust, Airflow integrations | Ship dashboard v1 & README |
 | Extension · Performance & cost | Performance & cost lab | How a query runs, Row-store indexing, Columnar warehouses, Distributed execution, Materialization & cost (FinOps), Delta Lake + Iceberg basics, Spark performance | Ship dashboard v1 & README |
@@ -286,7 +295,7 @@ Advanced timed practice, design and metric cases, then full mock loops.
 
 **Practice: weekly modeling exercise.** Produce a bus matrix, grain statements, an ERD in dbdiagram.io, **3 metric definitions in MetricFlow YAML** and 3–5 SQL answers.
 
-Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketplace, your supplier/product-lifecycle app, Copilot agent telemetry, airline bookings, recipes and nutrition (your Fuel Smart project).
+Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketplace, your supplier/product-lifecycle app, Copilot agent telemetry, airline outcomes and weather (your Flight Reliability project); recipes remain standalone exercises.
 
 ---
 
@@ -330,7 +339,7 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 **Practice:**
 - LeetCode "30 Days of Pandas"; StrataScratch in Python.
 - Solve problems three ways (SQL → pandas → PySpark).
-- **Fuel Smart ingester CLI:** deterministic recipe sample, paged USDA FoodData Central API calls, retries, safe re-runs, partitioned Parquet, schema validation, pytest, CI.
+- **Flight Reliability ingester CLI:** pinned monthly BTS ZIP/CSV files, bounded streaming, checksums, exact route filter, retries, safe re-runs, partitioned Parquet, validation, pytest and CI.
 - Phase 4: 2 plain-Python interview problems per week on a timer.
 
 ---
@@ -382,7 +391,7 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 - Optional: Dagster University "Dagster & dbt".
 
 **Practice:**
-- Daily Open Food Facts delta-file DAG: ingest → Databricks → dbt via Cosmos.
+- Published-month BTS discovery and selected NOAA files: ingest → Databricks → dbt via Cosmos; test interval backfills and corrected-month fixture replay.
 - Backfill a month and confirm re-runs don't create duplicates.
 - Failure exercises (killed task, source outage).
 - Asset-triggered data-quality DAG.
@@ -478,9 +487,9 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 
 **Practice:**
 - Every weekly modeling exercise includes 3 metric definitions plus edge cases.
-- From Phase 3, **1 metric/product case per week**, out loud, 20 minutes (e.g. "The average rating of high-protein recipes dropped 10%. Why?" using your project data).
+- From Phase 3, **1 metric/product case per week**, out loud, 20 minutes (e.g. "Cancellation rate increased by 2 percentage points. Why?" using your project data).
 - **Experiment notebook:** generate synthetic A/B data, then compute lift, a confidence interval and an SRM check, in both SQL and Python.
-- Write a metric spec for "high-protein recipe" on your project, as precise as a contract.
+- Write a metric spec for "cancellation rate" on your project, as precise as a contract.
 
 ---
 
@@ -507,8 +516,8 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 - modelcontextprotocol.io.
 
 **Practice: a later portfolio release, after v1 is published**
-1. Define 8–12 metrics in **MetricFlow** on the GitHub gold layer.
-2. Build an **"Ask GitHub Analytics" agent** (Copilot Studio, Foundry or Python) that queries through the **dbt MCP server / semantic layer**.
+1. Define 8–12 metrics in **MetricFlow** on the certified flight marts.
+2. Build an **"Ask Flight Reliability" agent** (Copilot Studio, Foundry or Python) that queries through the **dbt MCP server / semantic layer**.
 3. **Evaluation harness:** 40 business questions with expected answers.
    - Compare accuracy of (a) raw schema + text-to-SQL vs (b) semantic-layer-grounded answers.
    - Publish the results table in the README.
@@ -523,7 +532,7 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 | PL1 | **Cloud fundamentals** | Object storage (S3/ADLS), **IAM** (roles, service principals, least privilege), networking basics, cost controls | AWS Skill Builder "Cloud Practitioner Essentials" (free); you already know Azure. Grant least-privilege access in the portfolio. |
 | PL2 | **Terraform** | Providers, state, modules; provisioning storage + Databricks resources | HashiCorp tutorials (free). Easy for you after ARM templates. Provision the portfolio's infrastructure with Terraform. |
 | PL3 | **Snowflake** | Warehouses, micro-partitions, roles, Time Travel, Snowpark awareness, Cortex | 30-day trial + Snowflake's free **"Hands-On Essentials"** badges. Run the gold dbt layer on Snowflake to show portability. |
-| PL4 | **BigQuery** | Partitioning/clustering, slots vs on-demand pricing | Sandbox (free); load the Fuel Smart recipe sample |
+| PL4 | **BigQuery** | Partitioning/clustering, slots vs on-demand pricing | Sandbox (free); load the bounded flight sample |
 | PL5 | **Ingestion tools and CDC** | Fivetran/Airbyte/dlt trade-offs; CDC concepts (Debezium, log-based) | dlt (already used); read the Debezium docs overview |
 | PL6 | **BI breadth** | Power BI (deep; you have it), **LookML concepts**, Tableau awareness, BI-as-code (Evidence/Lightdash) | Google Cloud Skills Boost LookML labs; *Storytelling with Data* for dashboard design |
 | PL7 | Streaming (awareness; deeper for data engineer) | Kafka topics/partitions/consumer groups, delivery guarantees, Spark Structured Streaming | Confluent Developer "Kafka 101" (free). Optional mini-project: Wikimedia EventStreams → Structured Streaming → Delta. |
@@ -548,57 +557,40 @@ Domains to rotate through: e-commerce, ride-sharing, SaaS subscriptions, marketp
 
 ---
 
-## 17. Portfolio project: "Fuel Smart", released in stages
+## 17. Portfolio project: "Flight Reliability", released in stages
 
-One data space: food and nutrition. Full brief: [Fuel Smart project brief](../docs/study-planning/fuel-smart-project-brief.md).
+Full scope and metric definitions: [Flight Reliability project brief](../docs/study-planning/flights-project-brief.md). A [hosted HTML brief](ae-tracker/projects/flight-reliability/index.html) opens from the tracker.
 
-### First release: one question, one bounded dataset, one useful dashboard
+**Question:** Which airline and departure window has historically been most reliable for a selected US domestic route?
 
-**Question:** Which simple recipes (≤10 ingredients, ≤45 minutes) give the most protein and fibre per 100 kcal and the most vegetables, and do reviewers rate them as highly as other recipes?
+**First release:** January–March 2025 reporting-carrier flights on routes between SEA, SFO, LAX, DEN, ORD and JFK. Keep all matching rows, including cancellations and diversions. Build Python ingestion, month-partitioned Parquet, DuckDB/dbt models, tests in CI and a public route explorer. Commit a small offline fixture and pin source files, checksums, filters and retained/rejected counts in dataset.yml.
 
-**Dataset contract:** in `dataset.yml`, fix a deterministic sample of **5,000 Food.com recipes** with all their reviews, and pin the **USDA FoodData Central** Foundation Foods and SR Legacy releases. Record source versions, the sampling rule, retained counts and anything dropped. Commit a small fixture so someone can reproduce the build offline. Check representative recipes (ingredient quantity and name lists, servings, listed nutrition) before choosing metrics; explain what the sample can and cannot establish.
+**Metrics:** cancellation rate over all selected scheduled flights; ≥30-minute arrival-delay rate and p90 non-negative arrival delay over non-cancelled, non-diverted flights with recorded arrival delay. Show eligible counts, missing-outcome coverage, date range and low-sample labels. Use a configurable 100-eligible-flight comparison threshold.
 
-**Metrics** (per recipe serving): protein per 100 kcal, fibre per 100 kcal, and vegetable & legume share of matched ingredient weight. Define unit conversion with USDA food portions, the ingredient-match coverage threshold (e.g. exclude recipes with <80% of ingredient weight matched), zero denominators and how ratings are compared (minimum review counts). The metrics describe recipe data, not personal health advice.
+**Model:** one flight-leg fact with airport (origin/destination roles), reporting-carrier and date dimensions. Test candidate identity, conflicting duplicates, missing outcomes and local-time edge cases. Use reported delay fields for v1; resolve UTC, station mapping and fan-out in the weather extension.
 
-```text
-Food.com recipe sample + pinned USDA releases + small offline fixture
-  → Python CLI: deterministic sample, paged USDA API, retries, validation, safe re-runs, pytest in CI [Py3–Py4, PF1]
-  → Partitioned Parquet
-  → Ingredient parsing, gram conversion and USDA matching, checked against a 200-line answer set
-  → DuckDB + dbt staging and marts [D1–D3, Q1–Q2, PF3]
-  → Recipe-ingredient fact + review fact + recipe/food/reviewer/date dimensions
-  → Three documented SQL metrics
-  → One dashboard (Power BI or Evidence) + README + metric spec
-```
+### Build stages
 
-### First-release checklist (PF1 + PF3; application evidence)
+- **Frame the question & the sample:** A written question and decision, `dataset.yml` and a README stub in your lab repository.
+- **Build the bounded ingester:** A reproducible loader, a small fixture, a dataset manifest and passing tests in CI.
+- **Explore flight outcomes & time:** Profiling SQL, tested time/identity rules and reconciled counts for the selected routes.
+- **Design the analytical model:** Grain statements, a small model diagram and a metric spec.
+- **Build tested dbt marts:** Tested staging models and marts with a reproducible build.
+- **Ship dashboard v1 & README:** A public route explorer, three tested metrics, one supported finding and a reproducible README.
+- **Add weather & replay a disruption:** A tested weather integration and one historical airport-disruption replay.
+- **Local bronze → silver lakehouse:** Local bronze and silver Delta tables that reconcile with v1.
+- **Orchestrate with Airflow:** An Airflow project that schedules, backfills, recovers and alerts.
+- **Quality & observability:** Elementary report, freshness alert, reconciliation test, postmortem and TESTING.md.
+- **Performance & cost lab:** A benchmark report with cost per model.
+- **Semantic layer:** MetricFlow semantic models, a metric spec and a dashboard reading from them.
+- **AI agent + evaluation ⭐:** An agent, an evaluation harness and a published results table.
+- **Portability & infrastructure:** Terraform-managed infrastructure, a portable gold layer and full CI.
+- **Architecture & decision records:** An architecture document, ≥5 decision records and a linked TESTING.md.
+- **Polished story & demo:** Updated docs site, a three-minute demo video and a public write-up.
 
-- [ ] One business question and the decision the dashboard supports, captured using CM1
-- [ ] Dataset manifest: sampling rule, source versions, retained counts and coverage limitations
-- [ ] Small committed fixture; README commands reproduce ingestion and `dbt build`
-- [ ] Idempotent Python ingester with retries, validation, quarantine and pytest in CI
-- [ ] Ingredient matching with a hand-labelled answer set; precision and matched-weight coverage reported
-- [ ] Recipe-ingredient and review facts with only the dimensions needed for the question; grain statements and stable keys
-- [ ] Three precise metric definitions, with missing-data and zero-denominator behavior
-- [ ] dbt data tests, unit tests for tricky logic, and model contracts pass in CI
-- [ ] Dashboard v1 and README explain the answer and dataset limitations
+**Boundaries:** historical reported US domestic data with publication lag. Fares, live status and connection itineraries need separate sources. Weather is a second release with explicit association limits. Expand the real archive gradually; large synthetic benchmarks must be labelled. Collect decisions while building; AI comes after certified metrics.
 
-**First-release boundary:** use local DuckDB/dbt and manual reproducible runs. Open Food Facts, Auto Loader, a deployed Spark pipeline, all three fact types, a mandatory SCD2 mart, Airflow, hosted semantic APIs, AI, Terraform, Snowflake portability and large benchmarks belong to later extensions or dedicated learning labs. Select additional fact types and SCD2 when an extension's question needs them.
-
-### Later releases: extend the working v1
-
-| Release | Deliverables | Prerequisite / signoff |
-|---|---|---|
-| **Lakehouse** | PF2: full Food.com files and the Open Food Facts Parquet export (3.7M+ products) into local bronze/silver Delta, MERGE by barcode, reconciliation, quarantine and time-travel recovery. SB4 then adds Databricks Auto Loader. Iceberg remains an SB3 lab. | SB2–SB3 before PF2; PF2 before SB4 |
-| **Operations and quality** | PF4: Airflow/Cosmos loading daily Open Food Facts delta files and monthly USDA Branded Foods releases, with backfill, recovery, alerts and DAG tests. PF5: Elementary, freshness, reconciliation, the protein × 4 + carbohydrate × 4 + fat × 9 calorie check, postmortem and TESTING.md. PF6: larger performance/cost experiments. | AF1–AF4 before PF4; Q1–Q4 before PF5; P1–P5 before PF6 |
-| **Architecture documentation** | PF11: architecture diagram/document, ≥5 decision records and linked testing/recovery evidence. Collect decisions while building. | A1–A5, CM2 and PF2–PF5 |
-| **Semantic layer and AI** | PF7: MetricFlow and documented nutrition metrics. PF8: "What should I cook?" agent, 40-question evaluation and LLM ingredient extraction with cost measurement. | M5/BZ2/AI1–AI2 before PF7; PF7/AI3–AI5 before PF8 |
-| **Portability and infrastructure** | PF9: Terraform, least privilege, gold on Snowflake and full CI. | PL1–PL3 and D4 before PF9 |
-| **Polished story** | PF10: update existing architecture/docs, publish a three-minute demo and public write-up. | Reuse PF11; complete after A6 |
-
-For the one-month backfill, begin with a small deterministic fixture per interval and label it a recovery exercise. Open Food Facts delta files cover only the last 14 days and omit deleted products, so plan periodic full refreshes. Increase volume deliberately for performance benchmarks (uncompressed JSONL or a labelled synthetic scale factor). Keep the original local v1 run command reproducible throughout the extensions.
-
-**Extensions signoff** covers the later extensions and PF11; **application readiness** depends on the first-release checklist plus early career/interview preparation, not on finishing the full expanded system.
+**Application evidence:** the bounded tested first release, README, public explorer, career assets and basic interview practice. Full extensions are later work; employer-data access is unnecessary.
 
 ---
 

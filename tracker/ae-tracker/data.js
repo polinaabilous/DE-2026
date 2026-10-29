@@ -67,6 +67,8 @@
     dlt: ["dlt (data load tool) docs", "https://dlthub.com/docs", "docs"],
     pipelinesPocket: ["Data Pipelines Pocket Reference (Densmore)", null, "book"],
     ghArchive: ["GH Archive", "https://www.gharchive.org", "tool"],
+    btsFlights: ["BTS reporting-carrier flight records – monthly downloads", "https://www.transtats.bts.gov/Fields.asp?gnoyr_VQ=FGJ", "tool"],
+    noaaHourly: ["NOAA GHCNh – hourly weather and station metadata", "https://www.ncei.noaa.gov/products/global-historical-climatology-network-hourly", "tool"],
     foodcom: ["Food.com recipes & reviews (Kaggle, CC0)", "https://www.kaggle.com/datasets/irkaal/foodcom-recipes-and-reviews", "tool"],
     fdc: ["USDA FoodData Central – downloads & API (CC0)", "https://fdc.nal.usda.gov/download-datasets/", "tool"],
     offData: ["Open Food Facts data – nightly exports, daily deltas, Parquet (ODbL)", "https://world.openfoodfacts.org/data", "tool"],
@@ -557,9 +559,11 @@
     dlt: { f: "docs", t: "quick", why: "dlt introduction page — what dlt does and how pipelines look.", ok: "2026-10-13" },
     pipelinesPocket: { f: "book", t: "hour", why: "Short practical book on ingestion, transformation, orchestration (ch. 4–5)." },
     ghArchive: { f: "tool", t: "ref", why: "Public GitHub event archive (former portfolio dataset).", ok: "2026-10-13" },
-    foodcom: { f: "tool", t: "ref", why: "Portfolio dataset: Food.com recipes & reviews (Kaggle).", ok: "2026-10-13" },
-    fdc: { f: "tool", t: "ref", why: "Portfolio dataset: USDA FoodData Central downloads & API.", ok: "2026-10-13" },
-    offData: { f: "tool", t: "ref", why: "Portfolio dataset: Open Food Facts exports and deltas.", ok: "2026-10-13" },
+    btsFlights: { f: "tool", t: "ref", why: "Flight Reliability portfolio: schedules, outcomes, cancellations, diversions and the source field dictionary.", ok: "2026-10-14" },
+    noaaHourly: { f: "tool", t: "ref", why: "Weather extension: station observations, timestamps, units and quality flags; downloaded separately from flights.", ok: "2026-10-14" },
+    foodcom: { f: "tool", t: "ref", why: "Standalone recipe exercise dataset and former portfolio source.", ok: "2026-10-13" },
+    fdc: { f: "tool", t: "ref", why: "Standalone nutrition/API exercise dataset and former portfolio source.", ok: "2026-10-13" },
+    offData: { f: "tool", t: "ref", why: "Standalone JSON exercise dataset and former portfolio source.", ok: "2026-10-13" },
     pytest: { f: "docs", t: "ref", why: "pytest docs home.", ok: "2026-10-13" },
     pytestBook: { f: "book", t: "deep", why: "pytest from basics to strategy (ch. 3, 5, 7)." },
     pydantic: { f: "docs", t: "ref", why: "Pydantic docs home.", ok: "2026-10-13" },
@@ -1022,7 +1026,7 @@
     ["tanimura", "benGan", "modernSql", "dataLemur", "strata"],
     ["LeetCode 180 (Consecutive Numbers) and 185 (Department Top Three Salaries)",
      "DataLemur: 5 medium/hard problems tagged with these patterns",
-     "Group each Food.com reviewer's reviews into active streaks with a 30-day inactivity gap",
+     "On the flight sample, identify consecutive disruption days by airport; document the threshold, missing-day handling and gaps-and-islands solution",
      "Keep a pattern cheat-sheet with one canonical solution per pattern"],
     ["I de-duplicate with ROW_NUMBER/QUALIFY and can explain tie handling",
      "I write top-N per group two different ways",
@@ -1076,7 +1080,7 @@
   T("S7", "sql", "P", 5, "Semi-structured data",
     "JSON, arrays, UNNEST / LATERAL / EXPLODE across engines.",
     ["duckdb", "sparkDocs", "snowDocs"],
-    ["From Open Food Facts JSONL: extract nested nutriments with explicit types, explode the ingredients array, count products per ingredient",
+    ["Standalone JSON lab (separate from the CSV-based flight portfolio): extract typed nutriments and explode ingredient arrays from the Open Food Facts fixture; check fan-out",
      "Do it in DuckDB and in Spark SQL; note syntax differences"],
     ["I extract nested JSON fields with correct types",
      "I explode / unnest arrays without introducing fan-out mistakes",
@@ -1203,7 +1207,7 @@
     ["dbtLearn", "dbtTests", "dbtStructure", "aeBook"],
     ["Complete dbt Fundamentals (free)",
      "Build jaffle_shop on DuckDB",
-     "GH sample: sources + staging models + 4 generic tests + docs site"],
+     "Flight sample: sources + staging models + 4 generic tests + docs site"],
     ["I explain source vs ref and how lineage is built",
      "I use unique, not_null, accepted_values and relationships tests",
      "I choose view vs table materialization",
@@ -1223,8 +1227,8 @@
     "Incremental models, snapshots, advanced tests, unit tests, dbt_expectations.",
     ["dbtLearn", "dbtIncr", "dbtSnap", "dbtUnit"],
     ["dbt Learn: Advanced Materializations + Advanced Testing",
-     "Make the review model incremental (merge) with a 3-day lookback for late data",
-     "Snapshot the packaged-product dimension (Open Food Facts) to track label changes",
+     "Make the flight model incremental; reprocess a selected source month to simulate a corrected release, and reconcile against a full rebuild",
+     "Snapshot a small airport-reference fixture; simulate a changed name or time zone and verify history without claiming the source supplies full attribute history",
      "Write 3 unit tests for tricky logic"],
     ["I build incremental models with is_incremental(), unique_key and a strategy",
      "I handle late data with a lookback window",
@@ -1257,13 +1261,13 @@
   T("Py1", "py", "B", 12, "Python for data engineering",
     "The core Python you use every day in data work, before DataFrames: built-in structures and their costs (dict/set/deque, defaultdict, Counter); generators and itertools to stream and chunk files larger than memory; CSV / JSON / JSON-lines / gzip I/O; time-zone-aware datetimes (zoneinfo) and Decimal for money; DB-API with parameterized queries and transactions (sqlite3, psycopg, DuckDB); decorators and context managers; threads vs processes vs asyncio (the GIL); packaged CLIs with uv, ruff, type hints, dataclasses, logging and config from env vars.",
     ["pda|ch. 2–3 and 6 (Python basics, built-in structures, file formats)", "fluentPy|data model, dicts & sets, iterators/generators, decorators, context managers", "effectivePy", "pyStdlib|itertools, collections, csv, json, gzip, datetime/zoneinfo, sqlite3, concurrent.futures", "realPython|generators, decorators, context managers, concurrency", "duckdb|Python client section", "pyTutorial", "uv", "ruff"],
-    ["Stream the ≥1 GB gzip Open Food Facts JSONL export line by line with a generator; count products per NOVA group with Counter; confirm memory stays flat with tracemalloc",
-     "Chunk the stream with itertools (islice / batched) and write the batches to CSV and JSON-lines; open the CSV in Excel to check quoting and encoding",
+    ["Stream a BTS monthly ZIP/CSV in batches; count flights by origin with Counter and confirm bounded memory with tracemalloc",
+     "Chunk flight rows with itertools (islice / batched), write CSV and JSON-lines, and check quoting and encoding",
      "Parse timestamps in 3 formats into time-zone-aware UTC datetimes; convert to America/Los_Angeles with zoneinfo across a DST change",
      "Sum money with float vs Decimal and explain the difference",
      "Load the batches into DuckDB and sqlite3 from Python using parameterized queries inside a transaction; read results back as a list of dicts",
      "Write a @retry decorator with exponential backoff and a timing context manager; use both in your loader",
-     "Fetch 200 foods from the USDA FoodData Central API with ThreadPoolExecutor vs sequentially, within the rate limit; time both; then try a CPU-bound task with ProcessPoolExecutor",
+     "Download a bounded set of NOAA station files with ThreadPoolExecutor versus sequentially; respect the source limits, then compare a CPU-bound task with ProcessPoolExecutor",
      "Package it all as a CLI (argparse or typer) with uv + pyproject, ruff, type hints, dataclasses, logging and settings from env vars",
      "C# bridge note: write down your LINQ ↔ comprehension/itertools and IEnumerable ↔ generator equivalents"],
     ["I pick the right built-in structure (list / dict / set / tuple / deque, defaultdict, Counter) and know their lookup costs",
@@ -1286,9 +1290,9 @@
      "I know when to use Polars vs pandas vs DuckDB"]);
   T("Py3", "py", "B", 8, "Ingestion engineering",
     "httpx, pagination, retries with backoff, rate limits, streaming gzip JSON-lines, pyarrow/Parquet, idempotent writes, secrets, dlt.",
-    ["httpx","pyarrow","dlt","pipelinesPocket","fdc"],
-    ["Freeze the Fuel Smart sample in dataset.yml: 5,000 Food.com recipes by a deterministic rule plus pinned USDA Foundation & SR Legacy releases; page through the FoodData Central API with retries and rate limits and land partitioned Parquet",
-     "Commit a small fixture plus the sampling rule, source versions, retained counts and anything dropped; run the same sample twice and prove identical output"],
+    ["httpx", "pyarrow", "dlt", "pipelinesPocket", "btsFlights"],
+    ["Freeze the Flight Reliability contract in dataset.yml: January–March 2025 reporting-carrier flights between SEA, SFO, LAX, DEN, ORD and JFK; retain every matching row, including cancellations and diversions; download the monthly ZIP/CSV files with retries, record checksums and retrieval times, and write month-partitioned Parquet",
+     "Commit a small offline flight fixture with cancellation, diversion, missing delay and overnight cases; record source versions, retained/rejected counts and prove identical output on a second run"],
     ["I stream large files without loading them into memory",
      "I implement retries with backoff and respect rate limits",
      "My partitioned writes are idempotent",
@@ -1385,9 +1389,9 @@
   T("AF2", "airflow", "B", 6, "Airflow authoring",
     "TaskFlow API, data intervals, idempotent tasks, retries, catchup and backfills, dynamic task mapping, deferrable operators.",
     ["airflowBP", "airflowBook", "airflowDocs"],
-    ["Daily Open Food Facts delta-file DAG with TaskFlow",
+    ["DAG with monthly data intervals for BTS source discovery, ingestion and dbt builds; distinguish source publication time from flight event time",
      "Backfill one month and verify no duplicates",
-     "Dynamic task mapping per delta file"],
+     "Backfill one flight month and replay a corrected-month fixture; prove no duplicates and reconcile all partitions"],
     ["My tasks are idempotent using the data interval",
      "I run backfills and understand catchup",
      "I configure retries sensibly",
@@ -1518,7 +1522,7 @@
     "Precise definitions (grain, filters, window, edge cases), leading vs lagging, north-star + guardrails, ratio pitfalls, metric trees.",
     ["lean", "metricflow"],
     ["3 metric definitions in every weekly kata",
-     "Write a contract-level spec for 'high-protein recipe'"],
+     "Write a contract-level spec for cancellation rate and ≥30-minute arrival-delay rate; distinguish the denominators and record missing-outcome coverage"],
     ["My definitions specify grain, filters, time window and edge cases",
      "I pair a north-star metric with guardrails",
      "I avoid ratio-metric pitfalls",
@@ -1545,7 +1549,7 @@
   T("BZ5", "biz", "P", 4, "Diagnosing metric changes",
     "Data issue vs real change; segment by dimension; mix shift; seasonality; external events; communicating the answer.",
     ["aceDS", "dataInterview"],
-    ["Weekly 20-minute case out loud using your project data (e.g. 'the average rating of high-protein recipes dropped 10%')"],
+    ["Weekly 20-minute case aloud using flight data: cancellation rate rose by 2 percentage points; check ingestion, route/airline mix, sample size and seasonality before proposing an explanation"],
     ["I follow a structured diagnosis framework",
      "I separate data issues from real changes first",
      "I check segments and mix shift",
@@ -1590,7 +1594,7 @@
   T("AI5", "ai", "B", 3, "LLM functions in the warehouse",
     "Databricks ai_query / ai_classify / ai_extract, Snowflake Cortex AISQL; cost, latency, when not to use them.",
     ["dbxDocs", "cortex"],
-    ["ai_classify recipe titles by meal type (breakfast / main / side / dessert / snack)",
+    ["Standalone LLM-functions lab: classify a hand-labelled set of airport incident notes by theme; compare with rule-based classification and keep this separate from measured flight outcomes",
      "Measure cost per 1,000 rows; manually validate a sample"],
     ["I know when to use and not use LLM functions",
      "I estimate cost and latency",
@@ -1639,8 +1643,8 @@
      "I use Time Travel"]);
   T("PL4", "plat", "B", 2, "BigQuery",
     "Partitioning, clustering, slots vs on-demand pricing.",
-    ["bqSandbox", "foodcom"],
-    ["Load the Fuel Smart recipe sample into the BigQuery sandbox; create a partitioned + clustered review table; dry-run to check bytes"],
+    ["bqSandbox", "btsFlights"],
+    ["Load the bounded flight sample into BigQuery sandbox; partition by flight date, cluster by origin/destination/carrier, and dry-run to check bytes"],
     ["I use partitioning and clustering",
      "I explain slots vs on-demand",
      "I estimate cost with dry runs"]);
@@ -1698,20 +1702,20 @@
      "Active in at least one community"]);
 
   // ===== Portfolio deliverables =====
-  const pfLearn = ["foodcom", "sde"];
+  const pfLearn = ["btsFlights", "sde"];
   T("PF1", "pf", "B", 6, "Portfolio v1: bounded ingester",
-    "A reproducible Python CLI for a fixed sample of 5,000 Food.com recipes with their reviews, plus pinned USDA Foundation & SR Legacy releases. Record the sampling rule and source versions; retain a small offline fixture.",
-    ["foodcom","fdc","sde"],
+    "A reproducible Python CLI for a fixed three-month BTS flight sample on routes between six airports. Record monthly source checksums, the exact filter and retained/rejected counts; retain a small offline fixture.",
+    ["btsFlights", "sde"],
     ["Finish the ingestion engineering and Python quality & tooling lessons first; reuse their ingester, validation and tests",
-     "Publish dataset.yml, a small fixture and a README run command; document how the recipe sample and USDA coverage limit the conclusions"],
+     "Publish dataset.yml, a small fixture and a README run command; document the reporting-carrier coverage, selected routes and source publication lag"],
     ["Re-runnable for the fixed sample with identical output",
      "Retries with backoff and logs",
      "Pydantic validation; bad records quarantined",
      "pytest in CI",
      "Dataset manifest records the sampling rule, source file versions, retained counts and anything dropped"]);
   T("PF2", "pf", "B", 8, "Portfolio extension: local bronze → silver",
-    "After portfolio v1, load the full Food.com files and the Open Food Facts Parquet export into local bronze Delta and build de-duplicated silver with PySpark MERGE. Auto Loader is added later in the Databricks platform lesson.",
-    ["offData","sde","sparkDocs","deltaDocs"],
+    "After portfolio v1, expand to a measured multi-year BTS archive in local bronze Delta and build de-duplicated silver with PySpark MERGE. Reprocess a corrected-month fixture; add Databricks Auto Loader after the platform lesson.",
+    ["btsFlights", "noaaHourly", "sde", "sparkDocs", "deltaDocs"],
     ["Finish the PySpark and Delta Lake + Iceberg lessons; reuse the v1 sample locally and demonstrate time-travel recovery in the README",
      "Compare silver keys/counts with v1; keep DuckDB v1 reproducible while adding this extension"],
     ["Local bronze and silver Delta tables with PySpark + MERGE",
@@ -1719,21 +1723,21 @@
      "Silver reconciles to the bounded v1 sample; re-runs produce no duplicate keys",
      "Quarantine table for bad records"]);
   T("PF3", "pf", "B", 8, "Portfolio v1: tested marts + useful dashboard",
-    "Answer one question: which simple recipes (≤10 ingredients, ≤45 minutes) give the most protein and fibre per 100 kcal and the most vegetables, and do reviewers rate them as highly as other recipes? Use DuckDB + dbt on the bounded sample from the ingester stage; model only the facts and dimensions this question needs.",
-    ["foodcom","fdc","sde","dwt","dbtStructure"],
-    ["Finish the ingester stage and the modeling, dbt, data quality and dashboard storytelling lessons; build staging models, a recipe-ingredient fact matched to USDA foods, a review fact and recipe, food, reviewer and date dimensions",
-     "Define protein per 100 kcal, fibre per 100 kcal and vegetable & legume share per serving; document unit conversion, the ingredient-match coverage threshold, zero denominators and sample limitations",
-     "Publish dashboard v1 (Power BI or Evidence), a metric spec and a README that reproduces the fixture-based build"],
-    ["One documented business question, a recipe-ingredient fact and relevant dimensions with grain statements",
-     "Three precisely defined metrics with sample-coverage limitations",
+    "Answer one question: Which airline and departure window has historically been most reliable for a selected US domestic route? Use DuckDB + dbt on the bounded flight sample; model only the facts and dimensions this question needs.",
+    ["btsFlights", "sde", "dwt", "dbtStructure"],
+    ["Finish ingestion, modeling, dbt and quality lessons; build flight staging, one flight-leg fact and airport, reporting-carrier and date dimensions, then route/carrier/departure-window marts",
+     "Cancellation rate over all selected scheduled flights; arrival-delay ≥30-minute rate over non-cancelled, non-diverted flights with a recorded arrival delay; p90 non-negative arrival delay over that same eligible population; publish counts, missing-delay coverage, date range and a configurable 100-eligible-flight comparison threshold",
+     "Publish a public route explorer (Evidence or another web dashboard), a metric spec and a README that reproduces the fixture-based build"],
+    ["One documented business question, a flight-leg fact and relevant dimensions with grain statements",
+     "Three precisely defined reliability metrics with denominators, coverage and sample limits",
      "Data tests + unit tests + contracts pass in CI",
      "Dashboard v1 and README v1 published"]);
   T("PF4", "pf", "B", 8, "Portfolio: orchestration",
-    "After v1, Airflow (Cosmos) runs the pipeline with backfills, alerts and DAG tests: daily Open Food Facts delta files and monthly USDA Branded Foods releases. Validate on a bounded fixture before increasing data volume.",
-    ["offData","sde","cosmos"],
+    "After v1, Airflow and Cosmos process newly published BTS months and selected NOAA station files with backfills, alerts and DAG tests. Validate on bounded fixtures before increasing data volume.",
+    ["btsFlights", "noaaHourly", "sde", "cosmos"],
     ["Finish the four Airflow lessons and the Databricks platform lesson before signoff; use Cosmos, the Databricks integration and DAG tests",
-     "Demonstrate a one-month backfill using a small deterministic fixture per interval; label it a recovery exercise rather than a full-volume benchmark"],
-    ["Daily schedule running end to end",
+     "Demonstrate a one-month backfill and corrected-file replay with deterministic fixtures; distinguish this recovery exercise from a full-volume benchmark"],
+    ["Scheduled source-availability checks process only published months and record event/retrieval times",
      "1-month backfill with no duplicates",
      "Failure recovery tested",
      "Alerts and DAG tests in CI"]);
@@ -1746,11 +1750,11 @@
      "Reconciliation test (gold vs bronze)",
      "Incident postmortem + TESTING.md"]);
   T("PF6", "pf", "B", 8, "Portfolio: performance & cost lab",
-    "Benchmarks at 1 / 10 / 100 GB and ≥7 experiments including cost.",
+    "Benchmarks at measured archive sizes and ≥7 experiments including cost; optional 1 / 10 / 100 GB runs only when practical.",
     pfLearn.concat(["useIndex"]),
     ["Collect the lab write-ups from the performance lessons (query plans, indexing, columnar, distributed execution, materialization & cost) into one report"],
     ["≥7 experiment write-ups",
-     "Benchmark table at 1 / 10 / 100 GB",
+     "Benchmark table records actual bytes/rows and clearly labels synthetic scale-up",
      "Cost per model reported"]);
   T("PF7", "pf", "B", 6, "Portfolio: semantic layer",
     "MetricFlow semantic layer with 8–12 metrics feeding the dashboard.",
@@ -1760,13 +1764,13 @@
      "Metric spec document",
      "Dashboard reads from the metrics"]);
   T("PF8", "pf", "B", 10, "Portfolio: AI agent + evaluation ⭐",
-    "'What should I cook?' agent via dbt MCP with a 40-question evaluation harness; ai_extract enrichment of ingredient lines.",
+    "Historical route-reliability assistant via dbt MCP with a 40-question evaluation harness; measured summaries cite certified metrics and report sample limits.",
     pfLearn.concat(["dbtMcp"]),
-    ["Use the agents over data, evaluating AI analytics and LLM functions in the warehouse lessons"],
+    ["Use agents, evaluation and warehouse LLM lessons; build read-only answers over certified flight metrics and compare a generated disruption summary with a deterministic template"],
     ["Agent answers via dbt MCP / semantic layer",
      "40-question harness runs",
      "Results table (text-to-SQL vs semantic layer) in README",
-     "ai_extract ingredient lines (quantity, unit, food) with cost per 1,000 rows"]);
+     "Narrative summaries match source metrics on a hand-checked evaluation set, with unsupported-claim rate and cost per 1,000 summaries reported"]);
   T("PF9", "pf", "B", 8, "Portfolio: portability & infra",
     "Terraform, least-privilege access, gold on Snowflake, full CI.",
     pfLearn.concat(["terraform"]),
@@ -1777,7 +1781,7 @@
      "CI: ruff, SQLFluff, pytest, dbt slim CI"]);
   T("PF10", "pf", "B", 6, "Portfolio: polished story & demo",
     "Polish the architecture and decision records from the architecture stage, update the docs site, and publish a demo video and write-up for the releases you shipped.",
-    ["foodcom","sde"],
+    ["btsFlights", "sde"],
     ["Reuse the architecture stage's documents and decision records; finish the trade-offs & organization lesson and update documentation for any later extensions",
      "Record a three-minute demo that leads with the business question, dashboard finding and evidence of correctness"],
     ["README and architecture documents updated for the shipped releases",
@@ -1852,7 +1856,7 @@
 
   T("PF11", "pf", "B", 4, "Portfolio: architecture & decision records",
     "Document the bounded v1 and the lakehouse/orchestration extension before the extensions checkpoint. Keep the architecture diagram and decisions current as later releases are added.",
-    ["foodcom","sde","fde"],
+    ["btsFlights", "sde", "fde"],
     ["Finish the architecture lessons (pipeline patterns, storage, platform modeling, reliability, governance & security) and the writing lesson, plus the v1, lakehouse, orchestration and quality stages; collect decisions while building, then review the architecture document",
      "Write at least five decisions covering dataset scope, grain, storage, orchestration and quality/recovery; state alternatives and consequences"],
     ["Architecture document explains data flow, scope, ownership and recovery",
@@ -1868,7 +1872,7 @@
     CM4: ["Join Locally Optimistic Slack", "Follow a Seattle data meetup on Meetup.com"],
     P1: ["Install Docker Desktop", "Run Postgres in a container: `docker run -d --name pg -e POSTGRES_PASSWORD=pg -p 5432:5432 postgres:17`", "Connect from VS Code (PostgreSQL extension) or `psql`; `uv add \"psycopg[binary]\"`"],
     SB1: ["Install Java 17 (Eclipse Temurin)", "`uv add pyspark`", "Check the Spark UI opens at localhost:4040 while a job runs"],
-    Py3: ["`uv add httpx pyarrow`", "Get a free data.gov API key for FoodData Central, download the Food.com recipes and reviews from Kaggle, and freeze the 5,000-recipe sampling rule in dataset.yml"],
+    Py3: ["`uv add httpx pyarrow`", "Use the BTS reporting-carrier monthly download and field dictionary; pin January–March 2025 and the six-airport route filter in dataset.yml. Bulk files need no API key; API pagination is a separate lesson exercise"],
     Py4: ["`uv add pydantic`", "`uv add --dev pytest mypy pre-commit`", "Add a GitHub Actions workflow that runs ruff and pytest on every push"],
     SB3: ["`uv add delta-spark pyiceberg` (match the delta-spark version to your PySpark)"],
     PF3: ["Power BI Desktop, or Evidence: `npm create evidence@latest` (needs Node.js)"],
@@ -1995,153 +1999,675 @@
   // items ("PF1|0" = practice line 0, ticks stay in pc.PF1) and completion checks reuse their
   // definition-of-done lines ("PF1|0" = check 0, ticks in ck.PF1). New tasks/checks are owned by the stage ID.
   const stages = [
-    { id: "v1-frame", release: "v1", from: [], name: "Frame the question & the sample",
-      desc: "Write down the one question v1 answers and freeze the dataset contract before writing code.",
-      req: ["SETUP", "CM1"], after: [],
-      scope: ["Capture the portfolio question and the decision it supports with a request-intake template.",
-        "Fix the dataset contract: 5,000 Food.com recipes chosen by a deterministic rule, their reviews, and pinned USDA Foundation & SR Legacy releases.",
-        "Create the project repository every later stage builds on."],
-      boundary: "Keep v1 small: one question, one bounded sample, DuckDB + dbt, tests in CI and one dashboard. Open Food Facts, orchestration, AI and portability are later releases.",
-      tasks: [{ t: "Write the question", d: "Use your intake template (question, decision, grain, deadline) for: which simple recipes (≤10 ingredients, ≤45 minutes) give the most protein and fibre per 100 kcal and the most vegetables, and do reviewers rate them as highly as other recipes?" },
-        { t: "Freeze the dataset contract", d: "Record the recipe sampling rule, the Food.com file version and the USDA release dates in `dataset.yml`." },
-        { t: "Check representative records", d: "Look at a few recipes before choosing metrics: ingredient quantity and name lists, servings, listed nutrition and reviews. Note what the sample can and cannot establish." }],
-      output: "A written question and decision, `dataset.yml` and a README stub in your lab repository.",
-      files: "README.md · dataset.yml · docs/question.md",
-      checks: [{ t: "The question and the decision it supports are written down" },
-        { t: "`dataset.yml` records the sampling rule, source versions and limits" },
-        { t: "I can explain what the bounded sample can and cannot show" }] },
-    { id: "v1-ingest", release: "v1", from: ["PF1"], name: "Build the bounded ingester",
-      req: ["Py1", "Py3", "Py4"], after: ["v1-frame"],
-      scope: ["Build a reproducible Python CLI that samples 5,000 Food.com recipes with their reviews and loads the pinned USDA releases, paging through the FoodData Central API where needed.",
-        "Validate, quarantine and publish data with a repeatable run command.",
-        "Record the sampling rule and source versions; keep a small offline fixture."],
-      boundary: "Keep this loader bounded and local. A scheduler and a lakehouse are later extensions.",
-      tasks: [{ t: "Reuse the lesson code", ref: "PF1|0" }, { t: "Publish the sample", ref: "PF1|1" }],
-      output: "A reproducible loader, a small fixture, a dataset manifest and passing tests in CI.",
-      files: "ingest/ · dataset.yml · fixture/ · tests/ · README.md",
-      checks: ["PF1|0", "PF1|1", "PF1|2", "PF1|3", "PF1|4"] },
-    { id: "v1-explore", release: "v1", from: [], name: "Explore the sample & match ingredients",
-      desc: "Profile the sample with SQL in DuckDB, turn ingredient lists into grams, and match them to USDA foods with a measured confidence.",
-      req: ["S1", "S2", "S4", "S7"], after: ["v1-ingest"],
-      scope: ["Understand recipes, ingredient lists and reviews before modeling them.",
-        "Parse ingredient quantities and names, convert to grams with USDA food portions, and match each ingredient to a USDA food.",
-        "Confirm which observations the sample can support and how much ingredient weight is matched."],
-      boundary: "Explore and match in DuckDB and Python only. The reusable transformations are built with dbt two stages later.",
-      tasks: [{ t: "Profile the records", d: "Count recipes, ingredient lines and reviews; find duplicate recipe and review IDs; state the grain of each table." },
-        { t: "Flatten the ingredient lists", d: "Pair the quantity and name lists with explicit types. Compare row counts before and after unnesting, and handle missing units." },
-        { t: "Convert and match", d: "Convert quantities to grams with USDA food portions and match ingredients to USDA foods with a confidence score. Hand-label 200 lines as an answer set; report precision and coverage." },
-        { t: "Reconcile and explain", d: "Compare your computed nutrition with Food.com's listed nutrition, and record matched, unmatched and rejected counts in a short note." }],
-      output: "Profiling queries, an ingredient-matching step with an answer set, and reconciled sample counts.",
-      files: "sql/profile_sample.sql · parse/ · parse/answer_set.csv · docs/sample_notes.md",
-      checks: [{ t: "The profile states the grain of recipes, ingredient lines and reviews" }, { t: "Ingredient matching reports precision on the answer set and the share of ingredient weight matched" }, { t: "Counts and computed nutrition reconcile to the sample, with the gaps explained" }] },
-    { id: "v1-model", release: "v1", from: ["PF3"], name: "Design the analytical model",
-      desc: "Model only what the question needs: a recipe-ingredient fact matched to USDA foods, a review fact and their dimensions, plus three precise metrics.",
-      req: ["M1", "M2", "M3", "BZ1", "BZ2"], after: ["v1-explore"],
-      scope: ["Answer one question: which simple recipes (≤10 ingredients, ≤45 minutes) give the most protein and fibre per 100 kcal and the most vegetables, and do reviewers rate them as highly as other recipes?",
-        "Use DuckDB + dbt on the bounded sample from the ingester stage; model only the facts and dimensions this question needs.",
-        "Define the metrics and their limits before implementing them."],
-      boundary: "First-release boundary: packaged products, additional fact types and a mandatory SCD2 mart belong to later extensions — add them only when a question needs them.",
-      tasks: [{ t: "Write the grain statements", d: "State what one row of each fact (recipe ingredient line, review) and each dimension represents, with stable keys." },
-        { t: "Define the three metrics", ref: "PF3|1" }],
-      output: "Grain statements, a small model diagram and a metric spec.",
-      files: "docs/model.md · docs/metric_spec.md · model diagram",
-      checks: ["PF3|0", "PF3|1"] },
-    { id: "v1-marts", release: "v1", from: ["PF3"], name: "Build tested dbt marts",
-      desc: "Implement the design on DuckDB + dbt and prove it with data tests, unit tests and contracts in CI.",
-      req: ["S6", "M4", "D1", "D2", "D3", "Q1", "Q2"], after: ["v1-model"],
-      scope: ["Build sources, staging models, the recipe-ingredient and review facts, their dimensions and a recipe nutrition mart.",
-        "Verify keys, relationships and the expected metric results.",
-        "Make the build reproducible from the committed fixture."],
-      boundary: "Use simple materializations for the bounded sample; incremental strategies come with later extensions.",
-      tasks: [{ t: "Build staging and marts", ref: "PF3|0" },
-        { t: "Reproduce from a clean checkout", d: "README commands reproduce ingestion and `dbt build` from the small committed fixture." }],
-      output: "Tested staging models and marts with a reproducible build.",
-      files: "models/ · tests/ · .github/workflows/ · README build commands",
-      checks: ["PF3|2", { t: "README commands reproduce ingestion and `dbt build` from the committed fixture" }] },
-    { id: "v1-release", release: "v1", from: ["PF3"], name: "Ship dashboard v1 & README",
-      desc: "Publish the first portfolio release: one dashboard that answers the question, with metric definitions and sample limits visible.",
-      req: ["CM2", "CM3"], after: ["v1-marts"], setup: "PF3",
-      scope: ["Answer the Fuel Smart question on one dashboard.",
-        "Make the metric definitions, ingredient-match coverage and sample limitations visible.",
-        "Package a project another person can reproduce and review."],
-      boundary: "Ship this small release first. It is your application evidence; later releases extend it. Present metrics as recipe data, not personal health advice.",
-      tasks: [{ t: "Publish dashboard v1", ref: "PF3|2" }],
-      output: "Dashboard v1, a metric spec and a README that reproduces the fixture-based build.",
-      files: "dashboard · README.md · docs/metric_spec.md",
-      checks: ["PF3|3", { t: "Dashboard numbers match the tested metric outputs" }] },
-    { id: "x-lakehouse", release: "lakehouse", from: ["PF2"], name: "Local bronze → silver lakehouse",
-      req: ["SB2", "SB3"], after: ["v1-release"],
-      scope: ["Load the full Food.com files and the Open Food Facts Parquet export (3.7M+ products) into local bronze Delta.", "Build de-duplicated silver with PySpark MERGE (one row per product barcode) and a quarantine table.", "Demonstrate time-travel recovery."],
-      boundary: "Stay local. Databricks Auto Loader is added in the Databricks platform lesson after this stage; Iceberg remains a lesson lab.",
-      tasks: [{ t: "Build bronze and silver", ref: "PF2|0" }, { t: "Reconcile with v1", ref: "PF2|1" }],
-      output: "Local bronze and silver Delta tables that reconcile with v1.",
-      files: "spark/ · bronze/ · silver/ · README recovery section",
-      checks: ["PF2|0", "PF2|1", "PF2|2", "PF2|3"] },
-    { id: "x-orchestration", release: "orchestration", from: ["PF4"], name: "Orchestrate with Airflow",
-      req: ["AF1", "AF2", "AF3", "AF4", "SB4"], after: ["x-lakehouse"],
-      scope: ["Run the pipeline on a schedule with Airflow and Cosmos: daily Open Food Facts delta files and monthly USDA Branded Foods releases.", "Backfill, recover from failures and alert.", "Test DAGs in CI."],
-      boundary: "Validate on a bounded fixture before increasing data volume; label the backfill a recovery exercise. Delta files cover only the last 14 days and omit deleted products, so plan periodic full refreshes.",
-      tasks: [{ t: "Wire up the orchestration", ref: "PF4|0" }, { t: "Prove a one-month backfill", ref: "PF4|1" }],
-      output: "An Airflow project that schedules, backfills, recovers and alerts.",
-      files: "dags/ · tests/dags/ · docs/runbook.md",
-      checks: ["PF4|0", "PF4|1", "PF4|2", "PF4|3"] },
-    { id: "x-quality", release: "quality", from: ["PF5"], name: "Quality & observability",
-      req: ["Q1", "Q2", "Q3", "Q4", "AF3"], after: ["v1-release"],
-      scope: ["Publish an observability report and a freshness SLA.", "Reconcile gold with bronze, and flag foods and products whose protein × 4 + carbohydrate × 4 + fat × 9 disagrees with their kcal.", "Practise an incident end to end."],
-      boundary: "Prefer a few meaningful checks over test bloat; every alert needs an owner and a runbook.",
-      tasks: [{ t: "Apply the quality lessons", ref: "PF5|0" }],
-      output: "Elementary report, freshness alert, reconciliation test, postmortem and TESTING.md.",
-      files: "TESTING.md · docs/postmortem.md · Elementary report",
-      checks: ["PF5|0", "PF5|1", "PF5|2", "PF5|3"] },
-    { id: "x-perf", release: "perf", from: ["PF6"], name: "Performance & cost lab",
-      req: ["P1", "P2", "P3", "P4", "P5", "SB3", "SB5"], after: ["v1-release"],
-      scope: ["Benchmark at 1 / 10 / 100 GB.", "Run at least seven experiments, including cost."],
-      boundary: "Increase volume deliberately and say which runs used small fixtures. Food data reaches a few GB as Parquet; use the uncompressed Open Food Facts JSONL export and a labelled synthetic scale factor for larger runs.",
-      tasks: [{ t: "Collect the lab write-ups", ref: "PF6|0" }],
-      output: "A benchmark report with cost per model.",
-      files: "performance-lab/ · docs/benchmarks.md",
-      checks: ["PF6|0", "PF6|1", "PF6|2"] },
-    { id: "x-semantic", release: "semantic", from: ["PF7"], name: "Semantic layer",
-      req: ["M5", "BZ2", "AI1", "AI2"], after: ["v1-release"],
-      scope: ["Define 8–12 metrics in MetricFlow.", "Feed the dashboard from the semantic layer."],
-      boundary: "One definition per metric; the dashboard reads metrics instead of re-implementing them.",
-      tasks: [{ t: "Apply the semantic layer lessons", ref: "PF7|0" }],
-      output: "MetricFlow semantic models, a metric spec and a dashboard reading from them.",
-      files: "models/semantic/ · docs/metric_spec.md",
-      checks: ["PF7|0", "PF7|1", "PF7|2"] },
-    { id: "x-ai", release: "ai", from: ["PF8"], name: "AI agent + evaluation ⭐",
-      req: ["AI3", "AI4", "AI5"], after: ["x-semantic"],
-      scope: ["Build a “What should I cook?” agent over the semantic layer via the dbt MCP server.", "Evaluate it with a 40-question harness.", "Extract ingredient quantity, unit and food with `ai_extract`, check it against your answer set and measure cost."],
-      boundary: "Report results honestly, including failures; guardrails before convenience.",
-      tasks: [{ t: "Apply the AI lessons", ref: "PF8|0" }],
-      output: "An agent, an evaluation harness and a published results table.",
-      files: "agent/ · eval/ · README results table",
-      checks: ["PF8|0", "PF8|1", "PF8|2", "PF8|3"] },
-    { id: "x-portability", release: "portability", from: ["PF9"], name: "Portability & infrastructure",
-      req: ["PL1", "PL2", "PL3", "D4"], after: ["v1-release"],
-      scope: ["Provision infrastructure with Terraform and least-privilege access.", "Run the gold layer on Snowflake too.", "Complete CI for code, SQL and dbt."],
-      boundary: "Set a budget alert first; start the Snowflake trial only when you begin this stage.",
-      tasks: [{ t: "Apply the platform lessons", ref: "PF9|0" }],
-      output: "Terraform-managed infrastructure, a portable gold layer and full CI.",
-      files: "infra/ · .github/workflows/ · profiles for Snowflake",
-      checks: ["PF9|0", "PF9|1", "PF9|2", "PF9|3"] },
-    { id: "x-architecture", release: "architecture", from: ["PF11"], name: "Architecture & decision records",
-      req: ["A1", "A2", "A3", "A4", "A5", "CM2"], after: ["v1-release", "x-lakehouse", "x-orchestration", "x-quality"],
-      scope: ["Explain data flow, scope, ownership and recovery in one architecture document.", "Record at least five decisions with alternatives and consequences."],
-      boundary: "Collect decisions while building; this stage reviews and completes them.",
-      tasks: [{ t: "Collect the decisions", ref: "PF11|0" }, { t: "Write the decision records", ref: "PF11|1" }],
-      output: "An architecture document, ≥5 decision records and a linked TESTING.md.",
-      files: "docs/architecture.md · docs/adr/ · TESTING.md",
-      checks: ["PF11|0", "PF11|1", "PF11|2"] },
-    { id: "x-story", release: "story", from: ["PF10"], name: "Polished story & demo",
-      req: ["A6", "CM2", "CM3"], after: ["x-architecture"],
-      scope: ["Update the documentation for the releases you shipped.", "Publish a three-minute demo and a public write-up."],
-      boundary: "Lead with the business question, the finding and the evidence of correctness.",
-      tasks: [{ t: "Update the documentation", ref: "PF10|0" }, { t: "Record the demo", ref: "PF10|1" }],
-      output: "Updated docs site, a three-minute demo video and a public write-up.",
-      files: "README.md · docs site · demo video",
-      checks: ["PF10|0", "PF10|1", "PF10|2", "PF10|3"] }
-  ];
+  {
+    "id": "v1-frame",
+    "release": "v1",
+    "from": [],
+    "name": "Frame the question & the sample",
+    "desc": "Write down the one question v1 answers and freeze the dataset contract before writing code.",
+    "req": [
+      "SETUP",
+      "CM1"
+    ],
+    "after": [],
+    "scope": [
+      "Write the traveler decision and one historical reliability question using the intake template.",
+      "Fix the dataset contract: January–March 2025 reporting-carrier flights between SEA, SFO, LAX, DEN, ORD and JFK; retain every matching row, including cancellations and diversions.",
+      "Create the repository, pin source schemas/checksums and commit the offline fixture contract."
+    ],
+    "boundary": "Keep v1 small: BTS flights, DuckDB + dbt, three reliability metrics, tests in CI and a public route explorer. Weather, Spark, orchestration, AI and portability follow later.",
+    "tasks": [
+      {
+        "t": "Write the question",
+        "d": "Which airline and departure window has historically been most reliable for a selected US domestic route? Compare route, carrier and scheduled local departure window within the same date range."
+      },
+      {
+        "t": "Freeze the dataset contract",
+        "d": "Record months, six airports, both-endpoints route filter, source table, checksums and retrieval dates in dataset.yml; retain cancelled and diverted rows."
+      },
+      {
+        "t": "Inspect representative records",
+        "d": "Inspect cancellations, diversions, missing arrival delays, HHMM values and overnight flights; list what the source can and cannot establish."
+      }
+    ],
+    "output": "A written question and decision, `dataset.yml` and a README stub in your lab repository.",
+    "files": "README.md · dataset.yml · docs/question.md",
+    "checks": [
+      {
+        "t": "The question and the decision it supports are written down"
+      },
+      {
+        "t": "`dataset.yml` records the sampling rule, source versions and limits"
+      },
+      {
+        "t": "I can explain what the bounded sample can and cannot show"
+      }
+    ]
+  },
+  {
+    "id": "v1-ingest",
+    "release": "v1",
+    "from": [
+      "PF1"
+    ],
+    "name": "Build the bounded ingester",
+    "req": [
+      "Py1",
+      "Py3",
+      "Py4"
+    ],
+    "after": [
+      "v1-frame"
+    ],
+    "scope": [
+      "Build a Python CLI for the pinned monthly BTS ZIP/CSV files; stream in batches and retain all rows matching the route contract.",
+      "Validate, quarantine and atomically publish month-partitioned Parquet; verify checksums and reconcile raw, selected and rejected counts.",
+      "Keep a small offline fixture, source manifest and repeatable command."
+    ],
+    "boundary": "Keep this loader bounded and local. A scheduler and a lakehouse are later extensions.",
+    "tasks": [
+      {
+        "t": "Reuse the lesson code",
+        "ref": "PF1|0"
+      },
+      {
+        "t": "Publish the sample",
+        "ref": "PF1|1"
+      }
+    ],
+    "output": "A reproducible loader, a small fixture, a dataset manifest and passing tests in CI.",
+    "files": "ingest/ · dataset.yml · fixture/ · tests/ · README.md",
+    "checks": [
+      "PF1|0",
+      "PF1|1",
+      "PF1|2",
+      "PF1|3",
+      "PF1|4"
+    ]
+  },
+  {
+    "id": "v1-explore",
+    "release": "v1",
+    "from": [],
+    "name": "Explore flight outcomes & time",
+    "desc": "Profile scheduled flight legs, validate comparison groups and handle local times before modeling outcomes.",
+    "req": [
+      "S1",
+      "S2",
+      "S3",
+      "S4",
+      "S5"
+    ],
+    "after": [
+      "v1-ingest"
+    ],
+    "scope": [
+      "State the grain and test a candidate flight-leg key: date, reporting-carrier ID, flight number, origin, destination and scheduled departure time.",
+      "Profile cancellation/diversion flags, missing delays and comparable route/carrier/departure-window groups.",
+      "Use source delay fields for v1 outcomes; keep local departure windows and test HHMM, 2400, midnight and time-zone edge cases."
+    ],
+    "boundary": "Do not guess missing outcomes or silently choose conflicting duplicates. Full UTC weather alignment belongs to the weather extension; airport-wide conclusions need wider flight coverage.",
+    "tasks": [
+      {
+        "t": "Profile flight records",
+        "d": "Reconcile source/selected/quarantined counts; test the candidate key and distinguish exact duplicates from conflicting versions."
+      },
+      {
+        "t": "Handle event time",
+        "d": "Preserve local schedule values, derive local departure windows and use source delays; test midnight/2400 and document ambiguous dates or DST cases."
+      },
+      {
+        "t": "Calculate comparison metrics",
+        "d": "Cancellation rate over all selected scheduled flights; arrival-delay ≥30-minute rate over non-cancelled, non-diverted flights with a recorded arrival delay; p90 non-negative arrival delay over that same eligible population. Compare within the same route and date range; keep a date spine, sample counts and the comparison threshold."
+      },
+      {
+        "t": "Explain coverage",
+        "d": "Report missing-delay exclusions, cancellations and diversions separately; do not interpret an unobserved day or absent group as zero."
+      }
+    ],
+    "output": "Profiling SQL, tested time/identity rules and reconciled counts for the selected routes.",
+    "files": "sql/profile_flights.sql · tests/fixtures/ · docs/sample_notes.md",
+    "checks": [
+      {
+        "t": "I can explain the flight-leg grain, duplicate policy and source/filter counts"
+      },
+      {
+        "t": "Local departure windows and cancellation/diversion/missing-delay cases are tested"
+      },
+      {
+        "t": "Three reliability metrics reconcile to the sample with explicit denominators and counts"
+      }
+    ]
+  },
+  {
+    "id": "v1-model",
+    "release": "v1",
+    "from": [
+      "PF3"
+    ],
+    "name": "Design the analytical model",
+    "desc": "Design a flight-leg fact and role-playing airport, reporting-carrier and date dimensions; specify reliable comparison metrics.",
+    "req": [
+      "M1",
+      "M2",
+      "M3",
+      "BZ1",
+      "BZ2"
+    ],
+    "after": [
+      "v1-explore"
+    ],
+    "scope": [
+      "Answer one question: Which airline and departure window has historically been most reliable for a selected US domestic route? Use DuckDB + dbt on the bounded flight sample; model only the facts and dimensions this question needs.",
+      "Define the metrics, denominators and comparison limits before implementing them."
+    ],
+    "boundary": "One flight-leg fact is enough for v1. Weather observations get their own fact later; use SCD2 only for attributes whose history you actually capture.",
+    "tasks": [
+      {
+        "t": "Write the grain statements",
+        "d": "Define one row per selected scheduled flight leg; airports play origin/destination roles, DOT IDs preserve identity, and local departure windows are explicit."
+      },
+      {
+        "t": "Define the three metrics",
+        "ref": "PF3|1"
+      }
+    ],
+    "output": "Grain statements, a small model diagram and a metric spec.",
+    "files": "docs/model.md · docs/metric_spec.md · model diagram",
+    "checks": [
+      "PF3|0",
+      "PF3|1"
+    ]
+  },
+  {
+    "id": "v1-marts",
+    "release": "v1",
+    "from": [
+      "PF3"
+    ],
+    "name": "Build tested dbt marts",
+    "desc": "Implement the design on DuckDB + dbt and prove it with data tests, unit tests and contracts in CI.",
+    "req": [
+      "S6",
+      "M4",
+      "D1",
+      "D2",
+      "D3",
+      "Q1",
+      "Q2"
+    ],
+    "after": [
+      "v1-model"
+    ],
+    "scope": [
+      "Build sources/staging, the flight-leg fact, airport/carrier/date dimensions and route/carrier/departure-window marts.",
+      "Test key uniqueness, relationships, cancellations/diversions, missing delays and expected aggregate results.",
+      "Rebuild from the offline fixture in CI; prove a repeated load creates no duplicate legs."
+    ],
+    "boundary": "Use simple materializations for the bounded sample; incremental strategies come with later extensions.",
+    "tasks": [
+      {
+        "t": "Build staging and marts",
+        "ref": "PF3|0"
+      },
+      {
+        "t": "Reproduce from a clean checkout",
+        "d": "README commands reproduce ingestion and `dbt build` from the small committed fixture."
+      }
+    ],
+    "output": "Tested staging models and marts with a reproducible build.",
+    "files": "models/ · tests/ · .github/workflows/ · README build commands",
+    "checks": [
+      "PF3|2",
+      {
+        "t": "README commands reproduce ingestion and `dbt build` from the committed fixture"
+      }
+    ]
+  },
+  {
+    "id": "v1-release",
+    "release": "v1",
+    "from": [
+      "PF3"
+    ],
+    "name": "Ship dashboard v1 & README",
+    "desc": "Publish the first portfolio release: one dashboard that answers the question, with metric definitions and sample limits visible.",
+    "req": [
+      "CM2",
+      "CM3"
+    ],
+    "after": [
+      "v1-marts"
+    ],
+    "setup": "PF3",
+    "scope": [
+      "Answer the Flight Reliability question with a public route explorer: select route, carrier and scheduled departure window.",
+      "Show cancellation rate, ≥30-minute delay rate and p90 delay with counts, eligible denominators, date range and low-sample labels.",
+      "Publish one reproducible finding and a public link with no sign-in required; keep source links and data-as-of visible."
+    ],
+    "boundary": "Ship this bounded release first as application evidence. BTS supplies historical reported US domestic outcomes, with publication lag; fares, live status and connection-risk predictions need other data.",
+    "tasks": [
+      {
+        "t": "Publish dashboard v1",
+        "ref": "PF3|2"
+      }
+    ],
+    "output": "A public route explorer, three tested metrics, one supported finding and a reproducible README.",
+    "files": "dashboard · README.md · docs/metric_spec.md",
+    "checks": [
+      "PF3|3",
+      {
+        "t": "Dashboard numbers match the tested metric outputs"
+      }
+    ]
+  },
+  {
+    "id": "x-weather",
+    "resources": ["btsFlights", "noaaHourly"],
+    "release": "weather",
+    "from": [],
+    "name": "Add weather & replay a disruption",
+    "desc": "Connect historical flight outcomes with nearby NOAA station observations and replay one airport disruption period.",
+    "req": [
+      "Py2",
+      "Py3",
+      "S4",
+      "S5",
+      "M2",
+      "D1",
+      "Q1"
+    ],
+    "after": [
+      "v1-release"
+    ],
+    "scope": [
+      "Select one airport, one event period and a matched comparison period; expand flight coverage to all reported legs touching that airport for an airport-wide replay.",
+      "Download pinned NOAA GHCNh station data; record units, missing values, quality flags and source timestamps.",
+      "Map the airport to a suitable station with a documented distance/coverage rule; align timestamps in UTC and join at a defined grain without multiplying flight rows."
+    ],
+    "boundary": "Describe observed associations, not causal weather attribution or forecasts. Keep weather gaps and unmatched flights visible; use source delay outcomes instead of guessing ambiguous local arrival dates.",
+    "tasks": [
+      {
+        "t": "Choose and document stations",
+        "d": "Create airport_station_map.csv with source coordinates, IANA time zone, station ID, distance, coverage and mapping rationale."
+      },
+      {
+        "t": "Normalize observations and flight time",
+        "d": "Keep station observations as a separate fact. Convert flight times with date/elapsed-time constraints, flag ambiguous DST/overnight cases, and apply weather quality flags."
+      },
+      {
+        "t": "Join without fan-out",
+        "d": "Attach a documented hourly aggregation or nearest observation within a fixed tolerance; assert flight count preservation and publish match coverage."
+      },
+      {
+        "t": "Publish one event replay",
+        "d": "Show measured flight outcomes and weather over time, alongside a comparable baseline and source coverage."
+      }
+    ],
+    "output": "A tested weather integration and one historical airport-disruption replay.",
+    "files": "ingest/weather/ · models/weather/ · airport_station_map.csv · tests/ · dashboard/replay/",
+    "checks": [
+      {
+        "t": "Station mapping, units, time zones and quality filters are documented"
+      },
+      {
+        "t": "The temporal join preserves flight counts and measures missing/unmatched coverage"
+      },
+      {
+        "t": "Replay compares explicit periods and distinguishes association from causation"
+      }
+    ]
+  },
+  {
+    "id": "x-lakehouse",
+    "release": "lakehouse",
+    "from": [
+      "PF2"
+    ],
+    "name": "Local bronze → silver lakehouse",
+    "req": [
+      "SB2",
+      "SB3"
+    ],
+    "after": [
+      "v1-release",
+      "x-weather"
+    ],
+    "scope": [
+      "Expand to a pinned multi-year BTS archive plus selected station files; record actual size before choosing compute.",
+      "Keep raw source versions in bronze; MERGE validated flight legs and weather observations into separate silver tables using explicit keys and conflict rules.",
+      "Replay a corrected-month fixture, prove idempotence, demonstrate Delta time-travel recovery and reconcile the v1 slice."
+    ],
+    "boundary": "Stay local. Databricks Auto Loader is added in the Databricks platform lesson after this stage; Iceberg remains a lesson lab.",
+    "tasks": [
+      {
+        "t": "Build bronze and silver",
+        "ref": "PF2|0"
+      },
+      {
+        "t": "Reconcile with v1",
+        "ref": "PF2|1"
+      }
+    ],
+    "output": "Local bronze and silver Delta tables that reconcile with v1.",
+    "files": "spark/ · bronze/ · silver/ · README recovery section",
+    "checks": [
+      "PF2|0",
+      "PF2|1",
+      "PF2|2",
+      "PF2|3"
+    ]
+  },
+  {
+    "id": "x-orchestration",
+    "release": "orchestration",
+    "from": [
+      "PF4"
+    ],
+    "name": "Orchestrate with Airflow",
+    "req": [
+      "AF1",
+      "AF2",
+      "AF3",
+      "AF4",
+      "SB4"
+    ],
+    "after": [
+      "x-lakehouse"
+    ],
+    "scope": [
+      "Check monthly BTS source availability and ingest selected NOAA files using Airflow/Cosmos; record publication, event and retrieval times separately.",
+      "Reprocess published/corrected partitions, backfill a month, recover failures and alert.",
+      "Test DAGs and fixture-based runs in CI."
+    ],
+    "boundary": "A daily discovery job does not make monthly BTS files real-time. Process only available source intervals; keep fixture recovery exercises distinct from full-volume results.",
+    "tasks": [
+      {
+        "t": "Wire up the orchestration",
+        "ref": "PF4|0"
+      },
+      {
+        "t": "Prove a one-month backfill",
+        "ref": "PF4|1"
+      }
+    ],
+    "output": "An Airflow project that schedules, backfills, recovers and alerts.",
+    "files": "dags/ · tests/dags/ · docs/runbook.md",
+    "checks": [
+      "PF4|0",
+      "PF4|1",
+      "PF4|2",
+      "PF4|3"
+    ]
+  },
+  {
+    "id": "x-quality",
+    "release": "quality",
+    "from": [
+      "PF5"
+    ],
+    "name": "Quality & observability",
+    "req": [
+      "Q1",
+      "Q2",
+      "Q3",
+      "Q4",
+      "AF3"
+    ],
+    "after": [
+      "v1-release"
+    ],
+    "scope": [
+      "Publish freshness expectations based on actual source publication and a separate ingestion-latency check.",
+      "Reconcile raw/silver/gold counts by month and route; monitor missing delays, cancellations, diversions, duplicate keys and weather-match coverage.",
+      "Inject a corrupted or missing-month fixture, detect it and write an incident report."
+    ],
+    "boundary": "Prefer a few meaningful checks over test bloat; every alert needs an owner and a runbook.",
+    "tasks": [
+      {
+        "t": "Apply the quality lessons",
+        "ref": "PF5|0"
+      }
+    ],
+    "output": "Elementary report, freshness alert, reconciliation test, postmortem and TESTING.md.",
+    "files": "TESTING.md · docs/postmortem.md · Elementary report",
+    "checks": [
+      "PF5|0",
+      "PF5|1",
+      "PF5|2",
+      "PF5|3"
+    ]
+  },
+  {
+    "id": "x-perf",
+    "release": "perf",
+    "from": [
+      "PF6"
+    ],
+    "name": "Performance & cost lab",
+    "req": [
+      "P1",
+      "P2",
+      "P3",
+      "P4",
+      "P5",
+      "SB3",
+      "SB5"
+    ],
+    "after": [
+      "v1-release"
+    ],
+    "scope": [
+      "Benchmark flight scans, route aggregates and weather joins at measured archive sizes.",
+      "Compare partition pruning, clustering, materializations, joins and file sizes in at least seven experiments with cost."
+    ],
+    "boundary": "Start with available real archive sizes. Larger 1 / 10 / 100 GB experiments are optional; label synthetic repetitions, measure actual bytes and never invent completed benchmark results.",
+    "tasks": [
+      {
+        "t": "Collect the lab write-ups",
+        "ref": "PF6|0"
+      }
+    ],
+    "output": "A benchmark report with cost per model.",
+    "files": "performance-lab/ · docs/benchmarks.md",
+    "checks": [
+      "PF6|0",
+      "PF6|1",
+      "PF6|2"
+    ]
+  },
+  {
+    "id": "x-semantic",
+    "release": "semantic",
+    "from": [
+      "PF7"
+    ],
+    "name": "Semantic layer",
+    "req": [
+      "M5",
+      "BZ2",
+      "AI1",
+      "AI2"
+    ],
+    "after": [
+      "v1-release"
+    ],
+    "scope": [
+      "Define certified flight counts, cancellations, diversions, eligible arrivals, delay rates/percentiles and weather-match coverage in MetricFlow.",
+      "Feed the route explorer from consistent metric definitions with shared date/route/airline filters."
+    ],
+    "boundary": "One definition per metric; the dashboard reads metrics instead of re-implementing them.",
+    "tasks": [
+      {
+        "t": "Apply the semantic layer lessons",
+        "ref": "PF7|0"
+      }
+    ],
+    "output": "MetricFlow semantic models, a metric spec and a dashboard reading from them.",
+    "files": "models/semantic/ · docs/metric_spec.md",
+    "checks": [
+      "PF7|0",
+      "PF7|1",
+      "PF7|2"
+    ]
+  },
+  {
+    "id": "x-ai",
+    "release": "ai",
+    "from": [
+      "PF8"
+    ],
+    "name": "AI agent + evaluation ⭐",
+    "req": [
+      "AI3",
+      "AI4",
+      "AI5"
+    ],
+    "after": [
+      "x-semantic"
+    ],
+    "scope": [
+      "Build a read-only historical route-reliability assistant over the semantic layer using dbt MCP.",
+      "Evaluate 40 questions covering denominators, filters, low samples, unsupported fares/live status and weather-causality claims.",
+      "Compare metric-grounded disruption narratives with a deterministic template; measure unsupported claims, accuracy, latency and cost."
+    ],
+    "boundary": "The assistant cites measured historical metrics and coverage; it must abstain from unsupported prices, live predictions and causal explanations.",
+    "tasks": [
+      {
+        "t": "Apply the AI lessons",
+        "ref": "PF8|0"
+      }
+    ],
+    "output": "An agent, an evaluation harness and a published results table.",
+    "files": "agent/ · eval/ · README results table",
+    "checks": [
+      "PF8|0",
+      "PF8|1",
+      "PF8|2",
+      "PF8|3"
+    ]
+  },
+  {
+    "id": "x-portability",
+    "release": "portability",
+    "from": [
+      "PF9"
+    ],
+    "name": "Portability & infrastructure",
+    "req": [
+      "PL1",
+      "PL2",
+      "PL3",
+      "D4"
+    ],
+    "after": [
+      "v1-release"
+    ],
+    "scope": [
+      "Provision infrastructure with Terraform and least-privilege access.",
+      "Run the gold layer on Snowflake too.",
+      "Complete CI for code, SQL and dbt."
+    ],
+    "boundary": "Set a budget alert first; start the Snowflake trial only when you begin this stage.",
+    "tasks": [
+      {
+        "t": "Apply the platform lessons",
+        "ref": "PF9|0"
+      }
+    ],
+    "output": "Terraform-managed infrastructure, a portable gold layer and full CI.",
+    "files": "infra/ · .github/workflows/ · profiles for Snowflake",
+    "checks": [
+      "PF9|0",
+      "PF9|1",
+      "PF9|2",
+      "PF9|3"
+    ]
+  },
+  {
+    "id": "x-architecture",
+    "release": "architecture",
+    "from": [
+      "PF11"
+    ],
+    "name": "Architecture & decision records",
+    "req": [
+      "A1",
+      "A2",
+      "A3",
+      "A4",
+      "A5",
+      "CM2"
+    ],
+    "after": [
+      "v1-release",
+      "x-lakehouse",
+      "x-orchestration",
+      "x-quality"
+    ],
+    "scope": [
+      "Explain data flow, scope, ownership and recovery in one architecture document.",
+      "Record at least five decisions with alternatives and consequences."
+    ],
+    "boundary": "Collect decisions while building; this stage reviews and completes them.",
+    "tasks": [
+      {
+        "t": "Collect the decisions",
+        "ref": "PF11|0"
+      },
+      {
+        "t": "Write the decision records",
+        "ref": "PF11|1"
+      }
+    ],
+    "output": "An architecture document, ≥5 decision records and a linked TESTING.md.",
+    "files": "docs/architecture.md · docs/adr/ · TESTING.md",
+    "checks": [
+      "PF11|0",
+      "PF11|1",
+      "PF11|2"
+    ]
+  },
+  {
+    "id": "x-story",
+    "release": "story",
+    "from": [
+      "PF10"
+    ],
+    "name": "Polished story & demo",
+    "req": [
+      "A6",
+      "CM2",
+      "CM3"
+    ],
+    "after": [
+      "x-architecture"
+    ],
+    "scope": [
+      "Update the documentation for the releases you shipped.",
+      "Publish a three-minute demo and a public write-up."
+    ],
+    "boundary": "Lead with the business question, the finding and the evidence of correctness.",
+    "tasks": [
+      {
+        "t": "Update the documentation",
+        "ref": "PF10|0"
+      },
+      {
+        "t": "Record the demo",
+        "ref": "PF10|1"
+      }
+    ],
+    "output": "Updated docs site, a three-minute demo video and a public write-up.",
+    "files": "README.md · docs site · demo video",
+    "checks": [
+      "PF10|0",
+      "PF10|1",
+      "PF10|2",
+      "PF10|3"
+    ]
+  }
+];
 
   // ---------- checkpoints: keys stay stable so saved checkpoint ticks (g["s1-0"] …) still apply ----------
   const checkpoints = {
@@ -2149,23 +2675,23 @@
     s1: { title: "Checkpoint · Core SQL, modeling & ingester", items: ["Medium window problems in under 15 min", "I can explain grain, the 3 fact types and SCDs", "I can write a precise metric definition", "Bounded ingester validates records, re-runs safely and passes tests in CI"] },
     s2: { title: "Checkpoint · SQL depth, performance & quality", items: ["Hard SQL in 20–25 min", "≥3 performance experiments from the query-plan, indexing and columnar lessons written up", "Delta MERGE working", "Tests and contracts run in CI", "I can explain p-values, CIs and power simply"] },
     apply: { title: "Ready to apply", apply: true, note: "Apply with portfolio v1, career assets and basic interview practice. Continue later extensions and advanced interviews alongside applications; work-data access is not required.",
-      items: ["SQL depth, performance & quality checkpoint passed", "Portfolio v1 shipped: bounded dataset, tested dbt marts and dashboard", "Resume and LinkedIn prepared", "Basic SQL, Python and modeling interview practice done"] },
-    s3: { title: "Checkpoint · Extensions built", items: ["Lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built", "Architecture doc + ≥5 decision records + TESTING.md", "AI evaluation report published"] },
+      items: ["SQL depth, performance & quality checkpoint passed", "Flight Reliability v1 shipped: bounded dataset, tested dbt marts and public route explorer", "Resume and LinkedIn prepared", "Basic SQL, Python and modeling interview practice done"] },
+    s3: { title: "Checkpoint · Extensions built", items: ["Weather replay, lakehouse, orchestration, quality, performance & cost, semantic layer, AI and portability stages built", "Architecture doc + ≥5 decision records + TESTING.md", "AI evaluation report published"] },
     s4: { title: "Checkpoint · Interview-ready", items: ["3 mock loops passed", "Resume and LinkedIn rewritten", "Applications going out via referrals"] }
   };
 
   // ---------- roadmap: one learning path that unblocks project work ----------
   // Sections are portfolio releases (plus interview readiness). Rows: learn → stage | milestone (career lesson) | practice (standalone) | checkpoint.
   const road = [
-    { id: "v1", name: "First release · Fuel Smart", kind: "release",
-      desc: "One question, a bounded recipe sample, tested marts and one useful dashboard — your application evidence.",
+    { id: "v1", name: "First release · Flight Reliability", kind: "release",
+      desc: "One historical reliability question, three months of flight data, tested marts and a public route explorer — your application evidence.",
       rows: [
         { title: "Your lab & the question", learn: ["SETUP", "CM1"], stage: "v1-frame" },
         { checkpoint: "s0" },
         { title: "Python for data & ingestion", learn: ["Py1", "Py3", "Py4"], stage: "v1-ingest" },
-        { title: "Analytical SQL on recipes & reviews", learn: ["S1", "S2", "S4", "S7"], stage: "v1-explore" },
-        { title: "More SQL & DataFrames", learn: ["S3", "S5", "Py2"],
-          practice: { title: "Interview practice", text: "Not needed for a v1 stage. Practise these as interview reps: timed, without AI, and re-solve every miss 48 hours later.", sites: ["dataLemur", "lcSql50", "lcPandas"] } },
+        { title: "Analytical SQL on flight outcomes", learn: ["S1", "S2", "S3", "S4", "S5"], stage: "v1-explore" },
+        { title: "DataFrames & standalone JSON", learn: ["S7", "Py2"],
+          practice: { title: "Interview practice", text: "DataFrames support the later weather extension; JSON stays a standalone lab. Find interview questions here, then track your chosen problems separately.", sites: ["dataLemur", "lcSql50", "lcPandas"] } },
         { title: "Dimensional modeling & metrics", learn: ["M1", "M2", "M3", "BZ1", "BZ2"], stage: "v1-model" },
         { title: "Interview foundations", learn: [], milestone: "IV0" },
         { checkpoint: "s1" },
@@ -2180,7 +2706,9 @@
         { checkpoint: "s2" },
         { title: "Career assets", learn: ["CM4"], milestone: "IV3" },
         { checkpoint: "apply" }] },
-    { id: "lakehouse", name: "Extension · Lakehouse", kind: "release", desc: "Full recipes and 3.7M+ Open Food Facts products in local bronze and silver Delta tables.",
+    { id: "weather", name: "Extension · Weather & disruption replay", kind: "release", desc: "Connect NOAA observations to flight outcomes and publish one historical airport replay.",
+      rows: [{ title: "Reuse Python, temporal joins & modeling", learn: [], stage: "x-weather" }] },
+    { id: "lakehouse", name: "Extension · Lakehouse", kind: "release", desc: "A measured multi-year flight archive and selected weather observations in bronze and silver Delta tables.",
       rows: [{ title: "Storage architecture", learn: ["A2"], stage: "x-lakehouse" }] },
     { id: "orchestration", name: "Extension · Orchestration", kind: "release", desc: "Databricks, Airflow and Cosmos run the pipeline on a schedule.",
       rows: [{ title: "Databricks & Airflow", learn: ["SB4", "AF1", "AF2", "AF3", "AF4", "A4"], stage: "x-orchestration" }] },
@@ -2224,6 +2752,7 @@
   const dlCatalog = "sql/datalemur/index.html";
   // slug -> { title, sub, file (HTML deck or Markdown guide), md (companion), slides (numbered), extras [[title, file]], guide? }
   const decks = {
+    "architecture-evolution": { title: "Data architecture: how we got here", sub: "A connected story of warehouses, lakes, lakehouses and data mesh, with tools explained as they appear", file: "architecture-evolution/architecture-evolution.html", md: "architecture-evolution/architecture-evolution.md", slides: 40 },
     "data-file-formats": { title: "File formats in practice", sub: "CSV, JSON, Avro, Parquet & ORC", file: "data-file-formats/data-file-formats.html", md: "data-file-formats/data-file-formats.md", slides: 20, extras: [["Data formats one-page reference (file and table formats)", "data-file-formats/de-data-formats-one-page.html"]] },
     "data-table-formats": { title: "Table formats in practice", sub: "Delta Lake, Iceberg, Hudi & CDC", file: "data-table-formats/data-table-formats.html", md: "data-table-formats/data-table-formats.md", slides: 16, extras: [["Data formats one-page reference (file and table formats)", "data-file-formats/de-data-formats-one-page.html"]] },
     "sql-window-functions": { title: "Window functions", sub: "OVER, frames, ranking, LAG/LEAD, running totals", file: "sql-window-functions/sql-window-functions.html", md: null, slides: 19 },
@@ -2233,10 +2762,10 @@
     "sql-aggregation": { title: "SQL aggregation", sub: "Counts, FILTER, ratios, set operations, ROLLUP, pivot, percentiles", file: "sql-aggregation/sql-aggregation.html", md: "sql-aggregation/sql-aggregation.md", slides: 26 },
     "dim-why-dimensional": { title: "Why dimensional modeling", sub: "OLTP vs analytics, facts & dimensions, star schema, grain, four steps", file: "dim-why-dimensional/dim-why-dimensional.html", md: null, slides: 19 },
     "dim-fact-tables": { title: "Fact tables", sub: "Additivity and transaction / snapshot / accumulating / factless facts", file: "dim-fact-tables/dim-fact-tables.html", md: null, slides: 13 },
-    "dim-dimension-tables": { title: "Dimension tables", sub: "Surrogate keys, SCDs, date / role-playing / junk / bridge / conformed dims", file: "dim-dimension-tables/dim-dimension-tables.html", md: null, slides: 20 },
+    "dim-dimension-tables": { title: "Dimension tables", sub: "Surrogate keys, detailed SCD 3/4/6 examples, date / role-playing / junk / bridge / conformed dims", file: "dim-dimension-tables/dim-dimension-tables.html", md: null, slides: 26, extras: [["Types 3, 4 and 6: worked notes", "dim-dimension-tables/scd-advanced.md"]] },
     "dim-modeling-project": { title: "Model a business end to end", sub: "Bus matrix, full model, mistakes, interview cheat-sheet, FitHub project", file: "dim-modeling-project/dim-modeling-project.html", md: null, slides: 17 },
     "python-foundations": { title: "Python foundations for data engineering", sub: "Values, collections and their costs, functions, errors, copies, Counter/defaultdict/deque, type hints, dataclasses · deck 1 of 2", file: "python-foundations/python-foundations.html", md: "python-foundations/python-foundations.md", slides: 48 },
-    "python-files-streams": { title: "Python files, generators, and practical data scripts", sub: "Files and encodings, CSV/JSON/JSONL/gzip, generators and itertools, UTC/zoneinfo, Decimal, DB-API and transactions, scripts (logging, config, CLI, uv, Ruff, pytest), concurrency · deck 2 of 2", file: "python-files-streams/python-files-streams.html", md: "python-files-streams/python-files-streams.md", slides: 51 },
+    "python-files-streams": { title: "Python files, generators, and practical data scripts", sub: "Files and encodings, CSV/JSON/JSONL/gzip, nested API JSON to flat rows, generators and itertools, UTC/zoneinfo, Decimal, DB-API and transactions, scripts (logging, config, CLI, uv, Ruff, pytest), concurrency · deck 2 of 2", file: "python-files-streams/python-files-streams.html", md: "python-files-streams/python-files-streams.md", slides: 52 },
     "pandas-polars": { title: "pandas for data engineering, with a Polars bridge", sub: "pandas for SQL users: groupby, joins with validate=, shift/rank/rolling, pivot/melt, dtypes and memory, method chaining, Polars lazy, pandas/Polars/DuckDB choice", file: "pandas-polars/pandas-polars.html", md: "pandas-polars/pandas-polars.md", slides: 55 },
     "python-ingestion": { title: "Reliable Python ingestion: APIs and files to Parquet", sub: "httpx, timeouts, pagination, retries with jittered backoff, Retry-After, rate limits, checkpoints, PyArrow/Parquet, idempotent publication, secrets, dlt", file: "python-ingestion/python-ingestion.html", md: "python-ingestion/python-ingestion.md", slides: 52 },
     "dbt-fundamentals": { title: "dbt fundamentals: source data to trusted marts", sub: "Sources, ref and the DAG, staging / intermediate / marts, seeds, two facts, materializations, commands and selectors, data tests, docs and lineage, on a local dbt-duckdb project", file: "dbt-fundamentals/dbt-fundamentals.html", md: "dbt-fundamentals/dbt-fundamentals.md", slides: 43 },
@@ -2249,7 +2778,7 @@
     "sql-semi-structured": { title: "SQL semi-structured data: JSON, arrays, UNNEST across engines", sub: "DuckDB ->/->> and JSON paths, explicit casts, read_json with nested columns, STRUCT/LIST/MAP, UNNEST and its fan-out, empty vs NULL arrays, variable keys, schema drift and safe typed staging, PostgreSQL JSONB, Spark SQL / Snowflake / BigQuery syntax", file: "sql-semi-structured/sql-semi-structured.html", md: "sql-semi-structured/sql-semi-structured.md", slides: 32 },
     "sql-time-analysis": { title: "SQL time analysis: date spines, time zones, cohorts and funnels", sub: "generate_series / range spines, a calendar table, dbt_utils.date_spine, dense entity panels, week-over-week with missing weeks, ROWS vs RANGE over gaps, TIMESTAMP vs TIMESTAMPTZ, local day boundaries and DST, monthly cohort matrix with censoring, an ordered funnel with a per-user 7-day window", file: "sql-time-analysis/sql-time-analysis.html", md: "sql-time-analysis/sql-time-analysis.md", slides: 27 },
     "unit-economics-ops": { title: "Unit economics and operations metrics: LTV, CAC, payback, MTTR and SLAs", sub: "Contribution margin, blended vs paid CAC, formula vs cohort LTV, LTV/CAC and payback by channel, the incident clock (MTTD, MTTA, MTTR), MTBF and availability, SLA attainment, SLOs and error budgets, throughput and Little's law, data-centre operations metrics", file: "unit-economics-ops/unit-economics-ops.html", md: "unit-economics-ops/unit-economics-ops.md", slides: 20 },
-    "interview-foundations": { title: "Interview foundations: think aloud on SQL, Python and a case", sub: "The analytics-engineer interview loop and how rounds are scored, a think-aloud routine, running and self-checking a medium SQL session, four basic data-Python problems worked aloud with complexity, a six-step modeling and metrics case routine, the Fuel Smart case, a self-review rubric and a mistake log with retries", file: "interview-foundations/interview-foundations.html", md: "interview-foundations/interview-foundations.md", slides: 26 },
+    "interview-foundations": { title: "Interview foundations: think aloud on SQL, Python and a case", sub: "The analytics-engineer interview loop and how rounds are scored, a think-aloud routine, running and self-checking a medium SQL session, four basic data-Python problems worked aloud with complexity, a six-step modeling and metrics case routine, a standalone recipe case (adapt the routine to Flight Reliability), a self-review rubric and a mistake log with retries", file: "interview-foundations/interview-foundations.html", md: "interview-foundations/interview-foundations.md", slides: 26 },
     "modeling-approaches": { title: "Modeling approaches: star, One Big Table, Data Vault, Activity Schema and Inmon", sub: "Inmon 3NF vs Kimball, the Leafy star vs One Big Table (measured on 5M rows) and a one-page decision, Data Vault hubs/links/satellites with hash keys, hashdiffs and safe replays, Activity Schema temporal joins, and a platform-level comparison", file: "modeling-approaches/modeling-approaches.html", md: "modeling-approaches/modeling-approaches.md", slides: 31 },
     "dbt-packages-quality": { title: "dbt packages and project quality: dbt_utils, codegen, project evaluator and SQLFluff", sub: "packages.yml, dbt deps and package-lock.yml, generate_surrogate_key and composite keys, date_spine, star and dbt_utils tests, codegen generators, a macro with arguments and a custom generic test, dbt-project-evaluator to zero findings, SQLFluff with the dbt style config, a quality gate", file: "dbt-packages-quality/dbt-packages-quality.html", md: "dbt-packages-quality/dbt-packages-quality.md", slides: 30 },
     "dbt-incremental-snapshots": { title: "dbt incremental models, snapshots and unit tests", sub: "is_incremental() and {{ this }}, append / merge / delete+insert / insert_overwrite / microbatch, late data with a look-back window, proving incremental = full rebuild, on_schema_change, snapshots (timestamp vs check, hard deletes, SCD2 dimension), three unit tests, data tests with where / thresholds / store_failures, dbt_utils and dbt_expectations", file: "dbt-incremental-snapshots/dbt-incremental-snapshots.html", md: "dbt-incremental-snapshots/dbt-incremental-snapshots.md", slides: 35 },
@@ -2263,7 +2792,10 @@
   const lessonDecks = {
     S8: [["sql-warehouse-writes", "Whole lesson: MERGE with all branches (slides 5–7), source de-duplication (10–11), idempotent re-runs (12–14), merge vs delete+insert vs insert_overwrite (15–18), late-arriving updates (19–22), reconciling against a full rebuild (23); lab (24–25)"]],
     Q2: [["data-quality-contracts", "Whole lesson: enforced model contracts (16–17), an upstream schema change caught in CI (18–20), versions and deprecation (21–22), producer–consumer contracts and schema-change policies (15, 24–25)"]],
-    A3: [["modeling-approaches", "Kimball, Inmon, Data Vault and OBT compared at platform level (slides 5–6, 19–20); semantic-layer placement and serving paths (BI, reverse ETL, APIs, AI agents) are not covered", true]],
+    A1: [["architecture-evolution", "ETL/ELT and schema (13), batch/streaming and Lambda/Kappa (23); introductory architecture context, not a CDC or streaming implementation guide", true]],
+    A5: [["architecture-evolution", "Governance across access paths (21), domain products and shared controls (24–27); not hands-on RBAC, masking or GDPR implementation", true]],
+    A6: [["architecture-evolution", "Data mesh principles, ownership and platform responsibilities (24–28), choosing a design (29), operating costs and migration evidence (31–32); not a full FinOps cost lab", true]],
+    A3: [["architecture-evolution", "Separating storage, compute, business modeling and ownership (2), serving boundaries (14, 17, 26); reverse ETL and agent/API serving implementation are not covered", true], ["modeling-approaches", "Kimball, Inmon, Data Vault and OBT compared at platform level (slides 5–6, 19–20); semantic-layer placement and serving paths (BI, reverse ETL, APIs, AI agents) are not covered", true]],
     Py4: [["python-quality-tooling", "Gap deck, the rest of the lesson: fixtures and parametrize (slides 4–11), Pydantic / Pandera validation with quarantine (12–17), mypy, pre-commit and GitHub Actions (18–23), coverage ≥80 % and its limits (24–25); lab (26–27)"], ["python-files-streams", "Slides 32–33: uv + pyproject, Ruff and pytest basics (parametrize, tmp_path)", true], ["python-ingestion", "Slide 19: testing HTTP code offline with MockTransport and RESPX", true]],
     SETUP: [["uv-guide", "Install Python and create, run and update a project with uv"], ["duckdb-guide", "Query a CSV directly, inspect data and run saved SQL with DuckDB"]],
     S1: [["sql-window-functions", "Window basics, frames and the default-frame gotcha, ROW_NUMBER/RANK/DENSE_RANK, NTILE, LAG/LEAD, FIRST/LAST_VALUE, window aggregates, running totals and moving averages, period-over-period"]],
@@ -2277,16 +2809,16 @@
     P3: [["data-file-formats", "Row vs column storage, Parquet layout, how a Parquet query reads less (projection, row-group skipping), ORC (slides 10–13); warehouse clustering is not covered", true]],
     Py3: [["data-file-formats", "Parquet layout and a CSV to typed Parquet conversion with checks (slide 15); HTTP retries and dlt are not covered", true], ["python-ingestion", "Whole lesson: httpx, pagination, retries with backoff, Retry-After and rate limits, streaming gzip JSON Lines, PyArrow/Parquet, idempotent partitioned publication, secrets, and when dlt is the better choice"]],
     SB3: [["data-table-formats", "Transaction logs, versions and schema changes, Delta Lake, Iceberg, Hudi, choosing between them; hands-on MERGE, time travel, OPTIMIZE/VACUUM are not covered", true]],
-    A2: [["data-table-formats", "From files to tables, open table formats and catalogs, how file and table formats work together; warehouse vs lake vs lakehouse and medallion are not covered", true]],
+    A2: [["architecture-evolution", "Whole lesson: warehouse/lake/lakehouse evolution and tools (5–20), file/table/catalog/engine boundaries (17), medallion (22), storage/compute separation (11–12), a local selection and transaction lab (33–34)"], ["data-table-formats", "From files to tables, open table formats and catalogs, how file and table formats work together; warehouse vs lake vs lakehouse and medallion are not covered", true]],
     PL5: [["data-table-formats", "Change data capture basics (slide 8); Fivetran / Airbyte / dlt comparison is not covered", true]],
     M1: [["dim-why-dimensional", "OLTP vs analytics, facts vs dimensions, star schema, grain and its rules, the four-step design process"]],
     M2: [["dim-fact-tables", "Additive, semi-additive and non-additive measures; transaction, periodic snapshot, accumulating snapshot and factless fact tables"]],
-    M3: [["dim-dimension-tables", "Surrogate keys, SCD types 0–6 (focus on 1 and 2), date, role-playing, degenerate, junk dimensions, unknown members, bridge tables, conformed dimensions"]],
+    M3: [["dim-dimension-tables", "Surrogate keys, SCD types 0–6 (1 and 2, plus detailed Type 3/4/6 walkthroughs in 9A-9F), date, role-playing, degenerate, junk dimensions, unknown members, bridge tables, conformed dimensions"]],
     M6: [["dim-modeling-project", "Plan with a bus matrix (slide 3) and apply it in the FitHub project; BEAM / 7Ws interviews are not covered", true], ["dim-why-dimensional", "Grain statements and the four-step design process (slides 13–16)", true], ["metric-design", "Slides 4-8: turning a vague request into a grain + metric spec, pushing back with concrete readings. No bus matrix or BEAM", true], ["requirements-writing", "Gap deck: BEAM / 7Ws requirements interview, notes → event table, grain statement and bus-matrix rows, an agent-telemetry rehearsal with a metric push-back (slides 10–14)"]],
-    IV0: [["sql-patterns", "Four-question method (slide 4) and how to work a SQL interview question (slide 11)", true], ["sql-joins-grain", "A grain-first routine for SQL interviews (slide 22)", true], ["interview-foundations", "Gap deck: the interview loop (slides 4–5), think-aloud routine and self-checked SQL sessions (6–7), basic data-Python worked aloud (8–12), the modeling/metrics case routine and the Fuel Smart rehearsal (13–16), rubric and mistake log (17–18); five-session lab (19)"]],
+    IV0: [["sql-patterns", "Four-question method (slide 4) and how to work a SQL interview question (slide 11)", true], ["sql-joins-grain", "A grain-first routine for SQL interviews (slide 22)", true], ["interview-foundations", "Gap deck: the interview loop (slides 4–5), think-aloud routine and self-checked SQL sessions (6–7), basic data-Python worked aloud (8–12), the modeling/metrics case routine and a standalone recipe rehearsal (13–16); repeat the routine with Flight Reliability, rubric and mistake log (17–18); five-session lab (19)"]],
     IV1: [["sql-patterns", "SQL pattern recognition for timed sets; Python is not covered", true]],
     IV2: [["dim-modeling-project", "Common modeling mistakes, interview cheat-sheet, quick checks and the FitHub design case (slides 6–14); metric and dbt cases are not covered", true]],
-    Py1: [["python-foundations", "Deck 1 of 2: built-in structures and their lookup costs (list/tuple/dict/set/deque, Counter, defaultdict), comprehensions, functions, exceptions, mutability and copies, type hints, dataclasses; in-memory event cleaning"], ["python-files-streams", "Deck 2 of 2: files larger than memory with generators/itertools, CSV/JSON/JSONL/gzip, UTC + zoneinfo, Decimal at the boundaries, DB-API with parameterised queries and transactions (sqlite3, DuckDB; psycopg paramstyle), context managers, decorators (timing, retry), logging, env-var config, argparse CLI, uv + pyproject, Ruff, pytest, threads vs processes vs asyncio and the GIL"], ["uv-guide", "Packaging part only: uv projects, dependencies and running scripts", true]],
+    Py1: [["python-foundations", "Deck 1 of 2: built-in structures and their lookup costs (list/tuple/dict/set/deque, Counter, defaultdict), comprehensions, functions, exceptions, mutability and copies, type hints, dataclasses; in-memory event cleaning"], ["python-files-streams", "Deck 2 of 2: files larger than memory with generators/itertools, CSV/JSON/JSONL/gzip, nested API JSON to flat rows (12A), UTC + zoneinfo, Decimal at the boundaries, DB-API with parameterised queries and transactions (sqlite3, DuckDB; psycopg paramstyle), context managers, decorators (timing, retry), logging, env-var config, argparse CLI, uv + pyproject, Ruff, pytest, threads vs processes vs asyncio and the GIL"], ["uv-guide", "Packaging part only: uv projects, dependencies and running scripts", true]],
     Py2: [["pandas-polars", "Whole lesson: filter, groupby/agg/transform, merge with validate=, shift/rank/rolling, pivot/melt, dtypes and memory, method chaining, Polars eager/lazy, when to use pandas vs Polars vs DuckDB"]],
     D1: [["dbt-fundamentals", "Whole deck: source vs ref and lineage (11, 13, 33), generic tests (27), view/table/ephemeral (23-24), docs site (32), dbt build order (25, 30); lab = reproducible project (34)"]],
     D2: [["dbt-jinja-macros", "Jinja basics, a loop, a macro, refactoring legacy SQL proved with an output comparison (lessons 3-6). Packages appear only as one row of lesson 8 (dbt deps not executed); codegen, dbt-project-evaluator and SQLFluff are not covered", true], ["dbt-packages-quality", "Gap deck: packages, dbt deps and lock file (slides 4–5), dbt_utils incl. generate_surrogate_key (6–8), codegen (9–10), a second macro and a custom generic test (11–12), dbt-project-evaluator to zero findings (13–16), SQLFluff (17–20); lab: the Leafy quality gate (21)"]],
@@ -2299,7 +2831,7 @@
     BZ3: [["metric-diagnosis", "Slide 6 only: Simpson's paradox with a rate/mix decomposition. No distributions, CIs, p-values or power", true]],
     BZ4: [["metric-design", "Slide 22 only: A/B primary, guardrail and trust metrics, sample ratio mismatch check. No sample size, peeking or CUPED", true]],
     M5: [["metric-design", "Slide 23 only: metrics as code, a dbt Semantic Layer ratio metric (YAML, not executed) and a DAX measure", true]],
-    CM1: [["metric-design", "Slides 4-6: one request with six answers, the spec card, a clarifying routine for vague asks", true], ["requirements-writing", "Gap deck: request-intake template, acceptance criteria you can run, scoping a first version, trade-offs and timeline updates, the Fuel Smart question through the intake (slides 4–9); lab: the Fuel Smart spec pack (22)"]],
+    CM1: [["metric-design", "Slides 4-6: one request with six answers, the spec card, a clarifying routine for vague asks", true], ["requirements-writing", "Gap deck: request-intake template, acceptance criteria you can run, scoping a first version, trade-offs and timeline updates, a standalone recipe intake (slides 4–9); apply the same template to Flight Reliability; lab: recipe spec pack (22)"]],
     CM2: [["metric-design", "Slide 5: the metric spec card as precise written definitions", true], ["requirements-writing", "Gap deck: precise definitions (15), one-page design doc (16), decision records (17), PR descriptions (18), 10-minute READMEs (19), peer review (20); document templates ship with the deck"]],
     CM3: [["metric-diagnosis", "Lab steps 4-5 (slides 12-13): a headline-first WBR table and a five-line write-up. No chart choice or decluttering", true], ["dashboard-storytelling", "Gap deck: chart choice from the message (slides 4–7), decluttering (8–10), headline-first dashboards (9, 11–12), misleading charts, accessibility and a critique checklist (14–16); lab: critique and redesign Leafy's dashboard (17–21)"]],
     Q4: [["metric-design", "Slide 24: reconciling revenue with Finance through a step-by-step bridge; governance and certified metrics", true]]
@@ -2313,8 +2845,8 @@
     BZ1: [{ title: "Lab: a channel scorecard and an ops scorecard", file: "unit-economics-ops/unit-economics-ops.html", slide: 14 }, { title: "Lab folder: data generator, starter scorecard.py, reference solution and pytest checks", file: "unit-economics-ops/unit-economics-ops-lab/README.md", slide: 14, deck: "unit-economics-ops" }],
     S7: [{ title: "Lab: products per ingredient from Open Food Facts–shaped JSONL (slides 21–24)", file: "sql-semi-structured/sql-semi-structured.html", slide: 21 }, { title: "Lab folder: fixture, SQL models, run_lab.py, pytest checks and a Spark SQL port", file: "sql-semi-structured/sql-semi-structured-lab/README.md", slide: 21, deck: "sql-semi-structured" }],
     Py4: [{ title: "Lab: a test suite and CI for the Leafy ingester (slides 26–27)", file: "python-quality-tooling/python-quality-tooling.html", slide: 26 }, { title: "Ingester lab package: smoke test → reference suite at 100 % coverage, pre-commit config, GitHub Actions workflow", file: "python-quality-tooling/python-quality-tooling-lab/README.md", slide: 26, deck: "python-quality-tooling" }],
-    CM2: [{ title: "Lab: the Fuel Smart spec pack (intake, acceptance checks, design doc, ADR, README)", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
-    CM1: [{ title: "Lab: the Fuel Smart spec pack (intake, acceptance checks, design doc, ADR, README)", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
+    CM2: [{ title: "Standalone recipe spec-pack lab; reuse its intake, checks and README templates for Flight Reliability", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
+    CM1: [{ title: "Standalone recipe spec-pack lab; reuse its intake, checks and README templates for Flight Reliability", file: "requirements-writing/requirements-writing.html", slide: 22 }, { title: "Spec-pack lab folder: doclint.py, bus_matrix.py, acceptance.py, model answers and tests", file: "requirements-writing/requirements-writing-lab/README.md", slide: 22, deck: "requirements-writing" }],
     S1: [{ title: "Practice: name the pattern", file: "sql-window-functions/sql-window-functions.html", slide: 16 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): top_distinct, aggregate_rank, latest_order, running_share, rolling_frames, adjacent_change", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
     S2: [{ title: "Practice: name the pattern", file: "sql-patterns/sql-patterns.html", slide: 10 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): latest_order, top_distinct, streaks, sessions, repeat_payments", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
     S3: [{ title: "Exercises 1–3: aggregation", file: "sql-aggregation/sql-aggregation.html", slide: 21 }, { title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): conditional_rate, count_histogram, fixed_pivot, weighted_median, frequent_pairs", file: "sql-patterns/sql-interview-patterns-lab.sql" }],
@@ -2324,10 +2856,10 @@
     S8: [{ title: "SQL interview patterns lab (runnable DuckDB / PostgreSQL file): cdc_latest, merge_intervals", file: "sql-patterns/sql-interview-patterns-lab.sql" }, { title: "Lab: a re-runnable change-feed loader (slides 24–25)", file: "sql-warehouse-writes/sql-warehouse-writes.html", slide: 24 }, { title: "Lab folder: batch CSVs, SQL, load.py and pytest checks", file: "sql-warehouse-writes/sql-warehouse-writes-lab/README.md", slide: 24, deck: "sql-warehouse-writes" }],
     P3: [{ title: "Hands-on: CSV to typed Parquet", file: "data-file-formats/data-file-formats.html", slide: 15 }],
     Py3: [{ title: "The API lab end to end: chaos in, exact counts out", file: "python-ingestion/python-ingestion.html", slide: 18 }, { title: "Project: a bounded GH Archive ingester (slides 32–40)", file: "python-ingestion/python-ingestion.html", slide: 32 }, { title: "A small dlt pipeline, offline, twice", file: "python-ingestion/python-ingestion.html", slide: 43 }, { title: "Hands-on: CSV to typed Parquet", file: "data-file-formats/data-file-formats.html", slide: 15 }],
-    A2: [{ title: "Scenarios: evaluate the tradeoff", file: "data-table-formats/data-table-formats.html", slide: 12 }],
+    A2: [{ title: "Runnable lab: current source versions, Parquet and a transactional mart", file: "architecture-evolution/lab/README.md", deck: "architecture-evolution", slide: 34 }, { title: "Architecture decision cases and review rubric", file: "architecture-evolution/architecture-evolution.html", slide: 36 }, { title: "Scenarios: evaluate the tradeoff", file: "data-table-formats/data-table-formats.html", slide: 12 }],
     M1: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
     M2: [{ title: "Quick checks: decide, then reveal", file: "dim-modeling-project/dim-modeling-project.html", slide: 8 }, { title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
-    M3: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
+    M3: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }, { title: "SCD Types 3, 4 and 6: exact results, replay and rollback lab", file: "dim-dimension-tables/lab/README.md", slide: 21, deck: "dim-dimension-tables" }],
     M6: [{ title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }, { title: "From interview notes to bus-matrix rows (bus_matrix.py in the spec-pack lab folder)", file: "requirements-writing/requirements-writing-lab/README.md", slide: 13, deck: "requirements-writing" }],
     IV2: [{ title: "Quick checks: decide, then reveal", file: "dim-modeling-project/dim-modeling-project.html", slide: 8 }, { title: "FitHub practice project (brief, data, tasks, hints, model answer, number checks)", file: "dim-modeling-project/dim-modeling-project.html", slide: 9 }],
     Py1: [{ title: "Mini-project: an in-memory event cleaner (brief, starter code and tests, reference solution; slides 42–44)", file: "python-foundations/python-foundations.html", slide: 42 }, { title: "Project: a streaming JSONL → DuckDB loader (slides 40–44)", file: "python-files-streams/python-files-streams.html", slide: 40 }],
@@ -2345,7 +2877,7 @@
     perf: "Query performance: plans, indexes, and columnar scans",
     pyspark: "PySpark foundations: DataFrames on a distributed engine",
     lakehouse: "Lakehouse tables: operating Delta and understanding Iceberg",
-    arch: "Data architecture and modern modeling decisions",
+    arch: "Pipeline and data-serving architecture",
     stats: "Statistics for analytics engineers",
     dbx: "Databricks and Spark performance",
     dbtGov: "dbt deployment, CI, and governance",
@@ -2368,7 +2900,7 @@
   const lessonPlanned = {
    
     P1: ["perf"], P2: ["perf"], P3: ["perf"], SB1: ["pyspark"], SB2: ["pyspark"], SB3: ["lakehouse"],
-    A1: ["arch"], A2: ["arch"], A3: ["arch"], BZ3: ["stats"], SB4: ["dbx"], SB5: ["dbx"], P4: ["dbx"], D4: ["dbtGov"],
+    A1: ["arch"], A3: ["arch"], BZ3: ["stats"], SB4: ["dbx"], SB5: ["dbx"], P4: ["dbx"], D4: ["dbtGov"],
     D5: ["dbtGov"], AF1: ["airflow"], AF2: ["airflow"], AF3: ["airflow"], AF4: ["airflow"], A4: ["airflow", "obs"], Q3: ["obs"], Q4: ["obs"],
     BZ4: ["expPy"], Py6: ["expPy"], M5: ["semantic"], AI1: ["semantic"], AI2: ["semantic"], AI3: ["aiEval"], AI4: ["aiEval"],
     AI5: ["aiEval"], AI7: ["aiEval"], A5: ["cloud"], PL1: ["cloud"], PL2: ["cloud"], PL3: ["whPort"], PL4: ["whPort"], P5: ["cost"],
@@ -2409,7 +2941,7 @@
     D5: { start: "dbtContracts", deeper: ["dbtMeshIntro", "dbtVersions"], more: ["dbtAccess", "dbtSL", "dbtMcp", "dbtFusionBlog"], drop: ["dbtDocs"] },
     Py1: { start: "rpGenerators", deeper: ["pdaCh3", "duckdbPythonDbApi"], reading: ["fluentPy|ch. 3 Dictionaries and Sets; ch. 5 Data Class Builders; ch. 9 Decorators and Closures; ch. 17 Iterators, Generators, and Classic Coroutines; ch. 18 with, match, and else Blocks; ch. 19 Concurrency Models in Python", "effectivePy|ch. 3 Loops and Iterators; ch. 4 Dictionaries; ch. 6 Comprehensions and Generators; ch. 9 Concurrency and Parallelism"], more: ["rpDecorators", "rpWith", "rpConcurrency", "pyItertools", "pyCollections", "pyZoneinfo", "pySqlite3", "pdaCh6", "pyTutorialDS", "uvProjects", "ruffTutorial", "sdeMemoryEfficient"], drop: ["pda", "pyStdlib", "realPython", "duckdb", "pyTutorial", "uv", "ruff"] },
     Py2: { start: "pdaCh5", deeper: ["pdaCh10", "polarsFromPandas"], reading: ["effPandas|chapters 'Reshaping by Pivoting and Grouping' and 'Joining DataFrames' (titles from a reader's notes; chapter numbers not verified)"], sites: ["lcPandas"], more: ["pdaCh8", "polarsGettingStarted"], drop: ["pda", "polars"] },
-    Py3: { start: "httpxQuickstart", deeper: ["dltRestApi", "pyarrowParquet"], reading: ["pipelinesPocket|ch. 4 Data Ingestion: Extracting Data; ch. 5 Data Ingestion: Loading Data"], tools: ["fdc"], more: ["httpxTransports", "dltIncremental", "sdeApiExtract", "fdcApiGuide"], drop: ["httpx", "pyarrow", "dlt", "fdc"] },
+    Py3: { start: "httpxQuickstart", deeper: ["dltRestApi", "pyarrowParquet"], reading: ["pipelinesPocket|ch. 4 Data Ingestion: Extracting Data; ch. 5 Data Ingestion: Loading Data"], tools: ["btsFlights"], more: ["httpxTransports", "dltIncremental", "sdeApiExtract"], drop: ["httpx", "pyarrow", "dlt", "btsFlights"] },
     Py4: { start: "pytestGetStarted", deeper: ["pytestFixtures", "panderaModels"], reading: ["pytestBook|ch. 3 pytest Fixtures; ch. 5 Parametrization; ch. 7 Strategy"], more: ["pydanticModels", "pytestParametrize", "ruffTutorial"], drop: ["pytest", "pydantic", "pandera", "ruff"] },
     Py5: { start: "sdeInterviewDsa", deeper: ["pyHeapq", "pyCollections"], reading: ["effectivePy|ch. 12 Data Structures & Algorithms (heapq, deque, bisect)"], sites: ["lcPandas", "strata"], drop: ["dataExpert"] },
     Py6: { start: "scipyStatsTutorial", deeper: ["scipyBootstrap", "statsmodelsGettingStarted"], reading: ["psds|ch. 2 Data and Sampling Distributions (bootstrap); ch. 3 Statistical Experiments and Significance Testing"], drop: ["scipy", "statsmodels"] },
@@ -2448,7 +2980,7 @@
     PL1: { start: "awsIamBP", deeper: ["awsCP", "awsBudgets"], more: ["awsS3Intro"] },
     PL2: { start: "tfGetStartedAws", deeper: ["tfState", "dbxTerraform"], more: ["tfModules", "sdeTerraform"], drop: ["terraform"] },
     PL3: { start: "snowKeyConcepts", deeper: ["snowLearnDww", "snowTimeTravel"], more: ["snowMicroPartitions", "snowRbac", "cortexAisql", "snowZeroTo"], drop: ["snowLearn", "snowDocs"] },
-    PL4: { start: "bqPartitioned", deeper: ["bqClustered", "bqPricing"], tools: ["bqSandbox", "foodcom"], more: ["bqSlots"] },
+    PL4: { start: "bqPartitioned", deeper: ["bqClustered", "bqPricing"], tools: ["bqSandbox", "btsFlights"], more: ["bqSlots"] },
     PL5: { start: "airbyteCdc", deeper: ["debeziumFeatures", "dlt"], more: ["sdeCdcDebezium"], drop: ["airbyte", "debezium"] },
     PL6: { start: "evidenceQuickstart", deeper: ["skillsLookml", "sqlbiStarOrSingle"], drop: ["skillsBoost", "evidence", "swd"] },
     PL7: { start: "kafka101Course", deeper: ["sparkStructuredStreaming", "ytKleppmann"], reading: ["learningSpark|ch. 8 Structured Streaming"], more: ["sdeKafka"], drop: ["kafka101", "sparkDocs"] },
@@ -2456,16 +2988,16 @@
     CM2: { start: "techWritingOne", deeper: ["techWritingTwo"], drop: ["techWriting"] },
     CM3: { start: "swdChartGuide", deeper: ["wilkeDirectory", "loShareInsights"], reading: ["swd|ch. 1 The Importance of Context; ch. 2 Choosing an Effective Visual; ch. 3 Clutter Is Your Enemy!; ch. 4 Focus Your Audience's Attention"], drop: ["swd"] },
     CM4: { start: "loStandOut", deeper: ["loAnalyticsEngineer", "arWhatIsAE"], tools: ["dbtSlack"], drop: ["locallyOpt", "roundup", "benn"] },
-    PF1: { start: "sdeApiExtract", deeper: ["sdeIntegrationTest", "sdeMemoryEfficient"], tools: ["foodcom", "fdc"], drop: ["sde"] },
-    PF2: { start: "sdeSparkMerge", deeper: ["deltaMerge", "sdeTableFormat"], tools: ["offData"], drop: ["sde", "sparkDocs", "deltaDocs"] },
-    PF3: { start: "sdeFactsDims", deeper: ["dbtStructure", "dwt|ch. 3 Retail Sales (four-step design applied end to end)"], tools: ["foodcom", "fdc"], more: ["sdeDqChecks"], drop: ["sde"] },
-    PF4: { start: "cosmosGetStarted", deeper: ["sdeBackfillAirflow", "sdeIdempotent"], tools: ["offData"], drop: ["sde", "cosmos"] },
-    PF5: { start: "elementaryQuickstart", deeper: ["sdeDqChecks", "srePostmortem"], tools: ["foodcom"], drop: ["sde", "elementary"] },
-    PF6: { start: "sdeCostEffective", deeper: ["sdeOptimizeSpark", "duckdbPerf"], tools: ["foodcom"], drop: ["sde", "useIndex"] },
-    PF7: { start: "sdeMetricsSot", deeper: ["metricflow", "dbtSemanticModels"], tools: ["foodcom"], drop: ["sde"] },
-    PF8: { start: "dbtMcpDocs", deeper: ["sdeLlmDemocratize", "dbtSlVsText2Sql"], tools: ["foodcom"], more: ["dbtMcp", "dbxAiFunctions"], drop: ["sde"] },
-    PF9: { start: "sdeTerraform", deeper: ["tfGetStartedAws", "sdeInfraCicd"], tools: ["foodcom"], drop: ["sde", "terraform"] },
-    PF10: { start: "sdeImpressHM", tools: ["foodcom"], drop: ["sde"] },
+    PF1: { start: "sdeApiExtract", deeper: ["sdeIntegrationTest", "sdeMemoryEfficient"], tools: ["btsFlights"], drop: ["sde"] },
+    PF2: { start: "sdeSparkMerge", deeper: ["deltaMerge", "sdeTableFormat"], tools: ["btsFlights", "noaaHourly"], drop: ["sde", "sparkDocs", "deltaDocs"] },
+    PF3: { start: "sdeFactsDims", deeper: ["dbtStructure", "dwt|ch. 3 Retail Sales (four-step design applied end to end)"], tools: ["btsFlights"], more: ["sdeDqChecks"], drop: ["sde"] },
+    PF4: { start: "cosmosGetStarted", deeper: ["sdeBackfillAirflow", "sdeIdempotent"], tools: ["btsFlights", "noaaHourly"], drop: ["sde", "cosmos"] },
+    PF5: { start: "elementaryQuickstart", deeper: ["sdeDqChecks", "srePostmortem"], tools: ["btsFlights"], drop: ["sde", "elementary"] },
+    PF6: { start: "sdeCostEffective", deeper: ["sdeOptimizeSpark", "duckdbPerf"], tools: ["btsFlights"], drop: ["sde", "useIndex"] },
+    PF7: { start: "sdeMetricsSot", deeper: ["metricflow", "dbtSemanticModels"], tools: ["btsFlights"], drop: ["sde"] },
+    PF8: { start: "dbtMcpDocs", deeper: ["sdeLlmDemocratize", "dbtSlVsText2Sql"], tools: ["btsFlights"], more: ["dbtMcp", "dbxAiFunctions"], drop: ["sde"] },
+    PF9: { start: "sdeTerraform", deeper: ["tfGetStartedAws", "sdeInfraCicd"], tools: ["btsFlights"], drop: ["sde", "terraform"] },
+    PF10: { start: "sdeImpressHM", tools: ["btsFlights"], drop: ["sde"] },
     JOB1: { start: "kimballFourStep", deeper: ["dwt|ch. 15 Electronic Commerce (clickstream — closest to product telemetry)", "sqlbiStarOrSingle"], drop: ["sqlbi"] },
     JOB2: { start: "dbtMcpDocs", deeper: ["mcp", "dbtMcp"] },
     IV1: { start: null, sites: ["dataLemur", "lcSql50", "strata", "adventSql"] },
@@ -2474,12 +3006,894 @@
     IV4: { start: null, sites: ["designBanksAced", "designBanksPracHub"], tools: ["dbtEval"], drop: ["designBanks", "dbtSlack"] },
     CERT: { start: "dbtCertAE", deeper: ["dbxCertDEA", "astroCert"], drop: ["dbtLearn", "dbxAcademy", "astroAcademy"] },
     IV0: { start: "sdeInterviewSql", sites: ["dataLemur", "lcSql50", "strata"] },
-    PF11: { start: "sdeDesignPatterns", reading: ["fde|ch. 3 Designing Good Data Architecture"], tools: ["foodcom"], drop: ["sde"] }
+    PF11: { start: "sdeDesignPatterns", reading: ["fde|ch. 3 Designing Good Data Architecture"], tools: ["btsFlights"], drop: ["sde"] }
   };
   // The book you are reading now (suggested on the Library's Now bar; never marked as reading without your click).
   const currentBooks = ["dwt"];
   // Extra long-form reads shown on a learning area's reading list (from the Library extras).
   const areaReadingExtra = { model: ["bkAdamson"], perf: ["bkQueryEngines", "bkDbInternals"], spark: ["bkSparkTDG"], arch: ["bkDataMesh"], ai: ["bkAIEng"], career: ["bkDataviz"] };
+
+  // Optional production reading: full text checked signed-out on 2026-10-20.
+  // Keep keys stable; reuse existing resources instead of duplicating saved reading ticks.
+  // Tasks and gap assessments are editorial suggestions, not new completion requirements.
+  const productionReading = [
+    {
+      "key": "prodJoinSafety",
+      "title": "Preventing common analytical errors: Join duplicates and join misses — Alex Petralia",
+      "url": "https://alexpetralia.com/2017/07/19/more-dangerous-subtleties-of-joins-in-sql/",
+      "topics": [
+        "S4",
+        "M2"
+      ],
+      "why": "A worked example of joins silently inflating revenue or losing costs. Learn to check cardinality and unmatched keys before trusting aggregates.",
+      "try": "Duplicate an airport lookup key, join it to flights, and catch the changed flight count and cancellation denominator with assertions.",
+      "priority": true
+    },
+    {
+      "key": "prodIncrementalLimits",
+      "title": "On the limits of incrementality — Tristan Handy / dbt Community",
+      "url": "https://discourse.getdbt.com/t/on-the-limits-of-incrementality/303",
+      "topics": [
+        "S8",
+        "D3"
+      ],
+      "why": "SQL examples show why a maximum-timestamp filter misses old corrections, and how lookback windows and changed-entity rebuilds trade correctness against work.",
+      "try": "Correct a flight outside a three-day lookback. Compare the incremental result with a full rebuild, then rebuild the affected month.",
+      "caution": "Older warehouse-specific SQL: adapt syntax and benchmark your adapter; a fixed lookback cannot guarantee complete correction handling.",
+      "priority": true
+    },
+    {
+      "key": "prodRetryJitter",
+      "title": "Timeouts, retries, and backoff with jitter — Amazon Builders’ Library",
+      "url": "https://aws.amazon.com/builders-library/timeouts-retries-and-backoff-with-jitter/",
+      "topics": [
+        "Py3",
+        "AF2"
+      ],
+      "why": "Production experience explains how retries can amplify an outage and why timeout selection, bounded backoff and jitter matter.",
+      "try": "Use a fake downloader returning a timeout, 429 and 503. Verify bounded retries, jitter, Retry-After handling and failure after the retry budget.",
+      "priority": true
+    },
+    {
+      "key": "prodRetryIdempotency",
+      "title": "Making retries safe with idempotent APIs — Amazon Builders’ Library",
+      "url": "https://aws.amazon.com/builders-library/making-retries-safe-with-idempotent-APIs/",
+      "topics": [
+        "S8",
+        "Py3"
+      ],
+      "why": "An ambiguous timeout may follow a successful write. Request identity, repeated intent and atomic state changes explain what safe retries actually require.",
+      "try": "Simulate a crash after writing a monthly partition but before acknowledging success. Re-run using a manifest and checksum; publish one complete result.",
+      "gap": "Atomic publication and crash recovery are not explicit standalone practice in the current ingestion lesson.",
+      "caution": "The manifest exercise transfers the article’s design principles to files; an API request token alone does not make filesystem writes atomic."
+    },
+    {
+      "key": "prodDatetimeArithmetic",
+      "title": "Semantics of timezone-aware datetime arithmetic — Paul Ganssle",
+      "url": "https://blog.ganssle.io/articles/2018/02/aware-datetime-arithmetic.html",
+      "topics": [
+        "S5",
+        "Py1"
+      ],
+      "why": "Worked Python examples distinguish elapsed time from local wall-clock time across daylight-saving changes.",
+      "try": "Test a spring DST boundary: compare the next local calendar day with 24 elapsed hours. Convert endpoints to UTC before measuring elapsed duration.",
+      "caution": "Read after basic datetime/zoneinfo. Examples use dateutil; adapt them to zoneinfo. Flights v1 keeps BTS delay fields; full timestamp reconstruction belongs to the weather extension."
+    },
+    {
+      "key": "prodDuckdbMemory",
+      "title": "Memory Management in DuckDB — DuckDB Engineering",
+      "url": "https://duckdb.org/2024/07/09/memory-management",
+      "topics": [
+        "Py2",
+        "P3"
+      ],
+      "why": "Explains chunked execution, intermediate-state spilling and the buffer manager, making larger-than-memory processing concrete.",
+      "try": "Convert a bounded flight CSV to Parquet directly in DuckDB under a memory limit. Contrast it with materializing a DataFrame and record peak memory.",
+      "caution": "Spilling has limits and needs disk space; larger-than-memory support does not guarantee every query can finish under any memory limit."
+    },
+    {
+      "key": "prodDuckdbOptimizer",
+      "title": "Optimizers: The Low-Key MVP — DuckDB Engineering",
+      "url": "https://duckdb.org/2024/11/14/optimizers",
+      "topics": [
+        "P1",
+        "S6"
+      ],
+      "why": "Executable SQL and plans reveal filter pushdown, join ordering and Top-N optimization. Useful evidence when query shape and speed do not match intuition.",
+      "try": "Write equivalent CTE, subquery and join versions of a route query. Compare EXPLAIN ANALYZE plans and results before claiming one spelling is faster.",
+      "caution": "Optimizer behavior varies by engine and version; the article is not a universal CTE-versus-subquery rule."
+    },
+    {
+      "key": "prodJustInTimeModeling",
+      "title": "Just-In-Time Data Modeling — Joe Reis / Practical Data Modeling",
+      "url": "https://practicaldatamodeling.substack.com/p/just-in-time-data-modeling",
+      "topics": [
+        "M1",
+        "CM1"
+      ],
+      "why": "A free Substack article on modeling enough to answer today’s question and evolving reusable models as needs become clearer.",
+      "try": "Sketch only the flight-leg fact and dimensions needed for route reliability. Record two deliberately deferred requirements and the evidence that would justify adding them.",
+      "priority": true
+    },
+    {
+      "key": "prodLateDimensions",
+      "title": "Late Arriving Dimensions — Kimball Group",
+      "url": "https://www.kimballgroup.com/data-warehouse-business-intelligence-resources/kimball-techniques/dimensional-modeling-techniques/late-arriving-dimension/",
+      "topics": [
+        "M3"
+      ],
+      "why": "A concise operational technique for facts whose dimension context arrives later, including placeholder rows and retroactive type-2 corrections.",
+      "try": "Load a flight before its airport metadata, retain it through an unknown member, then supply the metadata without losing or duplicating the fact.",
+      "gap": "Late-arriving dimension repair is not explicit in the current dimension-table practice."
+    },
+    {
+      "key": "chadEngineersGuide",
+      "topics": [
+        "Q2",
+        "D5"
+      ],
+      "why": "Convoy engineers walk through entity contracts, schema enforcement and CDC fulfillment using open-source components; the full first part is free on Substack.",
+      "try": "Define required flight fields, a schema version, an owner and a breaking-change policy. Add a fixture that changes a field type and verify rejection before publication.",
+      "caution": "A dbt model contract checks the output shape; it is not the same thing as an enforced producer-to-consumer agreement."
+    },
+    {
+      "key": "prodSpotifyPlatform",
+      "title": "Data Platform Explained Part II — Spotify Engineering",
+      "url": "https://engineering.atspotify.com/2024/5/data-platform-explained-part-ii",
+      "topics": [
+        "A2",
+        "A3"
+      ],
+      "why": "A production architecture connects event collection, schema-driven deployment, processing, ownership, retention, lineage and access controls.",
+      "try": "Annotate your flight architecture with each dataset’s owner, schema, retention, quality checks and consumers; identify which capabilities the local project actually needs.",
+      "caution": "Study responsibilities and interfaces; Spotify’s scale does not justify copying its Kubernetes platform into a portfolio project."
+    },
+    {
+      "key": "prodTransactionalOutbox",
+      "title": "Reliable Microservices Data Exchange With the Outbox Pattern — Debezium",
+      "url": "https://debezium.io/blog/2019/02/19/reliable-microservices-data-exchange-with-the-outbox-pattern/",
+      "topics": [
+        "A1",
+        "PL5"
+      ],
+      "why": "A runnable design addresses the dual-write failure: committing a database change while failing to publish its corresponding event.",
+      "try": "Standalone lab: insert an order and its outbox row in one database transaction, simulate publisher failure, then replay with consumer deduplication.",
+      "gap": "The transactional outbox and the dual-write problem are missing from explicit CDC practice.",
+      "caution": "Use current connector configuration, not the article’s historical package names. This is a separate lab; monthly BTS downloads do not require Kafka or an outbox."
+    },
+    {
+      "key": "prodKafkaExactlyOnce",
+      "title": "Exactly-Once Semantics Are Possible: Here’s How Kafka Does It — Confluent Engineering",
+      "url": "https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/",
+      "topics": [
+        "PL7"
+      ],
+      "why": "The engineers behind Kafka’s transactions explain producer idempotence, failure recovery and the scope of transactional stream processing.",
+      "try": "Draw Kafka → consumer → SQL sink and mark the crash between the database commit and offset commit. Demonstrate how a unique event key prevents duplicate effects.",
+      "gap": "The boundary between broker guarantees and external sink effects needs a concrete failure exercise.",
+      "caution": "Historical implementation article: use current Kafka docs for settings. Kafka transactions do not automatically make an external database or HTTP call exactly once."
+    },
+    {
+      "key": "prodStreamingTime",
+      "title": "Streaming 102: The world beyond batch — Tyler Akidau / O’Reilly Radar",
+      "url": "https://www.oreilly.com/radar/the-world-beyond-batch-streaming-102/",
+      "topics": [
+        "PL7",
+        "A1"
+      ],
+      "time": "hour",
+      "why": "Animated examples separate event time, processing time, windows, watermarks and triggers, showing why a result may need later correction.",
+      "try": "Standalone lab: process five out-of-order events on paper, then compute results with and without allowed lateness; state when a window is considered complete.",
+      "gap": "Watermarks, completeness and late-event policy are not explicit learning outcomes in the streaming overview.",
+      "caution": "Read the linked Streaming 101 introduction first if unfamiliar. Concepts transfer across engines; the historical APIs are not a current Spark recipe."
+    },
+    {
+      "key": "prodDbtTestingWorkflow",
+      "title": "How to move from manual to test-driven analytics — dbt Labs",
+      "url": "https://www.getdbt.com/blog/test-driven-analytics-workflow",
+      "topics": [
+        "D4",
+        "Q1"
+      ],
+      "why": "Connects transformation unit tests, tests of actual data, isolated CI environments and production monitoring into a development workflow.",
+      "try": "Introduce an incorrect cancellation filter in a branch. Catch it with a small unit fixture, then run data tests in an isolated CI schema before merging.",
+      "caution": "The article discusses dbt’s commercial platform too; implement the testing principles with dbt Core and GitHub Actions without purchasing a subscription."
+    },
+    {
+      "key": "sdeIntegrationTest",
+      "topics": [
+        "Py4"
+      ],
+      "why": "A worked pytest example tests the boundaries between a Python pipeline and external systems, including unexpected output schemas and API behavior.",
+      "try": "Test CSV download → parsing → Parquet publication with tiny fixtures. Include a malformed response and reordered input columns; assert the final schema and rows.",
+      "priority": true
+    },
+    {
+      "key": "afBackfill",
+      "topics": [
+        "AF2",
+        "AF4"
+      ],
+      "why": "Current Airflow guidance covers reprocessing choices, concurrency limits, ordering and dry runs for historical DAG runs.",
+      "try": "Dry-run a three-month BTS backfill, cap active runs and rerun a corrected month. Verify untouched months and identical row counts on a repeat.",
+      "caution": "Use the documentation matching your installed Airflow version. Schedule source publication intervals; BTS monthly files are not a live daily feed."
+    },
+    {
+      "key": "prodSrePipelines",
+      "title": "Data Processing Pipelines — Google SRE Workbook / Spotify",
+      "url": "https://sre.google/workbook/data-processing/",
+      "topics": [
+        "AF1",
+        "A4"
+      ],
+      "time": "hour",
+      "why": "Production pipeline design connects correctness, timeliness, capacity, dependencies and operational reliability rather than treating a successful task as sufficient.",
+      "try": "Write the dependency graph and completion condition for one flight release. Simulate a missing source month and prevent a partial dashboard refresh from being published."
+    },
+    {
+      "key": "prodUberDataQuality",
+      "title": "How Uber Achieves Operational Excellence in the Data Quality Experience — Uber Engineering",
+      "url": "https://www.uber.com/us/en/blog/operational-excellence-data-quality/",
+      "topics": [
+        "Q3",
+        "Q4"
+      ],
+      "why": "Shows how quality checks connect to alert ownership and incident resolution, including the cost of false positives and manual work.",
+      "try": "Remove one airport from a fixture month. Detect the regional coverage drop, assign an owner, and record impact, diagnosis and recovery in a runbook.",
+      "caution": "Use simple checks first; the case study is a design example, not a requirement to recreate Uber’s platform."
+    },
+    {
+      "key": "prodSloAlerting",
+      "title": "Alerting on SLOs — Google SRE Workbook",
+      "url": "https://sre.google/workbook/alerting-on-slos/",
+      "topics": [
+        "Q3",
+        "AF3"
+      ],
+      "time": "hour",
+      "why": "Worked alert strategies explain precision, recall, detection time and error-budget burn instead of alerting on every failed check.",
+      "try": "For monthly BTS ingestion, define freshness relative to observed source publication, then distinguish a transient retry from a missed publication deadline.",
+      "caution": "The examples concern request-based services. Adapt the reasoning to batch freshness and completeness; do not copy request error-rate thresholds literally."
+    },
+    {
+      "key": "prodGitlabRecovery",
+      "title": "Postmortem of database outage of January 31 — GitLab Engineering",
+      "url": "https://about.gitlab.com/blog/postmortem-of-database-outage-of-january-31/",
+      "topics": [
+        "Q4",
+        "A4"
+      ],
+      "why": "A real incident exposes the difference between having backup mechanisms and having a recovery procedure that works under pressure.",
+      "try": "In a disposable copy, delete a derived flight partition, restore or rebuild it from retained inputs, and record recovery time and any unrecoverable changes.",
+      "gap": "A measured restore drill with recovery-time and recovery-point objectives is missing from explicit reliability practice."
+    },
+    {
+      "key": "prodSpotifyPrivacy",
+      "title": "Scalable User Privacy — Spotify Engineering",
+      "url": "https://engineering.atspotify.com/2018/9/scalable-user-privacy",
+      "topics": [
+        "A5",
+        "PL1"
+      ],
+      "why": "A real privacy architecture explains user-specific encryption keys and data lifecycle control across many services and batch pipelines.",
+      "try": "Standalone synthetic-user lab: delete a user from raw, derived and cached data; replay an old input and verify that the user is not reintroduced.",
+      "gap": "Deletion-versus-replay behavior is not an explicit exercise in governance or backfills.",
+      "caution": "Study the engineering trade-off, not a universal compliance recipe. Public BTS flight records do not require inventing passenger data; keep this lab synthetic."
+    },
+    {
+      "key": "prodDeltaCompaction",
+      "title": "Delta Lake Small File Compaction with OPTIMIZE — Delta Lake",
+      "url": "https://delta.io/blog/2023-01-25-delta-lake-small-file-compaction-optimize/",
+      "topics": [
+        "SB3",
+        "SB5"
+      ],
+      "why": "A small runnable example shows how repeated writes produce file overhead and how compaction changes physical layout without changing logical rows.",
+      "try": "On a disposable Delta fixture, create many small files, compact them, and compare file count, row checksums and repeated scan timings.",
+      "caution": "Skip the article’s zero-retention VACUUM demonstration: it removes rollback history. Choose retention for readers and recovery needs, using current Delta guidance."
+    },
+    {
+      "key": "prodBigqueryCostControls",
+      "title": "Estimate and control costs — BigQuery practical guide",
+      "url": "https://docs.cloud.google.com/bigquery/docs/best-practices-costs",
+      "format": "docs",
+      "topics": [
+        "P5",
+        "PL4"
+      ],
+      "why": "Concrete examples cover dry runs, bytes estimates, maximum bytes billed and query patterns that unexpectedly scan more data.",
+      "try": "Optional BigQuery lab: dry-run a bounded public-table query with and without a partition filter; record estimated bytes and set a maximum before execution.",
+      "caution": "Reading is free; cloud execution may cost money. Use current pricing and limits. A LIMIT clause is not a general scan-cost cap."
+    },
+    {
+      "key": "prodSampleRatioMismatch",
+      "title": "Diagnosing Sample Ratio Mismatch in A/B Testing — Microsoft Research",
+      "url": "https://www.microsoft.com/en-us/research/articles/diagnosing-sample-ratio-mismatch-in-a-b-testing/",
+      "topics": [
+        "BZ4",
+        "Py6"
+      ],
+      "why": "Real experiment examples show how missing or selectively filtered users can reverse a conclusion even when the final metric looks reasonable.",
+      "try": "Standalone experiment lab: generate a 50/50 assignment, selectively drop treatment users, run a chi-square SRM check and stop interpretation until the logging issue is understood.",
+      "caution": "The flights project is observational; do not present route or weather comparisons as randomized treatment effects."
+    },
+    {
+      "key": "prodAgentEvals",
+      "title": "Demystifying evals for AI agents — Anthropic Engineering",
+      "url": "https://www.anthropic.com/research/demystifying-evals-for-ai-agents",
+      "topics": [
+        "AI4"
+      ],
+      "time": "hour",
+      "why": "Concrete evaluation design separates tasks, graders, agent traces and outcomes, and explains how to start with observed failures.",
+      "try": "For the later flight assistant, grade result correctness, source citation and insufficient-data refusal separately. Preserve failed cases as regression tests.",
+      "caution": "The article is free. Running a hosted model can cost money; evaluation design and fixture-based checks can be prepared offline."
+    },
+    {
+      "key": "prodAgentInjection",
+      "title": "The lethal trifecta for AI agents — Simon Willison",
+      "url": "https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/",
+      "topics": [
+        "AI3",
+        "AI6"
+      ],
+      "why": "Practical examples explain prompt injection when an agent combines private data, untrusted retrieved content and external communication.",
+      "try": "Put a malicious instruction in a synthetic retrieved document. Verify that it cannot trigger a write, secret lookup or external request; enforce permissions outside the model.",
+      "gap": "Prompt-injection testing is missing from the current agent and retrieval practice.",
+      "caution": "Read-only SQL access alone does not prevent data leakage if other tools can send data out."
+    },
+    {
+      "key": "prodMetricPitfalls",
+      "title": "A Dirty Dozen: Twelve Common Metric Interpretation Pitfalls — Microsoft Research (PDF)",
+      "url": "https://www.microsoft.com/en-us/research/wp-content/uploads/2020/08/2017-08-KDDMetricInterpretationPitfalls.pdf",
+      "topics": [
+        "BZ2",
+        "BZ5"
+      ],
+      "time": "hour",
+      "why": "A freely available paper uses real experiment puzzles to show why a metric movement needs denominator, population and interpretation checks.",
+      "try": "Construct a two-airport example where the overall cancellation rate improves while each airport worsens. Explain the mix shift using counts and rates.",
+      "caution": "The paper concerns experiments. The mix-shift exercise transfers the diagnostic reasoning to observational flight metrics without making causal claims."
+    },
+    {
+      "key": "prodVisualizingUncertainty",
+      "title": "Visualizing uncertainty — Claus Wilke / Fundamentals of Data Visualization",
+      "url": "https://clauswilke.com/dataviz/visualizing-uncertainty.html",
+      "topics": [
+        "CM3",
+        "BZ3"
+      ],
+      "why": "A free illustrated chapter compares frequency framing, error bars and uncertainty displays for audiences with different levels of statistical knowledge.",
+      "try": "Show flight comparison sample sizes and coverage beside the rate. Sketch how an uncertainty display could explain why a tiny route sample cannot support a confident ranking.",
+      "caution": "A sample-size threshold is a product guardrail, not a confidence interval or proof that two airlines differ."
+    },
+    {
+      "key": "sdeMemoryEfficient",
+      "topics": [
+        "Py1"
+      ],
+      "why": "Runnable Python examples use generators and mini-batches instead of collecting every record in memory.",
+      "try": "Read a gzip CSV through a generator, validate rows in bounded batches, and measure peak memory against an eager list implementation.",
+      "caution": "Examples are older; follow the streaming pattern and current library APIs rather than copying dependency versions."
+    }
+  ];
+  function registerProductionRead(r) {
+    if (!L[r.key] && !LX[r.key]) L[r.key] = [r.title, r.url, r.format || "article"];
+    LM[r.key] = Object.assign({}, LM[r.key], {
+      f: r.format || LM[r.key]?.f || "article", t: r.time || LM[r.key]?.t || "quick",
+      why: "Production reading. " + r.why + " Try: " + r.try + (r.gap ? " Gap: " + r.gap : "") + (r.caution ? " Note: " + r.caution : ""),
+      ok: "2026-10-20"
+    });
+    const note = (r.priority ? "Good first read. " : "") + r.why + " Try: " + r.try +
+      (r.gap ? " Gap: " + r.gap : "") + (r.caution ? " Note: " + r.caution : "");
+    r.topics.forEach(id => {
+      const picks = lessonResources[id];
+      (picks.production || (picks.production = [])).push(r.key + "|" + note);
+    });
+  }
+  productionReading.forEach(registerProductionRead);
+
+  // Resource quality review: remove weak selections from every visible surface while
+  // retaining their permanent keys and saved reading evidence for import/export.
+  const resourceReview = {
+    date: "2026-10-21",
+    groups: [
+      {
+        "category": "directory",
+        "reason": "Broad homepage, directory or unspecified bundle; the catalog already contains selected pages or worked examples.",
+        "keys": [
+          "modernSql",
+          "sqlbi",
+          "realPython",
+          "sde",
+          "dbtBlog2026",
+          "engBlogs",
+          "arAstroLearn",
+          "arEvanMiller",
+          "ghDEHandbook",
+          "arGitlab",
+          "arRadar"
+        ]
+      },
+      {
+        "category": "definition",
+        "reason": "Short definition or technique summary without a worked implementation. Use the end-to-end modeling tutorial and dimension/fact ETL examples.",
+        "replacement": "arKimballDbt",
+        "keys": [
+          "kimballTech",
+          "kimballFourStep",
+          "kimballGrain",
+          "kimballAdditive",
+          "kimballFactless",
+          "kimballAccum",
+          "kimballType2",
+          "kimballJunk",
+          "kimballRolePlaying",
+          "kimballBridge",
+          "kimballConformed",
+          "kimballBusMatrix",
+          "kimballRequirements",
+          "kimballWorkshop",
+          "prodLateDimensions"
+        ]
+      },
+      {
+        "category": "opinion",
+        "reason": "Advice about iterative modeling without a worked model, SQL implementation or reproducible case.",
+        "replacement": "arKimballDbt",
+        "keys": [
+          "prodJustInTimeModeling"
+        ]
+      },
+      {
+        "category": "overview",
+        "reason": "General testing-workflow advice without executable model tests or CI configuration; use concrete unit-test docs and GitLab’s real dbt workflow.",
+        "replacement": "arGitlabDbt",
+        "keys": [
+          "prodDbtTestingWorkflow"
+        ]
+      },
+      {
+        "category": "overview",
+        "reason": "Broad platform responsibilities overview; the existing Uber platform retrospective and SRE pipeline chapter provide more engineering depth.",
+        "replacement": "uberBigData",
+        "keys": [
+          "prodSpotifyPlatform"
+        ]
+      },
+      {
+        "category": "opinion",
+        "reason": "Role positioning, product announcement or general advocacy; adds little implementation detail beyond the existing roadmap and decks.",
+        "keys": [
+          "dbtAe2026",
+          "dbtContextEng",
+          "dbtFusionBlog",
+          "arWhatIsAE",
+          "arDbtViewpoint",
+          "arRiseDE",
+          "loAnalyticsEngineer",
+          "arHiringAE"
+        ]
+      },
+      {
+        "category": "overview",
+        "reason": "Vendor benchmark or argument for semantic layers; replace with a worked semantic-model/query example and the evaluation guide.",
+        "replacement": "semanticWorkedExample",
+        "keys": [
+          "dbtSlVsText2Sql",
+          "dbtSlLlm"
+        ]
+      },
+      {
+        "category": "overview",
+        "reason": "Brief strategy overview without an implemented metric model; the worked Jaffle Shop semantic example is directly usable.",
+        "replacement": "semanticWorkedExample",
+        "keys": [
+          "sdeMetricsSot"
+        ]
+      },
+      {
+        "category": "overview",
+        "reason": "Introductory architecture explanation duplicated by existing decks and more detailed operational resources.",
+        "keys": [
+          "sdeEltVsEtl",
+          "arMedallion"
+        ]
+      },
+      {
+        "category": "outdated",
+        "reason": "Walkthrough uses Airflow 1.10.9 and an old third-party Docker image; current Airflow backfill, DAG-run and testing guides replace the implementation.",
+        "replacement": "afBackfill",
+        "keys": [
+          "sdeBackfillAirflow"
+        ]
+      },
+      {
+        "category": "access",
+        "reason": "Automated public retrieval was blocked (403), not proof of a paywall. Accessible SRE, Uber and GitLab implementation references cover the same learning needs without depending on this access path.",
+        "keys": [
+          "arFunctionalDE",
+          "arMinerva",
+          "netflixDataMesh"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Chapter introduction or contents page rather than the promised worked example. Keep the complete book and link directly to composite-index and hash-join examples.",
+        "replacement": "sqlCompositeIndexes",
+        "keys": [
+          "useIndexAnatomy",
+          "useIndexWhere",
+          "useIndexJoin"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Chart directory with short labels; the illustrated Wilke chapter and visualization deck provide the actual explanation.",
+        "replacement": "wilkeDirectory",
+        "keys": [
+          "swdChartGuide"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "General documentation landing page or unspecified reference; retain the specific how-to/API pages already mapped to lessons.",
+        "keys": [
+          "duckdb",
+          "dbtDocs",
+          "pyStdlib",
+          "pyTutorial",
+          "polars",
+          "pyarrow",
+          "httpx",
+          "dlt",
+          "pytest",
+          "pydantic",
+          "pandera",
+          "scipy",
+          "statsmodels",
+          "sparkDocs",
+          "pysparkDocs",
+          "deltaDocs",
+          "icebergDocs",
+          "pyiceberg",
+          "dbxDocs",
+          "airflowDocs",
+          "cosmos",
+          "debezium",
+          "elementary",
+          "soda",
+          "gx",
+          "ossie",
+          "cortex",
+          "azSearch",
+          "ghCopilot",
+          "snowDocs",
+          "airbyte",
+          "cube",
+          "mcp"
+        ]
+      },
+      {
+        "category": "duplicate",
+        "reason": "General tool documentation duplicates the mapped first-use guide or quickstart.",
+        "keys": [
+          "sqlfluff",
+          "evidence"
+        ]
+      },
+      {
+        "category": "scope",
+        "reason": "Source from an abandoned portfolio idea; the active project uses BTS flights and NOAA weather.",
+        "keys": [
+          "ghArchive",
+          "foodcom",
+          "fdc",
+          "offData",
+          "fdcApiGuide"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Unlinked bundle of question sites; use the named practice sites with actual URLs.",
+        "keys": [
+          "designBanks"
+        ]
+      },
+      {
+        "category": "duplicate",
+        "reason": "Generic practice-site homepage duplicates its selected product-sense question page.",
+        "replacement": "dataInterviewProductSense",
+        "keys": [
+          "dataInterview"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Channel or author homepage duplicates a selected talk or lesson already in the catalog.",
+        "keys": [
+          "ozar",
+          "statquest"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Broad course portal, general curriculum or duplicated course entry; keep the specific mapped course, lab or tool guide.",
+        "keys": [
+          "lamberti",
+          "selectStar",
+          "modeSql",
+          "dbtLearn",
+          "dbxAcademy",
+          "dataExpert",
+          "astroAcademy",
+          "dagsterU",
+          "khanStats",
+          "awsCP",
+          "terraform",
+          "snowLearn",
+          "skillsBoost",
+          "kafka101",
+          "techWriting",
+          "crDLAI",
+          "crSnowGuides",
+          "crMissing"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Unbounded YouTube channel rather than a selected, lesson-mapped tutorial. Keep the specific useful talks and lessons.",
+        "keys": [
+          "ytBaraa",
+          "ytZach",
+          "ytSeattleDataGuy",
+          "ytKahan",
+          "ytDbt",
+          "ytDatabricks",
+          "ytCafferky",
+          "ytCorey",
+          "ytMulla",
+          "ytAlex",
+          "ytTFQ",
+          "ytNasser",
+          "ytCMU",
+          "ytByteByteGo",
+          "ytDTC",
+          "ytAstronomer",
+          "ytGuyInCube",
+          "ytSqlbi"
+        ]
+      },
+      {
+        "category": "scope",
+        "reason": "Broad database roundup or transformer internals; lower priority than the roadmap’s concrete data-engineering labs.",
+        "keys": [
+          "yt7db",
+          "yt3b1bGPT"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Podcast homepage without a selected episode or practice connection; adds a browsing backlog rather than an actionable learning resource.",
+        "keys": [
+          "podAE",
+          "podDEP",
+          "podDSS",
+          "podAPH",
+          "podFlowcast",
+          "podDTC",
+          "podLatent",
+          "podPracticalAI"
+        ]
+      },
+      {
+        "category": "directory",
+        "reason": "Unbounded newsletter feed without a selected free practical article. Retain the selected articles, Data Engineering Weekly and Simon Willison as the two discovery feeds.",
+        "keys": [
+          "roundup",
+          "benn",
+          "nlSDG",
+          "nlJoe",
+          "nlDataProducts",
+          "nlDataExpert"
+        ]
+      },
+      {
+        "category": "scope",
+        "reason": "Beginner SQL curriculum or Fabric specialization is outside the current advanced roadmap’s focus.",
+        "keys": [
+          "crCS50Sql",
+          "crDP700"
+        ]
+      },
+      {
+        "category": "redundant-reading",
+        "reason": "Additional broad or overlapping long read without a distinct necessary lesson chapter; retain the core mapped books and the user’s current Data Warehouse Toolkit.",
+        "keys": [
+          "bkDbInternals",
+          "bkSparkTDG",
+          "bkAIEng",
+          "bkDataMesh",
+          "bkAdamson",
+          "setupGuide"
+        ]
+      },
+      {
+        "category": "redundant-reading",
+        "reason": "Optional paid alternate with unverified chapter mapping; the free Python for Data Analysis chapters and pandas practice already cover the lesson.",
+        "replacement": "pdaCh10",
+        "keys": [
+          "effPandas"
+        ]
+      }
+    ]
+  };
+  resourceReview.retired = Object.fromEntries(resourceReview.groups.flatMap(({ keys, ...decision }) => keys.map(k => [k, decision])));
+  const reviewedReads = [
+    {
+      "key": "arKimballDbt",
+      "topics": [
+        "M1",
+        "M2"
+      ],
+      "time": "hour",
+      "why": "A complete worked example with source data, a repository, dimension and fact SQL, surrogate keys and model documentation; includes a local DuckDB option.",
+      "try": "Identify the business process and grain, then reproduce one dimension and one fact. Adapt the pattern to flight-leg data and verify key uniqueness and join counts.",
+      "caution": "During modeling, focus on the design and SQL sections; run the dbt project after the dbt foundations lesson. Use current adapter versions instead of old pins.",
+      "priority": true
+    },
+    {
+      "key": "modelWarehouseObjects",
+      "title": "Implementing a dimensional warehouse: tables, keys and metadata — Databricks, Part 1",
+      "url": "https://www.databricks.com/blog/implementing-dimensional-data-warehouse-databricks-sql-part-1",
+      "topics": [
+        "M4"
+      ],
+      "time": "hour",
+      "why": "Uses AdventureWorks to turn a logical star schema into physical dimension and fact tables, covering data types, keys, constraints and metadata.",
+      "try": "Write the equivalent local DuckDB DDL for a flight fact and role-playing airport dimension. Document which constraints are actually enforced by each engine.",
+      "caution": "Databricks-specific syntax and platform behavior do not transfer unchanged. You can study the DDL locally before the later Databricks lesson."
+    },
+    {
+      "key": "modelDimensionEtl",
+      "title": "Dimension ETL with Type 1, Type 2 and late-arriving members — Databricks, Part 2",
+      "url": "https://www.databricks.com/blog/implementing-dimensional-data-warehouse-databricks-sql-part-2",
+      "topics": [
+        "M3"
+      ],
+      "time": "hour",
+      "why": "A step-by-step AdventureWorks implementation stages source data, detects changes, repairs placeholder dimensions, expires old SCD2 rows and inserts new versions.",
+      "try": "Replay two dimension changes, an unchanged batch and a late-arriving member. Assert one current row per business key and non-overlapping validity intervals.",
+      "gap": "Provides the worked late-arriving-dimension repair missing from the original lesson practice.",
+      "caution": "Translate Databricks SQL functions and execution assumptions to your engine. Keep the staging and version-expiry steps consistent during a load."
+    },
+    {
+      "key": "modelFactEtl",
+      "title": "Fact ETL: changed records, dimension lookups and late members — Databricks, Part 3",
+      "url": "https://www.databricks.com/blog/implementing-dimensional-data-warehouse-databricks-sql-part-3",
+      "topics": [
+        "M2"
+      ],
+      "time": "hour",
+      "why": "Works through an incremental sales fact load, including changed rows, missing dimension members, a continuous date dimension and surrogate-key lookup.",
+      "try": "Load a small transaction fact twice, then change a source row and add a previously missing dimension member. Reconcile row counts and measures after every step.",
+      "caution": "This is an engine-specific implementation, not a complete guarantee for arbitrary source corrections. Test watermarks, ties, deletes and old corrections against your own source contract."
+    },
+    {
+      "key": "modelSnapshotChanges",
+      "title": "Track changing order status with dbt snapshots — dbt Labs",
+      "url": "https://www.getdbt.com/blog/track-data-changes-with-dbt-snapshots",
+      "topics": [
+        "M3",
+        "D3"
+      ],
+      "time": "hour",
+      "why": "Follows a mutable order through status changes and shows how snapshot validity rows preserve history that the operational table overwrites.",
+      "try": "Change an order from pending to shipped, run a snapshot twice, and query its earlier state. Explain which transitions were invisible between snapshot runs.",
+      "caution": "The historical example uses older snapshot configuration. Follow current dbt snapshot syntax and distinguish observation time from the source’s true event time."
+    },
+    {
+      "key": "modelSnapshotJoin",
+      "title": "Tackling the complexity of joining snapshots — dbt Developer Blog",
+      "url": "https://docs.getdbt.com/blog/joining-snapshot-complexity",
+      "topics": [
+        "M3",
+        "S4"
+      ],
+      "time": "hour",
+      "why": "Uses two independently changing datasets and worked SQL to join only overlapping validity intervals instead of multiplying every historical row per entity.",
+      "try": "Create two histories with different change dates, compute interval overlaps and assert the expected timeline. Test equal boundaries and open-ended current rows.",
+      "caution": "Study the interval logic, not a universal complexity claim. Adapt macros and sentinel values to your warehouse and use a consistent half-open interval convention."
+    },
+    {
+      "key": "modelManyToMany",
+      "title": "Many-to-many model options compared with DAX and query plans — SQLBI",
+      "url": "https://www.sqlbi.com/articles/different-options-to-model-many-to-many-relationships-in-power-bi-and-tabular/",
+      "topics": [
+        "M5"
+      ],
+      "time": "hour",
+      "why": "Builds a customer-to-sport bridge scenario and compares filter paths, query plans and performance for alternative relationship designs.",
+      "try": "Model customers who play multiple sports. Compare a bridge design with a limited relationship, checking totals and filter propagation before timing queries.",
+      "caution": "This is Power BI/Tabular-specific. Do not apply its relationship or performance conclusions as universal SQL warehouse rules."
+    },
+    {
+      "key": "sqlCompositeIndexes",
+      "title": "Composite index column order: worked queries and execution plans — Use The Index, Luke!",
+      "url": "https://use-the-index-luke.com/sql/where-clause/the-equals-operator/concatenated-keys",
+      "topics": [
+        "P2"
+      ],
+      "why": "A company-merger example changes the employee key, then compares queries and plans before and after reversing a composite index.",
+      "try": "In PostgreSQL, compare indexes on (airline, flight_date) and (flight_date, airline) for selective filters. Record actual plans and rows rather than assuming one order always wins.",
+      "caution": "The article includes older Oracle-style plans. Verify current engine behavior, statistics and scan choices; small test tables may reasonably use a sequential scan."
+    },
+    {
+      "key": "sqlHashJoin",
+      "title": "Hash joins: filter indexes, projected columns and measured plans — Use The Index, Luke!",
+      "url": "https://use-the-index-luke.com/sql/join/hash-join-partial-objects",
+      "topics": [
+        "P2"
+      ],
+      "why": "Uses a sales-to-employee query and several engines’ plans to show how selective predicates and unnecessary columns affect a hash join.",
+      "try": "Compare SELECT * with a narrow projection and a date filter on a join. Inspect scan volume, hash-table size and runtime while confirming identical required output.",
+      "caution": "Translate date syntax and inspect the plan your engine actually chooses. An index on a join key is not an automatic improvement for every join strategy."
+    },
+    {
+      "key": "semanticWorkedExample",
+      "title": "Semantic models and metric queries on Jaffle Shop — dbt Labs / MetricFlow",
+      "url": "https://www.getdbt.com/blog/how-the-dbt-semantic-layer-works",
+      "topics": [
+        "M5",
+        "AI1"
+      ],
+      "time": "hour",
+      "why": "A worked Jaffle Shop example defines entities, measures and metrics in YAML, then explains how metric requests become SQL. Links to the example repository.",
+      "try": "Define a numerator, denominator and cancellation-rate metric over a flight mart. Inspect generated SQL and compare the result with a handwritten query at the same grain.",
+      "caution": "Some hosted APIs shown require a paid dbt plan. Read and inspect the example freely; follow the current MetricFlow version and distinguish local modeling from hosted API access."
+    },
+    {
+      "key": "arGitlabDbt",
+      "topics": [
+        "D4",
+        "Q1"
+      ],
+      "time": "hour",
+      "why": "GitLab publishes its actual dbt working practices, commands, model conventions, testing and deployment procedures, with concrete configuration examples.",
+      "try": "Read the testing and CI sections, then add a failure fixture to an isolated dbt branch and explain which check should block a merge.",
+      "caution": "Read the named sections rather than the entire handbook. GitLab’s infrastructure and conventions are company-specific, not a template to copy wholesale."
+    }
+  ];
+  reviewedReads.forEach(r => { productionReading.push(r); registerProductionRead(r); LM[r.key].ok = resourceReview.date; });
+
+  // Repair the moved Arrow reference without changing its reading identity.
+  L.pyarrowParquet[1] = "https://arrow.apache.org/docs/python/parquet/parquet.html";
+  LM.pyarrowParquet.ok = resourceReview.date;
+
+  // Replace weak primary recommendations as well as removing them from the Library.
+  const reviewedPicks = {
+    P2: { start: "sqlCompositeIndexes", deeper: ["pgIndexes", "ozarThinkLike"], more: ["sqlHashJoin"] },
+    M1: { deeper: ["dwt|ch. 1 and ch. 3: business process, grain, facts and dimensions", "modelWarehouseObjects"] },
+    M2: { start: "modelFactEtl", deeper: ["dwt|ch. 4 Inventory and ch. 6 Order Management: periodic and accumulating snapshots", "kimballDT167"] },
+    M3: { start: "modelSnapshotChanges", more: ["modelManyToMany"] },
+    M5: { start: "semanticWorkedExample" },
+    M6: { start: "loDiscovery|Use the worked discovery template to identify the business process and requirements before drafting the bus matrix", deeper: ["dwt|ch. 18 Dimensional Modeling Process and Tasks", "sdeReqQuestions"] },
+    D1: { start: "dbtQuickstartDuckdb", more: ["arKimballDbt", "dbtStructure"] },
+    D4: { start: "arGitlabDbt|Read the testing, CI and production orchestration sections; adapt the workflow to your local dbt project" },
+    A1: { start: "sdeDesignPatterns" },
+    A2: { start: "arLakehouse|Read the storage/compute and table-management architecture, then compare it with Parquet and Delta", deeper: ["uberBigData", "deltaTxnLog"] },
+    A4: { deeper: ["prodSrePipelines", "sdeLateEvents"] },
+    AI1: { start: "semanticWorkedExample", deeper: ["dbtSemanticModels", "dbtSL"] },
+    AI3: { start: "dbtMcpDocs", deeper: ["dbtMcp", "arAgents"] },
+    AI4: { start: "prodAgentEvals", deeper: ["bird", "spider"] },
+    CM3: { start: "wilkeDirectory", deeper: ["prodVisualizingUncertainty", "loShareInsights"] },
+    CM4: { deeper: ["sdeImpressHM"] },
+    PF4: { deeper: ["afBackfill", "sdeIdempotent"] },
+    PF7: { start: "semanticWorkedExample" },
+    JOB1: { start: "arKimballDbt" },
+    IV3: { start: "loStandOut", deeper: ["sdeImpressHM"] }
+  };
+  Object.entries(reviewedPicks).forEach(([id, picks]) => Object.assign(lessonResources[id], picks));
 
   // Preserve unchanged criteria when upgrading v3 progress; archive superseded checks.
   const curriculumMigration = {
@@ -2504,9 +3918,10 @@
   window.PLAN = {
     curriculumV: 4, curriculumMigration, checksV: 1,
     portfolio: {
-      question: "Which simple recipes (≤10 ingredients, ≤45 minutes) give the most protein and fibre per 100 kcal and the most vegetables, and do reviewers rate them as highly as other recipes?",
-      scope: "Use a fixed sample of 5,000 Food.com recipes with their reviews and pinned USDA FoodData Central releases, DuckDB + dbt, three documented metrics, tests in CI and one dashboard.",
-      brief: "study-planning/fuel-smart-project-brief.md"
+      name: "Flight Reliability",
+      question: "Which airline and departure window has historically been most reliable for a selected US domestic route?",
+      scope: "Start with January–March 2025 routes between six airports, DuckDB + dbt, three reliability metrics, tests in CI and a public route explorer. Add NOAA weather and a disruption replay next.",
+      brief: "projects/flight-reliability/index.html"
     },
     title: "Analytics Engineer Roadmap",
     effort: { min: 280, max: 350, weekly: 10 },
@@ -2518,7 +3933,8 @@
     },
     rating: ["Not yet", "Shaky", "Solid", "Confident"],
     L, LX, LM, tracks, items, areas, stages, checkpoints, road, deckBase, docsBase, dlCatalog, decks, lessonDecks, lessonLabs, plannedDecks, lessonPlanned,
-    lessonResources, areaReadingExtra, currentBooks,
+    lessonResources, areaReadingExtra, currentBooks, resourceReview,
+    productionReading: productionReading.filter(r => !resourceReview.retired[r.key]),
     skip: ["Hadoop / Hive / MapReduce", "Scala", "Deep Kubernetes", "Hard LeetCode algorithms", "Deep ML / model training", "Several BI tools in depth", "Collecting certifications", "Deep Fabric specialization", "Deep Data Vault", "Deep Flink"]
   };
 })();

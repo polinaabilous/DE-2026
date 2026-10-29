@@ -26,13 +26,13 @@ const legacy = () => { const ctx = vm.createContext({ window: {} }); vm.runInCon
 const plain = value => JSON.parse(JSON.stringify(value));
 const CODE = /\b(?:S[1-8]|P[1-5]|M[1-6]|D[1-5]|Py[1-6]|SB[1-5]|AF[1-4]|A[1-7]|Q[1-4]|BZ[1-5]|AI[1-7]|PL[1-7]|CM[1-4]|PF\d{1,2}|JOB[12]|IV[0-4]|SETUP|CERT)\b/;
 const text = html => html.replace(/<[^>]+>/g, ' ').replace(/&[a-z#0-9]+;/g, ' ');
-// The portfolio moved from GitHub activity to Fuel Smart (docs/study-planning/fuel-smart-project-brief.md).
-// Only these lines were rewritten for the new project data; list lengths stay the same so saved ticks still apply.
+// The portfolio now uses Flight Reliability; IDs/list positions remain stable for saved progress.
+// These project examples may change; list lengths stay stable so saved ticks still apply.
 const PROJECT_SWAP = new Set(['S2 practice 2', 'S7 practice 0', 'D3 practice 1', 'D3 practice 2', 'Py1 practice 0', 'Py1 practice 6',
   'Py3 practice 0', 'Py3 practice 1', 'Py3 setup 1', 'AF2 practice 0', 'AF2 practice 2', 'BZ2 practice 1', 'BZ5 practice 0', 'AI5 practice 0',
-  'PL4 practice 0', 'PF1 description', 'PF1 practice 1', 'PF1 check 4', 'PF2 description', 'PF3 description', 'PF3 practice 0',
-  'PF3 practice 1', 'PF3 check 0', 'PF4 description', 'PF4 check 0', 'PF8 description', 'PF8 check 3']);
-const PROJECT_DATA = new Set(['ghArchive', 'foodcom', 'fdc', 'offData']);
+  'D1 practice 2', 'Py1 practice 1', 'PF3 check 1', 'PF3 practice 2', 'PF6 description', 'PF6 check 1', 'PF8 practice 0', 'PL4 practice 0', 'PF1 description', 'PF1 practice 1', 'PF1 check 4', 'PF2 description', 'PF3 description', 'PF3 practice 0',
+  'PF3 practice 1', 'PF3 check 0', 'PF4 description', 'PF4 practice 1', 'PF4 check 0', 'PF8 description', 'PF8 check 3']);
+const PROJECT_DATA = new Set(['ghArchive', 'foodcom', 'fdc', 'offData', 'btsFlights', 'noaaHourly']);
 const OLD_PROJECT = /GH Archive|GitHub|\bGH\b|\bPR\b|repositor|contributor|24-hour UTC|hourly|per hour/i;
 // Verified moved links from the resource plan's issues list (2026-10-13). Keys stay; only these fields change.
 // Format/kind corrections (newsletter, community …) live in LM, so the [title, url, kind] entries keep their kind.
@@ -102,9 +102,9 @@ test('no old topic, check, practice item, resource, setup step or prerequisite i
       }
     }
   }
-  assert.match(plan.portfolio.question, /recipes/);
+  assert.match(plan.portfolio.question, /airline.*departure window/);
   assert.ok(!OLD_PROJECT.test(plan.portfolio.question + plan.portfolio.scope), 'portfolio no longer describes GitHub activity');
-  for (const s of plan.stages) assert.ok(!/GH Archive|GitHub|\bPR\b|repositories/.test([s.name, s.desc || '', ...s.scope, s.boundary, ...s.tasks.map(t => (t.t || '') + ' ' + (t.d || ''))].join(' ')), `stage ${s.id} uses Fuel Smart data`);
+  for (const s of plan.stages) assert.ok(!/GH Archive|GitHub|\bPR\b|repositories/.test([s.name, s.desc || '', ...s.scope, s.boundary, ...s.tasks.map(t => (t.t || '') + ' ' + (t.d || ''))].join(' ')), `stage ${s.id} uses flight data`);
   assert.deepEqual(plain(plan.skip), plain(old.skip));
   for (const [k, v] of Object.entries(old.L)) assert.deepEqual(plain(plan.L[k]), fixed(v, RESOURCE_FIXES[k]), `resource ${k}`);
   for (const [k, v] of Object.entries(old.LX)) assert.deepEqual(plain(plan.LX[k]), fixed(v, LX_FIXES[k]), `library extra ${k}`);
@@ -252,18 +252,23 @@ test('lessons show their decks and at most three resources; practice sites, tool
     assert.ok(tiers <= 3, `${id} panel shows ${tiers} resources`);
     // Nothing tagged to the lesson disappears: shown, reading list, problem sites, tools or "Also tagged".
     const placed = new Set(resources.tagged(id).map(x => x.key));
-    for (const e of plan.items[id].learn) assert.ok(placed.has(e.split('|')[0]), `${id} keeps ${e}`);
+    for (const e of plan.items[id].learn) {
+      const key = e.split('|')[0];
+      assert.ok(placed.has(key) || plan.resourceReview.retired[key], `${id} keeps or explicitly retires ${e}`);
+    }
     // Broad entries dropped from the panel stay tagged with the lesson in the Library and the By lesson view.
     for (const k of plan.lessonResources[id]?.drop || []) {
+      if (!resources.isActive(k)) continue;
       assert.ok(!shown.some(x => x.key === k), `${id} hides dropped ${k}`);
       assert.ok([...r.more, ...r.tools, ...r.sites, ...r.reading].some(x => x.key === k), `${id} keeps ${k} under Also tagged (or as a tool, site or chapter)`);
       assert.ok(resources.libItem[k].topics.includes(id), `${k} stays tagged with ${id} in the Library`);
     }
   }
   const libKeys = new Set(resources.LIB.map(x => x.key));
-  for (const k of [...Object.keys(plan.L), ...Object.keys(plan.LX)]) assert.ok(libKeys.has(k), `${k} stays in the Library`);
-  for (const k of Object.keys(legacy().L).concat(Object.keys(legacy().LX))) assert.ok(libKeys.has(k), `old ${k} is still in the Library`);
+  for (const k of [...Object.keys(plan.L), ...Object.keys(plan.LX)]) assert.equal(libKeys.has(k), resources.isActive(k), `${k} matches its review decision`);
+  for (const k of Object.keys(legacy().L).concat(Object.keys(legacy().LX))) assert.ok(libKeys.has(k) || plan.resourceReview.retired[k], `old ${k} is retained or explicitly retired`);
   for (const id of Object.keys(plan.items)) for (const e of plan.items[id].learn) {
+    if (!resources.isActive(e.split('|')[0])) continue;
     assert.ok(resources.LIB.find(x => x.key === e.split('|')[0]).topics.includes(id), `${e} stays tagged with ${id}`);
   }
   assert.ok(resources.areaReading('sql').some(r => r.key === 'tanimura'), 'broad SQL books are on the area reading list');
@@ -274,7 +279,7 @@ test('resource plan picks resolve, new resources are verified, every resource ha
   const old = legacy(), oldKeys = new Set([...Object.keys(old.L), ...Object.keys(old.LX)]);
   for (const [id, o] of Object.entries(plan.lessonResources)) {
     assert.ok(plan.items[id], `${id} is a curriculum item`);
-    for (const e of [o.start, ...(o.deeper || []), ...(o.reading || []), ...(o.sites || []), ...(o.tools || []), ...(o.more || []), ...(o.drop || [])].filter(Boolean)) {
+    for (const e of [o.start, ...(o.deeper || []), ...(o.production || []), ...(o.reading || []), ...(o.sites || []), ...(o.tools || []), ...(o.more || []), ...(o.drop || [])].filter(Boolean)) {
       const k = e.split('|')[0];
       assert.ok(plan.L[k] || plan.LX[k], `${id} references ${k}`);
     }
@@ -293,13 +298,106 @@ test('resource plan picks resolve, new resources are verified, every resource ha
   assert.ok(resources.LIB.filter(x => x.format === 'deck').length >= 20, 'decks are in the Library');
 });
 
+test('production reading resolves once in the Library, maps to lessons and keeps full practice context', () => {
+  const { plan, resources, views } = fixture();
+  const entries = plan.productionReading;
+  const audit = fs.readFileSync(path.join(app, '../../docs/study-planning/production-reading-map.md'), 'utf8');
+  const keys = new Set(), urls = new Set();
+  assert.equal(entries.filter(r => r.priority).length, 5, 'five manageable starting picks');
+  for (const r of entries) {
+    assert.ok(!keys.has(r.key), `unique curated key ${r.key}`); keys.add(r.key);
+    const resolved = resources.resolve(r.key);
+    assert.ok(!urls.has(resolved.url), `no duplicate article ${resolved.url}`); urls.add(resolved.url);
+    assert.match(plan.LM[r.key].ok, /^\d{4}-\d{2}-\d{2}$/);
+    assert.ok(r.why && r.try && audit.includes(resolved.url), `${r.key} has research context and an audit link`);
+    assert.equal(resources.LIB.filter(x => x.key === r.key).length, 1, `${r.key} appears once in the Library`);
+    assert.ok(resources.libItem[r.key].text.includes('production reading'), 'collection is searchable in the Library');
+    for (const id of r.topics) {
+      const picks = resources.lessonRes(id);
+      const resource = [picks.start, ...picks.deeper, ...picks.production].find(x => x?.key === r.key);
+      assert.ok(resource && resource.note.includes(r.try), `${id} keeps the suggested exercise`);
+      assert.ok(!r.caution || resource.note.includes(r.caution), `${id} keeps implementation caveats`);
+      assert.ok(resources.libItem[r.key].topics.includes(id), `${r.key} links back to ${id}`);
+      assert.ok(!picks.more.some(x => x.key === r.key), `${r.key} is not repeated under Also tagged`);
+      assert.ok(picks.production.length <= 2, `${id} has at most two optional reads`);
+      const panel = views.panelBody(id);
+      if (picks.production.length) assert.match(panel, /<details class="[^"]*production-reading">/, 'extra production reading starts collapsed');
+      assert.ok(panel.includes(resolved.url), `${id} exposes the source`);
+    }
+  }
+});
+
+test('optional production reading shares completion across lessons without completing required checks', () => {
+  const { resources, roadmap, state } = fixture();
+  const before = JSON.stringify({ checks: state().ck, done: state().done, practice: state().pc });
+  // Existing resource key retained when its article is promoted from Also tagged.
+  state().rc.Py4 = { sdeIntegrationTest: true };
+  assert.ok(resources.libDone('sdeIntegrationTest'));
+  assert.ok(resources.lessonRes('Py4').production.some(r => r.key === 'sdeIntegrationTest'));
+  resources.setLibDone('prodRetryJitter', true);
+  assert.ok(resources.libDone(resources.lessonRes('AF2').production.find(r => r.key === 'prodRetryJitter').key));
+  assert.ok(!roadmap.isDone('Py3') && !roadmap.isDone('AF2'));
+  assert.equal(JSON.stringify({ checks: state().ck, done: state().done, practice: state().pc }), before);
+  resources.setLibDone('prodRetryJitter', false);
+  assert.ok(!resources.libDone('prodRetryJitter'));
+});
+
+test('review decisions remove resources from every recommendation surface and cover the full catalog', () => {
+  const { plan, roadmap, resources } = fixture();
+  const report = JSON.parse(fs.readFileSync(path.join(app, '../../docs/study-planning/resource-quality-review.json'), 'utf8'));
+  const decisions = new Map(report.decisions.map(x => [x.key, x]));
+  assert.equal(decisions.size, report.decisions.length, 'one audit decision per permanent key');
+  const rawKeys = new Set([...Object.keys(plan.L), ...Object.keys(plan.LX)]);
+  for (const key of rawKeys) {
+    assert.ok(decisions.has(key), `audit covers ${key}`);
+    assert.equal(decisions.get(key).decision, resources.isActive(key) ? 'keep' : 'remove');
+    const r = resources.resolve(key);
+    assert.ok(r.title, `${key} remains resolvable, including reused Library extras`);
+  }
+  assert.equal(decisions.size, rawKeys.size + Object.keys(plan.decks).length);
+  assert.equal(report.summary.removed, Object.keys(plan.resourceReview.retired).length);
+  assert.equal(report.summary.retained, resources.LIB.length);
+  for (const id of roadmap.lessons) {
+    const picks = resources.lessonRes(id);
+    if (!['IV1', 'IV4'].includes(id)) assert.ok(picks.start, `${id} retains a useful starting resource`);
+    const visible = [picks.start, ...picks.deeper, ...picks.production, ...picks.reading, ...picks.sites, ...picks.tools, ...picks.more].filter(Boolean);
+    for (const r of visible.concat(resources.quickPicks(id))) assert.ok(resources.isActive(r.key), `${id} cannot recommend retired ${r.key}`);
+    const primary = [picks.start, ...picks.deeper, ...picks.production].filter(Boolean).map(r => r.key);
+    assert.equal(new Set(primary).size, primary.length, `${id} does not repeat an article promoted to a primary pick`);
+  }
+  for (const a of plan.areas) for (const r of resources.areaReading(a)) assert.ok(resources.isActive(r.key));
+  for (const s of plan.stages) for (const [, r] of resources.stageRefs(s)) assert.ok(resources.isActive(r.key));
+  for (const [key, decision] of Object.entries(plan.resourceReview.retired)) {
+    assert.ok(rawKeys.has(key) && decision.reason, 'retirement has a real identity and an explicit reason');
+    if (decision.replacement) assert.ok(resources.libItem[decision.replacement], 'replacement is visible');
+    assert.ok(!resources.libItem[key] && !plan.productionReading.some(r => r.key === key));
+  }
+});
+
+test('retired reading evidence survives migration and cloud export without blocking current reading', () => {
+  const { model, state, replace, resources } = fixture();
+  const old = model.blank();
+  old.lib.kimballGrain = 'done'; old.rc.M1 = { kimballFourStep: true };
+  old.reading.effPandas = { status: 'reading', note: 'Keep this old note', pct: 35, updated: '2026-10-20' };
+  replace(model.migrate(old));
+  const ctx = vm.createContext({ structuredClone, crypto: globalThis.crypto });
+  vm.runInContext(fs.readFileSync(path.join(app, 'cloud-core.js'), 'utf8'), ctx);
+  const back = model.migrate(ctx.AECloudCore.unpack(ctx.AECloudCore.pack(state()), model.blank()));
+  assert.equal(back.lib.kimballGrain, 'done');
+  assert.equal(back.rc.M1.kimballFourStep, true);
+  assert.deepEqual(plain(back.reading.effPandas), plain(old.reading.effPandas));
+  assert.ok(!resources.readingNow().includes('effPandas'));
+  assert.deepEqual(plain(resources.readingConflicts('dwt')), []);
+  assert.ok(!resources.libItem.kimballGrain && resources.libDone('kimballGrain'));
+});
+
 test('book chapters show with their notes; the current book is badged', () => {
   const { resources, views, plan } = fixture();
   const m1 = resources.lessonRes('M1');
   const dwt = m1.deeper.find(r => r.key === 'dwt');
   assert.match(dwt.note, /ch\. 1/);
   const panel = views.panelBody('M1');
-  assert.match(panel, /ch\. 1 Data Warehousing/);
+  assert.match(panel, /ch\. 1 and ch\. 3: business process/);
   assert.match(panel, /Your current book/);
   assert.match(views.panelBody('S1'), /ch\. 3 Time Series Analysis/, 'reading-list chapters show in the panel');
   assert.deepEqual(plain(plan.currentBooks), ['dwt']);

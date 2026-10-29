@@ -2,7 +2,7 @@ const { test } = require('node:test');
 const assert = require('node:assert/strict');
 require('../ae-tracker/cloud-core.js');
 const { pack, unpack, Model } = globalThis.AECloudCore;
-const empty = () => ({v:7,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},ck:{},done:{},built:{},lib:{},reading:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
+const empty = () => ({v:7,setupV:2,curriculumV:4,savedAt:0,ui:{res:'topic'},r:{},pc:{},rc:{},g:{},ck:{},done:{},built:{},lib:{},reading:{},deckVisits:{},act:{},notes:[],log:[],todo:[],practice:{},attempts:[]});
 const base = () => ({...empty(),checksV:1,r:{S1:[0,2]},pc:{S1:[true,false]},ck:{S1:[true,false],'v1-frame':[true]},done:{SETUP:'migrated'},built:{'v1-frame':'2026-10-13'},rc:{S1:{'https://example.com/a/b':true}},g:{'1.1-0':true},lib:{url:'later',dwt:'later'},reading:{dwt:{status:'reading',note:'Ch. 6 · Order Management',pct:35,updated:'2026-10-13'},corr:{status:'later',updated:'2026-10-12'}},act:{'2026-10-06':2},
   notes:[{id:'note-a',text:'SQL\n**FILTER**\n- One\n```sql\nSELECT 1;\n```',track:'sql',c:'2026-10-06'}],
   log:[{id:'log-a',d:'2026-10-06',text:'Practiced joins',h:1.5,role:'P',note:'legacy',custom:{retained:true}}],
@@ -40,6 +40,23 @@ test('late acknowledgements cannot discard newer edits; outbox survives reload',
 test('remote changes never become new local writes',()=>{
   const a=new Model(pack(base()));a.receive(pack(base()));const remote=base();remote.notes[0].text='Changed elsewhere';
   a.receive(pack(remote));a.edit(pack(remote));assert.equal(a.count(),0);
+});
+test('recent deck opens sync independently and a late offline open cannot move a deck backwards',()=>{
+  const s=empty(),a=new Model(pack(s)),b=new Model(pack(s));a.receive(pack(s));b.receive(pack(s));
+  const laptop=structuredClone(s),phone=structuredClone(s);
+  laptop.deckVisits['sql-window-functions']=1000;phone.deckVisits['python-foundations']=2000;
+  a.edit(pack(laptop));b.edit(pack(phone));
+  const remote={...pack(s),...Object.fromEntries(Object.entries(b.pending).map(([k,v])=>[k,v.value]))};
+  const merged=unpack(a.receive(remote),empty());
+  assert.deepEqual(merged.deckVisits,{'sql-window-functions':1000,'python-foundations':2000});
+  const key='["deckVisits","sql-window-functions"]';
+  const newer={...remote,[key]:'3000'};
+  const result=unpack(a.receive(newer),empty());
+  assert.equal(result.deckVisits['sql-window-functions'],3000);
+  assert.equal(a.pending[key],undefined,'older queued timestamp is discarded');
+  const before=pack(result);result.deckVisits={};a.edit(pack(result));
+  assert.equal(a.pending[key].value,null,'reset still deletes history');
+  assert.ok(Object.hasOwn(before,key));
 });
 test('special JSON keys cannot pollute objects; malformed cloud data is rejected',()=>{
   assert.throws(()=>unpack({'["extra","__proto__"]':'{}'},empty()));

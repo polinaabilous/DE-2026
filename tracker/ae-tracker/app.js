@@ -21,6 +21,10 @@
   const roadmap = globalThis.AEProgress.create(P, () => S);
   const { order, it, isDone, status, required, lessonChecks, currentRow } = roadmap;
   const resources = globalThis.AEResources.create(P, roadmap, () => S);
+  const deckHistory = globalThis.AEDeckHistory.store;
+  const deckCatalog = globalThis.AEDeckHistory.catalog(P.decks, P.deckBase, document.baseURI);
+  const deckScope = () => accountUid ? "user:" + accountUid : "local";
+  if (!Cloud?.info().configured) deckHistory.setAccount(null);
   const { resolve, LIB, TIME, FORMATS, FORMAT_ORDER, libDone, libLater, setLibDone } = resources;
   const planViews = globalThis.AEPlanViews.create({ plan: P, roadmap, resources, getState: () => S });
   const bar = v => `<div class="bar"><i style="width:${pct(v)}"></i></div>`;
@@ -28,6 +32,48 @@
   const target = id => roadmap.sourceOf[id] ? roadmap.sourceOf[id][0] : id;
   const topicTitle = id => roadmap.title(target(id));
   let roadHighlight = null;
+
+  // Deck opens are separate from completion and activity. Standalone tabs queue
+  // them locally; the tracker moves them into its normal account/folder storage.
+  function absorbDeckOpens() {
+    const scope = deckScope(), pending = deckHistory.read(scope);
+    let changed = false;
+    for (const [id, at] of Object.entries(pending)) {
+      if (!Object.hasOwn(P.decks, id) || at <= (S.deckVisits[id] || 0)) continue;
+      S.deckVisits[id] = at; changed = true;
+    }
+    if (changed) save();
+    if (Object.keys(pending).length) deckHistory.acknowledge(pending, scope);
+    // Let the link's normal navigation finish before replacing recent cards.
+    setTimeout(refreshRecentDecks, 0);
+  }
+  function recentDecks() {
+    const recent = deckCatalog.recent(S.deckVisits);
+    if (!recent.length) return "";
+    return `<div class="recent-decks-head"><h3>Recently opened</h3><span class="small muted">Decks &amp; guides</span></div><div class="recent-decks-list">${recent.map(d => {
+      const date = new Date(d.openedAt), opened = dayKey(date) === dayKey() ? "Today" : date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+      return `<a class="recent-deck" href="${esc(d.url)}" target="_blank" rel="noopener"><span class="recent-deck-icon" aria-hidden="true">${icon("slides")}</span><span class="grow"><strong>${esc(d.title)}</strong><small>${d.guide ? "Guide" : "Deck"} · <time datetime="${esc(date.toISOString())}">${esc(opened)}</time></small></span>${icon("arrow")}</a>`;
+    }).join("")}</div>`;
+  }
+  function refreshRecentDecks() {
+    const html = recentDecks();
+    document.querySelectorAll("[data-recent-decks]").forEach(el => {
+      const focused = el.contains(document.activeElement) ? document.activeElement.closest("a")?.href : null;
+      el.innerHTML = html; el.hidden = !html;
+      if (focused) [...el.querySelectorAll("a")].find(a => a.href === focused)?.focus({ preventScroll: true });
+    });
+  }
+  function trackDeckLink(event) {
+    if (event.defaultPrevented || (event.type === "auxclick" ? event.button !== 1 : event.button !== 0)) return;
+    const link = event.target.closest("a[href]");
+    if (!link || link.hasAttribute("download")) return;
+    const id = deckCatalog.match(link.href);
+    if (id) deckHistory.record(id, deckScope());
+  }
+  document.addEventListener("click", trackDeckLink);
+  document.addEventListener("auxclick", trackDeckLink);
+  window.addEventListener("ae-deck-open", event => { if (event.detail.scope === deckScope()) absorbDeckOpens(); });
+  window.addEventListener("storage", event => { if (deckHistory.isStorageKey(event.key)) absorbDeckOpens(); });
 
   // ---------- dashboard ----------
   function weekStart(d) { const x = new Date(d); x.setHours(0, 0, 0, 0); x.setDate(x.getDate() - ((x.getDay() + 6) % 7)); return x; }
@@ -107,9 +153,9 @@
   // By lesson: deck(s), labs, Start here / Go deeper, problem sites, data & tools, book chapters, then everything else
   // tagged to the lesson in a quiet "Also tagged" group. Each area ends with its reading list.
   function vByTopic(tabs) {
-    let h = `<div class="panel">${tabs}<h2>Resources by lesson</h2><p class="muted">Every learning area and lesson with its decks, labs and picks, then everything else tagged to it. Ticks are shared with the lesson panel and the Library.</p>
+    let h = `<div class="panel">${tabs}<h2>Resources by lesson</h2><p class="muted">Every learning area and lesson with its decks, labs and picks, then everything else tagged to it. Ticks are shared with the lesson panel and the Library.</p><p class="small">${P.productionReading.length} practical reads mapped to lessons, with worked examples, tool usage and suggested exercises. <button class="text-btn" data-rquery="good first read">Start with five</button> · <button class="text-btn" data-rquery="production reading">Show production reading</button> · <button class="text-btn" data-rquery="">Show all</button></p>
       <div class="filters"><input id="rsearch" type="search" placeholder="Search lessons, resources…" aria-label="Search lessons and resources"> <select id="rkind" aria-label="Format"><option value="">All formats</option><option value="lab">Lab</option>${FORMAT_ORDER.map(f => `<option value="${f}">${esc(FORMATS[f][0])}</option>`).join("")}</select></div></div>`;
-    const item = (id, r, role, area, cls = "") => `<li class="ritem ${cls}" data-kind="${esc(r.format)}" data-text="${esc((topicTitle(id) + " " + r.title + " " + r.format + " " + role + " " + area + " " + (r.note || "")).toLowerCase())}">${resRow(id, r, role)}</li>`;
+    const item = (id, r, role, area, cls = "") => `<li class="ritem ${cls}" data-kind="${esc(r.format)}" data-text="${esc((topicTitle(id) + " " + r.title + " " + r.format + " " + role + " " + (r.production ? "production reading " : "") + area + " " + (r.note || "")).toLowerCase())}">${resRow(id, r, role)}</li>`;
     P.areas.forEach(a => {
       h += `<section class="panel rgroup"><h3>${esc(a.name)}${a.star ? " ⭐" : ""}</h3>`;
       roadmap.areaLessons(a).forEach(id => {
@@ -120,6 +166,7 @@
         d.labs.forEach(l => { h += `<li class="ritem" data-kind="lab" data-text="${esc((name + " lab " + l.title + " " + a.name).toLowerCase())}"><span class="res"><span class="fmt f-lab">${icon("box")}Lab</span><span class="grow"><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.title)}</a>${l.slideUrl ? ` · <a href="${esc(l.slideUrl)}" target="_blank" rel="noopener">walkthrough slide</a>` : ""}</span></span></li>`; });
         if (p.start) h += item(id, p.start, "Start here", a.name);
         p.deeper.forEach(r => { h += item(id, r, "Go deeper", a.name); });
+        if (p.production.length) h += `<li class="also"><details class="also-tagged production-reading"><summary>Production reading <span class="muted">(${p.production.length}) · optional</span></summary><ul class="rlist">${p.production.map(r => item(id, r, "Production reading", a.name)).join("")}</ul></details></li>`;
         p.sites.forEach(r => { h += item(id, r, "Problems", a.name); });
         p.tools.forEach(r => { h += item(id, r, "Data & tools", a.name); });
         p.reading.forEach(r => { h += item(id, r, "Book chapters", a.name); });
@@ -575,11 +622,13 @@
 
   // ---------- routing / render ----------
   const practice = globalThis.AEPractice.create({ catalog: globalThis.AEPracticeCatalog, getState: () => S, save, touch, toast });
+  const landscape = globalThis.AELandscape.create({ data: globalThis.AELandscapeData, plan: P, onLesson: openItem });
   $("#trackerSubnav").innerHTML = practice.model.tools.map(t => `<a href="#trackers/${esc(t.id)}">${esc(t.name)}</a>`).join("");
-  const views = { trackers: practice.hub, ...Object.fromEntries(practice.model.tools.map(t => ["trackers/" + t.id, () => practice.toolView(t.id)])), topics: planViews.topics, roadmap: () => planViews.roadmap(roadHighlight), dashboard: vDashboard, resources: vResources, notes: vNotes, log: vLog, todo: vTodo };
+  const views = { "data-map": landscape.render, trackers: practice.hub, ...Object.fromEntries(practice.model.tools.map(t => ["trackers/" + t.id, () => practice.toolView(t.id)])), topics: planViews.topics, roadmap: () => planViews.roadmap(roadHighlight), dashboard: vDashboard, resources: vResources, notes: vNotes, log: vLog, todo: vTodo };
   const ALIAS = { kb: "notes", knowledge: "notes", interview: "roadmap", skills: "topics", areas: "topics", library: "resources" };
   function route() {
     let r = location.hash.replace("#", "");
+    if (r.startsWith("data-map/")) r = "data-map";
     if (ALIAS[r]) { if (r === "library") S.ui.res = "lib"; r = ALIAS[r]; history.replaceState(null, "", "#" + r); }
     return views[r] ? r : "topics";
   }
@@ -587,6 +636,11 @@
     const r = route();
     $("#view").dataset.route = r;
     $("#view").innerHTML = views[r]();
+    if (["topics", "roadmap", "resources", "dashboard"].includes(r)) {
+      const head = $("#view > .page-head") || $("#view > .panel");
+      head?.insertAdjacentHTML("afterend", '<section class="recent-decks" data-recent-decks aria-label="Recently opened decks" hidden></section>');
+      refreshRecentDecks();
+    }
     $("#trackerSubnav").hidden = !r.startsWith("trackers");
     $("#trackerNavLink").setAttribute("aria-expanded", String(r.startsWith("trackers")));
     document.querySelectorAll("nav a").forEach(a => {
@@ -608,6 +662,7 @@
       }
     }
     practice.afterRender();
+    landscape.afterRender();
     focusEntry();
   }
   const rerender = () => { render(); renderDrawer(); focusNote(); };
@@ -772,7 +827,7 @@
 
   // ---------- events ----------
   document.addEventListener("click", e => {
-    const t = e.target.closest("[data-open],[data-road],[data-act],[data-nb],[data-rtab],[data-larea],[data-time],[data-fmt],[data-lstatus],[data-libles],[data-note-format],[data-list]");
+    const t = e.target.closest("[data-open],[data-road],[data-act],[data-nb],[data-rtab],[data-rquery],[data-larea],[data-time],[data-fmt],[data-lstatus],[data-libles],[data-note-format],[data-list]");
     if (!t || t.disabled) return;
     if (t.dataset.list) return formatList($("textarea", t.closest(".editor-shell")), t.dataset.list === "number");
     if (t.dataset.noteFormat === "link") return formatLink($("textarea", t.closest(".editor-shell")));
@@ -781,6 +836,7 @@
     if (t.dataset.road !== undefined) { e.preventDefault(); return showRoadRow(t.dataset.road); }
     if (t.dataset.nb !== undefined) { e.preventDefault(); NF.track = t.dataset.nb; if (route() !== "notes") location.hash = "#notes"; else render(); return; }
     if (t.dataset.rtab) { S.ui.res = t.dataset.rtab; save(); return render(); }
+    if (t.dataset.rquery !== undefined) { $("#rsearch").value = t.dataset.rquery; $("#rkind").value = ""; filterResources(); return; }
     if (t.dataset.larea !== undefined) {
       libF.area = libF.area === t.dataset.larea ? "" : t.dataset.larea; libF.pick = null; updLib();
       $("#libChips")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -860,8 +916,8 @@
       case "theme": return toggleTheme();
       case "export": return download();
       case "import": return $("#importFile").click();
-      case "sample": if (confirm("Replace your progress with sample data? (Export first if you want to keep it.)" + folderNote())) { S = sample(); clearDrafts(); save(); rerender(); updatePill(); } return;
-      case "reset": if (confirm("Clear all progress, checks, log, notes, to dos, library ticks, reading status and practice progress?" + folderNote())) { S = blank(); clearDrafts(); save(); closePanel(); noteEdit = null; rerender(); updatePill(); } return;
+      case "sample": if (confirm("Replace your progress with sample data? (Export first if you want to keep it.)" + folderNote())) { S = sample(); deckHistory.clear(deckScope()); clearDrafts(); save(); rerender(); updatePill(); } return;
+      case "reset": if (confirm("Clear all progress, checks, log, notes, to dos, library ticks, reading status, recently opened decks and practice progress?" + folderNote())) { S = blank(); deckHistory.clear(deckScope()); clearDrafts(); save(); closePanel(); noteEdit = null; rerender(); updatePill(); } return;
     }
   });
   function cancelEdit() {
@@ -903,7 +959,7 @@
           const s = JSON.parse(txt);
           if (!s || typeof s !== "object" || !("r" in s)) throw 0;
           if (!confirm("Replace your current progress with this file?" + folderNote())) return;
-          S = migrate(s); clearDrafts(); save(); rerender(); toast("Imported ✓");
+          S = migrate(s); deckHistory.clear(deckScope()); clearDrafts(); save(); rerender(); toast("Imported ✓");
         } catch { alert("That file doesn't look like a roadmap export."); }
         finally { t.value = ""; }
       });
@@ -979,6 +1035,7 @@
     const scroll = [window.scrollX, window.scrollY];
     activeKey = Cloud.stateKey(uid);
     S = migrate(Object.assign(state, { ui: S.ui, savedAt: Date.now() })); persistLocal();
+    absorbDeckOpens();
     rerender();
     if (formKey && name) {
       const form = [...document.querySelectorAll("form[data-key]")].find(f => f.dataset.key === formKey);
@@ -989,18 +1046,19 @@
   }
   Store.on(updatePill);
   Cloud?.on(updatePill);
-  window.addEventListener("focus", () => guard(Store.changedOnDisk().then(ch => ch && syncFolder("external"))));
-  document.addEventListener("visibilitychange", () => { if (document.hidden) Store.flush(); });
+  window.addEventListener("focus", () => { absorbDeckOpens(); guard(Store.changedOnDisk().then(ch => ch && syncFolder("external"))); });
+  document.addEventListener("visibilitychange", () => { if (document.hidden) Store.flush(); else absorbDeckOpens(); });
 
-  window.AE = { build: "2026-10-13.8", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
+  window.AE = { build: "2026-10-26.1", state: () => S, openItem, closePanel, order, isDone, currentRow, roadmap, resources, syncFolder, Store, Cloud, LIB, Practice: practice };
   themeLabel();
   render();
+  absorbDeckOpens();
   updatePill();
   guard(Store.init().then(async i => {
     if (i.state === "connected") await syncFolder("startup");
     if (Cloud) await Cloud.init({ current: () => S, empty: blank, hasData, apply: applyCloud,
-      account: uid => { activeKey = Cloud.stateKey(uid); if (accountUid !== uid) { clearDrafts(); } accountUid = uid; },
-      signedOut: () => { accountUid = null; activeKey = KEY; S = load(); clearDrafts(); closePanel(); rerender(); }
+      account: uid => { activeKey = Cloud.stateKey(uid); if (accountUid !== uid) { clearDrafts(); } accountUid = uid; deckHistory.setAccount(uid); },
+      signedOut: () => { accountUid = null; deckHistory.setAccount(null); activeKey = KEY; S = load(); clearDrafts(); closePanel(); rerender(); absorbDeckOpens(); }
     });
   }));
 })();

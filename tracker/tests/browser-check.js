@@ -219,6 +219,23 @@
     $('[data-practice-action="close"]').click();await tick();
     practiceFilter('status','completed');check(countProblems() === 1, 'Status filter finds completed problems');
     const practiceCsv=AE.Practice.csv('datalemur');check(practiceCsv.includes('topics,status,notes') && !practiceCsv.includes('last_attempt') && practiceCsv.includes('**Group** twice') && practiceCsv.split('\r\n').length === 3, 'Filtered CSV includes status, compact topics and notes');
+    $('[data-practice-action="clear"]').click();await go('trackers');
+    check(!!$('.practice-tool-card[href="#trackers/leetcode-sql50"]'), 'Trackers hub exposes LeetCode SQL 50');
+    $('.practice-tool-card[href="#trackers/leetcode-sql50"]').click();await tick();
+    check($('main').dataset.route === 'trackers/leetcode-sql50' && !!$('#trackerSubnav a[href="#trackers/leetcode-sql50"].active'), 'LeetCode has its own route and active submenu entry');
+    check(countProblems() === 50 && $('.practice-meta').textContent.includes('#1757'), 'All 50 LeetCode problems display in official order with problem numbers');
+    set($('.practice-filters [name="q"]'),'Subqueries');check(countProblems() === 7, 'LeetCode search finds official study-plan sections');
+    practiceFilter('difficulty','Hard');check(countProblems() === 1 && $('[data-practice-problem]:not([hidden])').textContent.includes('Department Top Three Salaries'), 'Difficulty and section search combine');
+    $('[data-practice-action="clear"]').click();set($('.practice-filters [name="q"]'),'1757');check(countProblems() === 1, 'LeetCode search accepts problem numbers');
+    const lcSlug='recyclable-and-low-fat-products',lcKey='leetcode-sql50:'+lcSlug;
+    $('[data-practice-status="'+lcSlug+'"][data-status="completed"]').click();
+    check(state().practice[lcKey].status === 'completed' && state().practice[problemKey].status === 'completed', 'LeetCode status changes preserve DataLemur progress');
+    $('[data-practice-open="'+lcSlug+'"]').click();set($('.practice-notes-form').elements.text,'**WHERE** filters\n- Check both conditions');$('.practice-notes-form').requestSubmit();
+    check(state().practice[lcKey].notes.includes('Check both conditions') && state().practice[problemKey].notes === '**Group** twice', 'LeetCode Markdown notes remain separate');
+    $('[data-practice-action="close"]').click();await tick();
+    const lcCsv=AE.Practice.csv('leetcode-sql50');check(lcCsv.includes('1757') && lcCsv.includes('Select') && !lcCsv.includes('undefined') && lcCsv.split('\r\n').length===3, 'LeetCode export includes number and section without fabricated companies');
+    await go('trackers/datalemur');check(countProblems()===54 && $('.practice-filters [name="q"]').value==='', 'Filters remain independent across practice tools');
+    await go('trackers/leetcode-sql50');check(countProblems()===1 && $('.practice-filters [name="q"]').value==='1757', 'LeetCode filters survive navigation');
     $('[data-practice-action="clear"]').click();await go('todo');
 
     // Topics, roadmap and the lesson / stage side panel.
@@ -246,6 +263,14 @@
     check(!$('#drawer').open && document.activeElement?.dataset.open === 'S2', 'Closing the panel returns focus to the lesson');
     await go('roadmap');
     check(document.querySelectorAll('.road-row').length > 25 && !!$('.checkpoint-card.apply') && !CODE.test($('main').textContent), 'Roadmap shows rows, checkpoints and Ready to apply without codes');
+    check($('.road-intro').textContent.includes('Portfolio · Flight Reliability') && !$('main').textContent.includes('Fuel Smart'), 'Roadmap uses the flight portfolio throughout');
+    const brief = $('.road-intro a[href="projects/flight-reliability/index.html"]');
+    const briefResponse = await fetch(brief.href);
+    check(briefResponse.ok && (await briefResponse.text()).includes('Flight Reliability — portfolio project brief'), 'Project brief opens from the Hosting public directory');
+    $('.project-card [data-open="x-weather"]').click(); await tick();
+    check($('#drawer').textContent.includes('station') && $('#drawer').textContent.includes('fan-out') && $('#drawer').textContent.includes('Knowledge needed'), 'Weather stage explains its knowledge, station mapping and temporal joins');
+    check(!!$('#drawer a[href="https://www.ncei.noaa.gov/products/global-historical-climatology-network-hourly"]'), 'Weather stage links the official observation source');
+    AE.closePanel(); await tick();
     $('.project-card [data-open="v1-frame"]').click(); await tick();
     check($('#drawer').open && $('#drawer [data-act="build"]').disabled && $('#drawer').textContent.includes('Knowledge needed'), 'Stage opens and stays locked until its lessons are complete');
     AE.closePanel(); await tick();
@@ -282,7 +307,7 @@
     check(JSON.stringify(reloaded.log) === JSON.stringify(state().log) && JSON.stringify(reloaded.todo) === JSON.stringify(state().todo), 'Page reload preserves journal and checklist; migration is idempotent');
     check(reloaded.practice[problemKey].status === 'completed', 'Status survives a fresh page load');
     frame.remove();
-    for (const route of ['topics', 'roadmap', 'resources', 'notes', 'log', 'todo', 'trackers', 'trackers/datalemur', 'dashboard']) {
+    for (const route of ['topics', 'roadmap', 'resources', 'notes', 'log', 'todo', 'trackers', 'trackers/datalemur', 'trackers/leetcode-sql50', 'dashboard']) {
       await go(route);
       check(!!$('main h2') && !$('main').innerHTML.includes('NaN') && !$('main').innerHTML.includes('undefined'), `${route} renders with migrated data`);
     }
@@ -290,10 +315,40 @@
     // Product names such as Amazon S3 are not topic codes.
     const noCode = t => !CODE.test(t.replace(/Amazon S3/g, ''));
     check(!!$('.rtopic .fmt.f-deck') && !!$('.also-tagged') && noCode($('main').textContent), 'By lesson lists decks, labs, picks and Also tagged without codes');
+    const completionBeforeReading = JSON.stringify({ done: state().done, ck: state().ck, pc: state().pc });
+    check(!document.querySelector('[data-rc$="|kimballGrain"], [data-rc$="|kimballFourStep"], [data-rc$="|prodJustInTimeModeling"]'), 'Retired definitions and opinion pieces are absent from resources');
+    check(!!$('.production-reading') && !$('.production-reading').open, 'Optional production reading starts collapsed');
+    $('[data-rquery="good first read"]').click();
+    check(new Set([...document.querySelectorAll('.ritem:not([hidden]) [data-rc]')].map(x => x.dataset.rc.split('|')[1])).size === 5, 'Starting picks filter finds five unique free reads');
+    $('#rkind').value = 'video'; $('#rkind').dispatchEvent(new Event('change', { bubbles: true }));
+    $('[data-rquery="production reading"]').click();
+    const productionRows = [...document.querySelectorAll('.ritem:not([hidden])')];
+    const reviewedKeys = new Set(PLAN.productionReading.map(x => x.key));
+    check($('#rsearch').value === 'production reading' && $('#rkind').value === '' && productionRows.length > 30 && productionRows.every(x => reviewedKeys.has(x.querySelector('[data-rc]')?.dataset.rc.split('|')[1]) && (!x.closest('.production-reading') || x.closest('.production-reading').open)), 'Production filter finds primary and optional practical reads and opens optional groups');
+    set($('#rsearch'), 'Atomic publication');
+    check([...document.querySelectorAll('.ritem:not([hidden])')].some(x => x.textContent.includes('crash recovery')), 'Resource search finds gaps and suggested exercises');
+    $('[data-rquery=""]').click();
+    check($('#rsearch').value === '' && !!document.querySelector('.ritem[data-kind="deck"]:not([hidden])'), 'Show all clears the reading filter');
+    AE.openItem('Py3');
+    check(!!$('#drawer .production-reading') && !$('#drawer .production-reading').open && $('#drawer .production-reading').textContent.includes('Retry-After'), 'Lesson drawer contains collapsed reading with full exercise context');
+    $('#drawer .production-reading').open = true;
+    $('#drawer [data-rc="Py3|prodRetryJitter"]').click();
+    check(AE.resources.libDone('prodRetryJitter') && JSON.stringify({ done: state().done, ck: state().ck, pc: state().pc }) === completionBeforeReading, 'Reading tick is shared without changing lesson completion or practice');
+    AE.closePanel();
+    AE.openItem('AF2');
+    check($('#drawer [data-rc="AF2|prodRetryJitter"]').checked, 'Same article is completed in its other lesson');
+    $('#drawer [data-rc="AF2|prodRetryJitter"]').click(); AE.closePanel();
+    AE.openItem('M3');
+    check($('#drawer').textContent.includes('Dimension ETL with Type 1, Type 2') && $('#drawer').textContent.includes('Tackling the complexity of joining snapshots') && !$('#drawer').textContent.includes('Late Arriving Dimensions — Kimball'), 'Modeling panel uses worked ETL and snapshot examples');
+    AE.closePanel();
     $('#rsearch').value = 'locally optimistic'; $('#rsearch').dispatchEvent(new Event('input', { bubbles: true }));
     check([...document.querySelectorAll('.ritem:not([hidden])')].some(li => li.closest('.also-tagged')?.open), 'Search opens Also tagged when a broad resource matches');
     $('[data-rtab="lib"]').click();
     const lib = $('main');
+    check(!AE.resources.LIB.some(x => PLAN.resourceReview.retired[x.key]), 'Library excludes every retired key');
+    set($('#lq'), 'Kimball technique: Grain');
+    check(!document.querySelector('.lcard[data-key="kimballGrain"]'), 'Library search cannot resurrect retired resources');
+    set($('#lq'), '');
     check(!!$('#libNow .now-col') && document.querySelectorAll('.fmt-chip').length === 11 && !!$('.shelf-quick .lcard') && !!$('.shelf-long .long-row') && !!$('.shelf-loop .loop-item'), 'Library renders the Now bar, format chips and the three shelves');
     check(noCode(lib.textContent) && !lib.innerHTML.includes('undefined') && !lib.innerHTML.includes('NaN'), 'Library shows no topic codes');
     check(!!$('#libNow [data-act="readstart"][data-key="dwt"]') && !Object.keys(state().reading).some(k => state().reading[k].status === 'reading'), 'Current book is suggested, not silently marked as reading');

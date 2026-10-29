@@ -1,0 +1,152 @@
+/* Scoped read-only reference; uses the tracker's light/dark theme tokens. */
+main[data-route="data-map"] { max-width: 1460px; padding-top: 32px; }
+.landscape-page { --map-blue: #426d8c; --map-gold: #9b702b; }
+:root[data-theme="dark"] .landscape-page { --map-blue: #9dc5df; --map-gold: #e1bc79; }
+.landscape-page .page-head { gap: 24px; margin-bottom: 22px; }
+.landscape-page .page-head p { max-width: 690px; font-size: 15px; }
+.landscape-total { color: var(--accent); font-size: 16px; font-weight: 650; white-space: nowrap; text-align: right; }
+.landscape-total > span { display: block; font-size: 12px; color: var(--muted); font-weight: 400; }
+.landscape-stack { padding: 20px 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+.landscape-examples > summary { cursor: pointer; font-size: 12px; color: var(--accent); padding: 4px 0 11px; font-weight: 600; }
+.landscape-examples > summary > span { color: var(--muted); font-weight: 400; margin-left: 8px; font-size: 11px; }
+.landscape-stack-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; margin-bottom: 18px; }
+.landscape-stack h3 { font-size: 17px; margin: 3px 0 0; }
+.landscape-stack .eyebrow { font-size: 10px; }
+.landscape-switch, .landscape-kinds { display: flex; align-items: center; flex-wrap: wrap; gap: 3px; padding: 3px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel2); }
+.landscape-switch button, .landscape-kinds button { min-height: 36px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); padding: 6px 10px; font-size: 12px; font-weight: 600; }
+.landscape-switch button[aria-pressed="true"], .landscape-kinds button[aria-pressed="true"] { color: var(--accent); background: var(--panel); box-shadow: var(--shadow); }
+.landscape-chain { display: flex; align-items: stretch; gap: 4px; }
+.landscape-chain-node { display: flex; flex: 1; min-width: 0; flex-direction: column; justify-content: center; text-align: left; gap: 4px; padding: 12px; border: 1px solid color-mix(in srgb, var(--accent) 28%, var(--line)); border-radius: 9px; background: var(--accent-soft); color: var(--text); }
+.landscape-chain-node > span { font-size: 14px; font-weight: 650; line-height: 1.3; }
+.landscape-chain-node > small { font-size: 11px; line-height: 1.45; color: var(--muted); }
+.landscape-chain-node:hover { border-color: var(--accent); }
+.landscape-chain-link { display: flex; justify-content: center; align-items: center; flex-direction: column; align-self: center; width: 56px; flex: none; font-size: 10px; line-height: 1.25; text-align: center; color: var(--muted); }
+.landscape-chain-link > span:last-child { font-size: 20px; color: var(--accent); }
+.landscape-stack-note { font-size: 12px; color: var(--muted); margin: 14px 0 10px; max-width: 920px; }
+.landscape-alongside { display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; font-size: 12px; }
+.landscape-alongside > span { color: var(--muted); margin-right: 3px; }
+.landscape-inline { font-size: 12px; min-height: 32px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 6px; background: var(--panel); color: var(--accent); }
+.landscape-inline:hover { border-color: var(--accent); background: var(--accent-soft); }
+.landscape-mixups { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 15px 0 18px; }
+.landscape-mixups > span { font-size: 11px; font-weight: 650; color: var(--muted); margin-right: 5px; }
+.landscape-mixups > button { background: transparent; border: 1px solid var(--line); border-radius: 20px; color: var(--text); font-size: 11px; min-height: 32px; padding: 5px 10px; }
+.landscape-mixups > button:hover { border-color: var(--accent); background: var(--accent-soft); }
+.landscape-toolbar { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 0; align-items: center; position: sticky; top: var(--hh, 0px); z-index: 15; background: var(--bg); }
+.landscape-search { display: flex; align-items: center; flex: 1; gap: 10px; min-width: min(100%, 280px); border: 1px solid var(--line); background: var(--panel); border-radius: 9px; padding: 0 13px; color: var(--muted); }
+.landscape-search input { padding: 12px 0; min-height: 44px; width: 100%; min-width: 0; background: transparent; color: var(--text); font: inherit; border: 0; outline: none; }
+.landscape-search:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.landscape-search input:focus-visible { outline: none; }
+.landscape-result-info { display: flex; gap: 12px; align-items: center; justify-content: space-between; min-height: 36px; margin: 2px 0 10px; color: var(--muted); font-size: 12px; }
+#landscapeActiveFilters { display: flex; align-items: center; gap: 12px; }
+.landscape-result-info .ui-icon { width: 13px; height: 13px; }
+.landscape-groups { columns: 3; column-gap: 16px; }
+.landscape-group { display: inline-block; width: 100%; break-inside: avoid; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); padding: 17px 16px 12px; margin: 0 0 16px; vertical-align: top; }
+.landscape-group-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+.landscape-group-head > .ui-icon { color: var(--accent); margin-top: 4px; width: 19px; height: 19px; }
+.landscape-question { display: block; color: var(--muted); font-size: 10px; text-transform: uppercase; letter-spacing: .7px; }
+.landscape-group-head h3 { font-size: 16px; margin: 2px 0 0; line-height: 1.35; }
+.landscape-group-head h3 > button { font: inherit; color: var(--text); border: 0; padding: 0; background: transparent; text-align: left; }
+.landscape-group-head h3 > button:hover { color: var(--accent); }
+.landscape-group-head h3 > span { font-size: 11px; font-weight: 500; color: var(--muted); margin-left: 9px; }
+.landscape-group-note { font-size: 11px; line-height: 1.55; color: var(--muted); margin: 9px 0 13px; }
+.landscape-nodes { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.landscape-node { display: flex; flex-direction: column; align-items: stretch; justify-content: flex-start; gap: 3px; min-width: 0; padding: 9px 10px; min-height: 58px; border: 1px solid var(--line); border-radius: 7px; background: var(--panel2); text-align: left; color: var(--text); }
+.landscape-node:hover { border-color: var(--accent); background: var(--accent-soft); }
+.landscape-node > span { display: flex; align-items: flex-start; justify-content: space-between; gap: 5px; }
+.landscape-node b { font-size: 13px; line-height: 1.4; font-weight: 650; overflow-wrap: anywhere; }
+.landscape-node small { font-size: 11px; color: var(--muted); line-height: 1.45; }
+.landscape-kind-dot { width: 5px; height: 5px; margin-top: 5px; border-radius: 50%; flex: none; background: var(--accent); }
+.landscape-kind-dot.format { background: var(--map-blue); }
+.landscape-kind-dot.concept { background: var(--map-gold); }
+.landscape-node.is-root { border-color: var(--accent); background: var(--accent-soft); }
+.landscape-node > em { display: block; font-style: normal; font-size: 10px; color: var(--accent); line-height: 1.5; margin-top: 4px; }
+.landscape-focus { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); background: var(--accent-soft); padding: 12px 16px; border-radius: 9px; margin-bottom: 16px; font-size: 13px; }
+.landscape-focus + .landscape-groups { display: grid; columns: auto; grid-template-columns: repeat(auto-fit, minmax(min(100%, 290px), 1fr)); align-items: start; gap: 16px; }
+#landscapeResults { scroll-margin-top: calc(var(--hh, 0px) + 100px); }
+.landscape-empty { padding: 44px 20px; border: 1px dashed var(--line); border-radius: 12px; text-align: center; }
+.landscape-empty p { margin: 6px 0 18px; color: var(--muted); }
+.landscape-research { font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); padding: 18px 0 8px; }
+.landscape-research > summary { cursor: pointer; font-weight: 600; color: var(--text); display: list-item; }
+.landscape-research > summary > span { font-weight: 400; color: var(--muted); margin-left: 12px; font-size: 11px; }
+.landscape-research > p { max-width: 840px; margin: 12px 0; }
+.landscape-source-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 24px; margin-top: 18px; }
+.landscape-source-list a { overflow-wrap: anywhere; }
+
+/* Reference details follow the existing lesson-panel interaction. */
+#landscapeDialog { margin: 0 0 0 auto; width: min(630px, 100vw); max-width: 100vw; height: 100dvh; max-height: 100dvh; overflow: hidden; padding: 0; border: 0; border-left: 1px solid var(--line); background: var(--bg); color: var(--text); border-radius: 0; box-shadow: -10px 0 45px #0002; }
+#landscapeDialog::backdrop { background: #10241a52; backdrop-filter: blur(1.5px); }
+.landscape-dialog-shell { display: flex; flex-direction: column; height: 100%; min-height: 0; }
+.landscape-dialog-controls { display: flex; flex: none; justify-content: space-between; align-items: center; padding: 6px 16px 0; }
+.landscape-dialog-title { flex: none; padding: 4px 22px 12px; border-bottom: 1px solid var(--line); }
+.landscape-dialog-title h2 { font-size: 27px; margin: 4px 0 3px; overflow-wrap: anywhere; outline: none; }
+.landscape-dialog-title > p { color: var(--muted); }
+.landscape-dialog-body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 22px; overscroll-behavior: contain; }
+.landscape-definition { margin: 0; }
+.landscape-definition > div { margin: 0 0 11px; }
+.landscape-definition > div:last-child { margin-bottom: 0; }
+.landscape-definition dt { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: var(--muted); margin-bottom: 3px; }
+.landscape-definition dd { margin: 0; font-size: 15px; line-height: 1.5; }
+.landscape-definition > .landscape-good { padding: 10px 12px; background: var(--accent-soft); border-radius: 9px; }
+.landscape-good dt { color: var(--accent); }
+.landscape-detail-section { border-top: 1px solid var(--line); padding: 12px 0 0; margin-top: 14px; }
+.landscape-detail-section h3 { font-size: 16px; margin: 0 0 8px; }
+.landscape-detail-heading { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.landscape-detail-heading .text-btn { font-size: 12px; }
+.landscape-origin { border: 1px solid var(--line); background: var(--accent-soft); padding: 7px 12px; font-size: 14px; font-weight: 650; border-radius: 7px; }
+.landscape-relations > button { display: grid; grid-template-columns: 16px minmax(100px, 1fr) minmax(100px, 1fr) 18px; align-items: center; gap: 8px; width: calc(100% - 12px); min-height: 38px; margin: 0 0 0 12px; padding: 7px 6px 7px 10px; border: 0; border-left: 1px solid var(--line); border-bottom: 1px solid var(--line); background: transparent; text-align: left; }
+.landscape-relations > button:hover { background: var(--accent-soft); }
+.landscape-relations > button > small { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.landscape-relations > button > b { font-size: 13px; color: var(--accent); font-weight: 600; }
+.landscape-relations > button > span { color: var(--muted); }
+.landscape-incoming { font-size: 12px; color: var(--muted); margin: 9px 0 2px; }
+.landscape-incoming > summary { cursor: pointer; }
+.landscape-incoming > div { display: flex; flex-wrap: wrap; gap: 6px; padding-top: 7px; }
+.landscape-learning { display: grid; gap: 2px; }
+.landscape-learning > button, .landscape-learning > a { display: flex; gap: 9px; align-items: center; padding: 6px 0; min-height: 34px; font-size: 13px; text-align: left; color: var(--accent); text-decoration: none; background: transparent; border: 0; }
+.landscape-learning > :is(button,a):hover { text-decoration: underline; }
+.landscape-learning .ui-icon { width: 15px; height: 15px; }
+.landscape-learning .ui-icon:last-child:not(:first-child) { margin-left: auto; }
+.landscape-source-links { display: grid; gap: 6px; margin-bottom: 8px; font-size: 13px; }
+.landscape-dialog-foot { flex: none; border-top: 1px solid var(--line); display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: center; padding: 8px 22px; background: var(--panel); }
+.landscape-dialog-foot .btn { min-height: 38px; font-size: 12px; padding: 7px 12px; }
+.landscape-copy-link { max-width: 100%; display: block; color: var(--text); background: var(--panel); border: 1px solid var(--line); padding: 6px; }
+.landscape-compare-answer { font-size: 16px; line-height: 1.55; margin: 0 0 14px; }
+.landscape-compare-cards { display: grid; gap: 10px; }
+.landscape-compare-cards > section { border: 1px solid var(--line); background: var(--panel); border-radius: 10px; padding: 14px; }
+.landscape-compare-cards h3 { font-size: 19px; margin: 4px 0 6px; }
+.landscape-compare-cards p { font-size: 14px; line-height: 1.5; margin-bottom: 8px; }
+.landscape-compare-diff { color: var(--muted); }
+.landscape-compare-cards .text-btn { font-size: 13px; }
+@media (max-width: 1240px) { .landscape-groups { columns: 2; } .landscape-stack-head { align-items: flex-start; flex-direction: column; gap: 12px; } }
+@media (max-width: 700px) {
+  main[data-route="data-map"] { padding: 24px 16px 85px; }
+  .landscape-page .page-head { gap: 10px; } .landscape-total { font-size: 12px; }
+  .landscape-total { display: none; }
+  .landscape-page .page-head p { font-size: 14px; }
+  .landscape-stack { padding: 16px; }
+  .landscape-examples > summary > span { display: block; margin-left: 0; margin-top: 4px; }
+  .landscape-chain { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .landscape-chain-node { flex-direction: row; align-items: center; justify-content: space-between; gap: 18px; padding: 10px 12px; }
+  .landscape-chain-node > small { max-width: 50%; text-align: right; }
+  .landscape-chain-link { width: auto; flex-direction: row; gap: 7px; font-size: 10px; min-height: 26px; }
+  .landscape-chain-link > span:last-child { transform: rotate(90deg); font-size: 16px; }
+  .landscape-switch { width: 100%; } .landscape-switch > button { flex: 1; padding-left: 7px; padding-right: 7px; font-size: 11px; }
+  .landscape-mixups { gap: 5px; padding-bottom: 12px; }
+  .landscape-mixups > span { width: 100%; }
+  .landscape-toolbar { gap: 8px; padding: 8px 0; }
+  .landscape-search { width: 100%; flex-basis: 100%; }
+  .landscape-kinds { width: 100%; } .landscape-kinds > button { flex: 1; min-height: 34px; }
+  .landscape-result-info { flex-wrap: wrap; gap: 0 8px; font-size: 11px; }
+  .landscape-result-info .small { font-size: 11px; }
+  .landscape-groups { columns: 1; }
+  .landscape-group { padding: 16px; }
+  .landscape-node b { font-size: 14px; } .landscape-node small { font-size: 12px; } .landscape-node { min-height: 68px; padding: 10px; }
+  .landscape-group-note { font-size: 12px; }
+  .landscape-source-list { grid-template-columns: 1fr; }
+  .landscape-dialog-title { padding: 4px 16px 12px; } .landscape-dialog-title h2 { font-size: 25px; }
+  .landscape-dialog-controls { padding: 6px 10px 0; }
+  .landscape-dialog-body { padding: 12px 16px; } .landscape-dialog-foot { padding: 8px 16px; }
+  .landscape-relations > button { grid-template-columns: 10px 1fr 1fr 14px; gap: 7px; margin-left: 6px; width: calc(100% - 6px); min-height: 44px; padding-left: 7px; }
+  .landscape-learning > button, .landscape-learning > a { min-height: 40px; }
+  .landscape-relations > button > small { font-size: 11px; } .landscape-relations > button > b { font-size: 12px; }
+}

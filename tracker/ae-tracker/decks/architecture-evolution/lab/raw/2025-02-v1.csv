@@ -1,0 +1,3 @@
+flight_id,flight_date,airline,origin,destination,scheduled_hour,cancelled,diverted,arrival_delay
+F004,2025-02-03,AIR_A,SEA,SFO,8,1,0,
+F005,2025-02-04,AIR_B,SEA,SFO,18,0,0,40
